@@ -1,0 +1,455 @@
+/* ---------- ROOT VARIABLES & GLOBAL RESET ---------- */
+:root {
+  --bg:#0A0A0F;
+  --glass: rgba(255,255,255,0.06);
+  --stroke: rgba(255,255,255,0.12);
+  --text:#cfd81f;
+  --cyan:#00FFF0;
+  --magenta:#FF00E6;
+  --lime:#9BFF00;
+  --violet:#9C6BFF;
+
+  /* Navbar height variable */
+  --nav-height: 80px;
+
+  /* desktop-look-on-mobile scaling */
+  --desktop-scale-default: 1;
+  --desktop-scale-420: 0.86;  /* phones ~420px */
+  --desktop-scale-375: 0.82;  /* smaller phones ~375px */
+  --desktop-scale-360: 0.78;  /* smallest phones */
+}
+
+/* ---------- BASE RESET ---------- */
+* { box-sizing:border-box; }
+html,body,#root { height:100%; }
+
+/* Smooth scroll + offset for anchors */
+html {
+  /* IMPORTANT: auto here to avoid weird infinite/bouncy scrolling */
+  scroll-behavior: auto;
+  scroll-padding-top: var(--nav-height);
+}
+
+body {
+  margin:0;
+  font-family: 'Outfit', system-ui, sans-serif;
+  background:
+    radial-gradient(1200px 800px at 70% -20%, rgba(156,107,255,0.18), transparent 60%),
+    radial-gradient(1000px 600px at 20% 20%, rgba(0,255,240,0.12), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  padding-top: var(--nav-height); /* room for fixed navbar */
+}
+
+/* Keep the page from horizontally overflowing due to scaling artifacts */
+html, body {
+  overflow-x: hidden;
+}
+
+/* accessibility helper */
+.visually-hidden {
+  position: absolute !important;
+  left: -9999px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
+/* ---------- BUTTONS (global) ---------- */
+.btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.5rem;
+  padding:.7rem 1rem;
+  border-radius:12px;
+  border:1px solid var(--stroke);
+  cursor:pointer;
+  text-decoration:none;
+  font-weight:600;
+}
+.btn-neon {
+  background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--lime), var(--violet));
+  background-size: 300% 100%;
+  color:#0A0A0F;
+  animation: hue 6s linear infinite;
+  box-shadow: 0 0 20px rgba(0,255,240,.35);
+}
+.btn-ghost {
+  background:var(--glass);
+  color:var(--text);
+}
+.btn.small {
+  padding: 0.4rem 0.7rem;
+  font-size:13px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.value-props {
+  list-style:none;
+  padding:0;
+  display:flex;
+  gap:10px;
+  opacity:.9;
+  justify-content:center;
+}
+.value-props li {
+  border:1px dashed var(--stroke);
+  padding:.35rem .6rem;
+  border-radius:999px;
+  background:rgba(255,255,255,.04);
+}
+
+@keyframes hue {
+  0%{ background-position:0 0 }
+  100%{ background-position:100% 0 }
+}
+
+/* ---------- BACK TO TOP BUTTON ---------- */
+.back-to-top {
+  position:fixed;
+  right:14px;
+  bottom:14px;
+  z-index:40;
+  opacity:0;
+  transform: translateY(8px);
+  transition: opacity .2s ease, transform .2s ease;
+  background:var(--glass);
+  color:var(--text);
+  border:1px solid var(--stroke);
+  border-radius:999px;
+  padding:.6rem .8rem;
+}
+.back-to-top.show {
+  opacity:1;
+  transform: translateY(0);
+}
+
+/* ---------- ROOT LAYOUT PROTECTION ----------
+   Prevent any page-level transforms/animations that can cause
+   the whole page to appear to zoom or bounce.
+   This does NOT affect inner elements like cards, buttons, etc.
+*/
+html,
+body,
+#root,
+main,
+.section,
+.hero {
+  transform: none !important;
+  animation: none !important;
+}
+
+/* ---------- HERO FULLSCREEN LAYOUT ---------- */
+
+.hero-fullscreen {
+  position: relative;
+  min-height: calc(100vh - var(--nav-height));
+  padding: 40px 16px 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* background orbs */
+.hero-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(40px);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.hero-orb-1 {
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, rgba(0,255,240,0.5), transparent 60%);
+  top: -80px;
+  left: -80px;
+}
+
+.hero-orb-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255,0,230,0.45), transparent 60%);
+  bottom: -60px;
+  right: -40px;
+}
+
+.hero-orb-3 {
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(155,255,0,0.4), transparent 60%);
+  top: 40%;
+  right: 20%;
+}
+
+/* inner block centered */
+.hero-inner-block {
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* pill label */
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  background: rgba(0,0,0,0.45);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.hero-pill .pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+}
+
+/* main title */
+.hero-main-title {
+  font-size: clamp(32px, 4vw, 46px);
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.hero-main-glow {
+  color: var(--text);
+  text-shadow: 0 0 18px rgba(230,255,80,0.6);
+}
+
+/* sub text */
+.hero-sub {
+  max-width: 640px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.75);
+}
+
+/* typewriter-style line (static but stylable) */
+.hero-typewriter-line {
+  margin-top: 4px;
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+/* rotating phrases area */
+.hero-loop {
+  margin-top: 10px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* ICON FEATURE ROW */
+.hero-icon-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.hero-icon-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(6, 12, 30, 0.9);
+  font-size: 13px;
+  box-shadow: 0 0 18px rgba(0,0,0,0.5);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.hero-icon-pill svg {
+  font-size: 14px;
+}
+
+.hero-icon-pill:hover {
+  transform: translateY(-2px);
+  background: rgba(18, 26, 58, 0.96);
+  box-shadow: 0 0 22px rgba(79, 70, 229, 0.55);
+}
+
+/* CTA buttons row */
+.hero-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+  justify-content: center;
+}
+
+/* hero stats */
+.hero-stats-center {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.hero-stat {
+  min-width: 140px;
+  padding: 12px 18px;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.6);
+}
+
+.hero-stat-number {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.hero-stat-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+}
+
+/* ---------- HERO CHAT WIDGET ---------- */
+
+.hero-chat-widget {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.hero-chat-panel {
+  width: 260px;
+  max-width: 80vw;
+  background: rgba(10, 14, 30, 0.98);
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.8);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+  padding: 12px 14px 10px;
+  font-size: 13px;
+}
+
+.hero-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.hero-chat-header svg {
+  font-size: 20px;
+  color: var(--text);
+}
+
+.hero-chat-title {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.hero-chat-subtitle {
+  font-size: 11px;
+  color: rgba(255,255,255,0.65);
+}
+
+.hero-chat-body ul {
+  margin: 4px 0 0;
+  padding-left: 16px;
+}
+
+.hero-chat-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.hero-chat-cta {
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+/* toggle button */
+.hero-chat-toggle {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(232,255,77,0.7);
+  background: radial-gradient(circle at 30% 0, var(--text), #0f172a);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.95);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.hero-chat-toggle svg {
+  font-size: 20px;
+}
+
+.hero-chat-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 1);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 900px) {
+  .hero-fullscreen {
+    padding-top: calc(var(--nav-height) + 20px);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-inner-block {
+    padding-inline: 4px;
+  }
+
+  .hero-main-title {
+    font-size: 30px;
+  }
+
+  .hero-chat-widget {
+    right: 12px;
+    bottom: 12px;
+  }
+}
+
+/* Collaborators section wrapper */
+.collab-section {
+  padding: 60px 16px 80px;
+  overflow: visible;            /* make sure nothing gets clipped */
+}
+
+/* Extra breathing room on mobile so logos don't overlap Contact */
+@media (max-width: 768px) {
+  .collab-section {
+    padding-bottom: 140px;      /* increase if still a bit tight */
+  }
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+/* ---------- END OF FILE ---------- */

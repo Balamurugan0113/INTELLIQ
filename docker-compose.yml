@@ -1,0 +1,48 @@
+
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      CORS_ORIGINS: "*"
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: 465
+      SMTP_USER: intelliqassociation@gmail.com
+      SMTP_PASS: mort eowo gtzz bxdg    # or use secrets
+      ADMIN_TOKEN: supersecretadmintoken
+      FROM_EMAIL: intelliqassociation@gmail.com
+      NOTIFY_EMAIL: intelliqassociation@gmail.com
+    ports:
+      - "8000:8000"
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm install --no-audit --no-fund && npm run dev -- --host"
+    volumes:
+      - ./frontend:/app
+    environment:
+      VITE_API_URL: ${VITE_API_URL}
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

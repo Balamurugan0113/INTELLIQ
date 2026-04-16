@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "ogl": "^1.0.11",
+    "react-player": "^2.16.0"
+  },
+  "devDependencies": {
+    "baseline-browser-mapping": "^2.9.18"
+  }
+}

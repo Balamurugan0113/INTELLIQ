@@ -1,0 +1,88 @@
+/* frontend/src/components/LogoFadeLoop.css */
+
+.logo-fade-wrapper {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.logo-fade-title {
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 22px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ===================== MARQUEE STRIP ===================== */
+
+/* ✅ Always show 4 logos (desktop + mobile) */
+.logo-marquee {
+  width: min(720px, 95vw); /* 4 logos visible */
+  overflow: hidden;
+  border-radius: 18px;
+  position: relative;
+  padding: 14px 10px;
+}
+
+/* Track moves RIGHT -> LEFT */
+.logo-marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 0px; /* keep no gap for perfect 4 */
+  width: max-content;
+  animation: marquee-left linear infinite;
+}
+
+/* Pause on hover */
+.logo-marquee.paused .logo-marquee-track {
+  animation-play-state: paused;
+}
+
+/* ✅ Fixed width so 4 logos fit always */
+.logo-marquee-item {
+  flex: 0 0 auto;
+  width: 170px; /* desktop 4 logos */
+  height: 70px;
+  display: grid;
+  place-items: center;
+  padding: 8px 10px;
+}
+
+/* Logo image */
+.logo-marquee-img {
+  height: 80px;
+  width: 100%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Animation: translate half width (because duplicated logos) */
+@keyframes marquee-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ✅ Mobile: still show 4 logos (smaller boxes) */
+@media (max-width: 600px) {
+  .logo-marquee {
+    width: min(420px, 98vw); /* still fits 4 logos */
+    padding: 10px 6px;
+  }
+
+  .logo-marquee-item {
+    width: 95px; /* 95 x 4 = 380px */
+    height: 52px;
+    padding: 6px 6px;
+  }
+
+  .logo-marquee-img {
+    height: 40px;
+  }
+}

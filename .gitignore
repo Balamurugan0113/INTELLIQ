@@ -1,0 +1,15 @@
+# Node
+frontend/node_modules/
+node_modules/
+
+# Python
+backend/__pycache__/
+backend/.venv/
+venv/
+
+# VSCode
+.vscode/
+
+# Other
+*.log
+.env

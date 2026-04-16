@@ -1,0 +1,83 @@
+/* ---------- Rotating phrases below typewriter ---------- */
+.rotating-phrases {
+  display: inline-block;
+  position: relative;
+  min-width: 220px;
+  height: 1.8em;
+  vertical-align: middle;
+  overflow: visible;
+  pointer-events: none;
+  margin-top: 4px;
+  --phrase-duration: 620ms;
+}
+
+.rotating-phrases .rotating-phrase {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
+  filter: blur(0.6px);
+  color: var(--text);
+  font-weight: 700;
+  font-size: clamp(14px, 2vw, 16px);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  text-align: left;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transition:
+    opacity var(--phrase-duration) ease,
+    transform var(--phrase-duration) cubic-bezier(.2,.9,.2,1),
+    filter calc(var(--phrase-duration) * 1) ease;
+}
+
+.rotating-phrase .phrase-inner {
+  display: inline-block;
+  will-change: transform, opacity;
+  transform-origin: center;
+}
+
+/* active phrase – fades in, glows */
+.rotating-phrases .rotating-phrase.is-active {
+  opacity: 0.85;
+  transform: translateY(0) scale(1.04);
+  filter: blur(0);
+}
+
+.rotating-phrases .rotating-phrase.is-active .phrase-inner {
+  color: transparent;
+  background: linear-gradient(90deg, rgb(221, 255, 0), rgba(126, 228, 11, 0.71));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    0 2px 0 rgba(255, 255, 0, 0.5),
+    0 0 8px rgba(221, 255, 0, 0.4),
+    0 0 16px rgba(221, 255, 0, 0.7);
+  transition: transform var(--phrase-duration) cubic-bezier(.2,.9,.2,1);
+  transform: translateZ(0);
+}
+
+/* reduced motion: show just first phrase, no animation */
+@media (prefers-reduced-motion: reduce) {
+  .rotating-phrases {
+    --phrase-duration: 0ms;
+  }
+  .rotating-phrases .rotating-phrase {
+    transition: none !important;
+    transform: none !important;
+    opacity: 0;
+    filter: none;
+  }
+  .rotating-phrases .rotating-phrase:first-child {
+    opacity: 1;
+    color: var(--text);
+    background: none;
+    -webkit-text-fill-color: initial;
+    transform: none;
+  }
+}

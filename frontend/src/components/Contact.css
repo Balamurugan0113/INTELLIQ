@@ -1,0 +1,424 @@
+/* ===================== CONTACT LAYOUT ===================== */
+
+.contact-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+@media (max-width: 840px) {
+  .contact-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ===================== LEFT: INFO + TASKBAR ===================== */
+
+.contact-info {
+  padding: 18px 16px 18px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contact-heading {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contact-heading-main {
+  font-size: clamp(22px, 2.6vw, 28px);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  /* Neon gradient text */
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 255, 240, 1),
+    rgba(156, 107, 255, 1),
+    rgba(255, 0, 230, 1)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    0 0 10px rgba(0, 255, 240, 0.35),
+    0 0 20px rgba(156, 107, 255, 0.25);
+}
+
+.contact-heading-sub {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Taskbar-style panel – now vertical stack of chips */
+
+.contact-taskbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 16px;
+  background: radial-gradient(
+      circle at 0% 0%,
+      rgba(0, 255, 240, 0.16),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(156, 107, 255, 0.18),
+      transparent 60%
+    ),
+    rgba(7, 10, 16, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 0 18px rgba(0, 255, 240, 0.22),
+    0 10px 30px rgba(0, 0, 0, 0.7);
+  width: 100%;
+}
+
+/* Single stacked neon chips with icon + text */
+
+.task-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(4, 8, 16, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    border-color 0.16s ease,
+    background 0.16s ease;
+  text-decoration: none; /* for the <a> chip */
+}
+
+/* ICON STYLE */
+.task-chip .chip-icon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* LABEL + VALUE WRAPPER */
+.task-chip-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.chip-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  opacity: 0.72;
+}
+
+/* Value text – allow wrapping, full text visible */
+.chip-value {
+  font-size: 0.9rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.chip-link {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.chip-link:hover {
+  text-decoration: underline;
+}
+
+/* Hover Animation Glow */
+.task-chip:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 255, 240, 0.7);
+  box-shadow:
+    0 0 14px rgba(0, 255, 240, 0.45),
+    0 8px 26px rgba(0, 0, 0, 0.8);
+  background: radial-gradient(
+      circle at 0% 0%,
+      rgba(0, 255, 240, 0.18),
+      transparent 60%
+    ),
+    rgba(4, 8, 16, 0.95);
+}
+
+.contact-small-print {
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+
+/* ===================== RIGHT: FORM ===================== */
+
+.contact-form-wrapper {
+  padding: 4px 0 4px 4px;
+}
+
+.contact-form {
+  height: 100%;
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(0, 255, 240, 0.14), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(156, 107, 255, 0.22), transparent 55%),
+    rgba(8, 10, 18, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.8),
+    0 0 22px rgba(0, 255, 240, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    flex-direction: column;
+  }
+}
+
+.form-field {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-field label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  opacity: 0.8;
+}
+
+.form-field input,
+.form-field textarea {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(4, 8, 16, 0.92);
+  color: var(--text);
+  padding: 9px 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  resize: vertical;
+  min-height: 40px;
+  box-shadow: 0 0 0 0 rgba(0, 255, 240, 0.35);
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease;
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  opacity: 0.6;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: rgba(0, 255, 240, 0.8);
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 240, 0.6),
+    0 0 18px rgba(0, 255, 240, 0.4);
+  background: rgba(2, 6, 12, 0.96);
+}
+
+/* footer row: button + status text */
+
+.form-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.contact-submit {
+  min-width: 150px;
+}
+
+/* status messages */
+
+.form-status {
+  font-size: 0.8rem;
+  opacity: 0.0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.form-status--sending,
+.form-status--success,
+.form-status--error {
+  /* base styles – we’ll override color depending on state below */
+}
+
+.form-status--sending.form-status {
+  opacity: 0.9;
+  transform: translateY(0);
+  color: var(--cyan);
+}
+
+.form-status--success.form-status {
+  opacity: 0.95;
+  transform: translateY(0);
+  color: var(--lime);
+}
+
+.form-status--error.form-status {
+  opacity: 0.95;
+  transform: translateY(0);
+  color: #ff6b81;
+}
+
+/* Disabled button style */
+.contact-submit:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* ===================== CAMPUS MAP ===================== */
+
+.contact-root {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* box around the map */
+.contact-map-wrapper {
+  margin-top: 8px;
+  padding: 16px 18px 18px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(0, 255, 240, 0.14), transparent 55%),
+    radial-gradient(circle at 100% 100%, rgba(156, 107, 255, 0.18), transparent 55%),
+    rgba(8, 10, 18, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.85),
+    0 0 22px rgba(0, 255, 240, 0.22);
+}
+
+/* neon title for map */
+.contact-map-title {
+  margin: 0 0 4px;
+  font-size: clamp(18px, 2.2vw, 22px);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 255, 240, 1),
+    rgba(156, 107, 255, 1)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    0 0 8px rgba(0, 255, 240, 0.35),
+    0 0 14px rgba(156, 107, 255, 0.25);
+}
+
+.contact-map-subtitle {
+  margin: 0 0 10px;
+  font-size: 0.86rem;
+  opacity: 0.9;
+}
+
+/* map frame with aspect-ratio, responsive */
+.contact-map-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 10 / 5;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.9),
+    0 0 18px rgba(0, 255, 240, 0.32);
+}
+
+.contact-map-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* slightly taller map on small screens for better view */
+@media (max-width: 640px) {
+  .contact-map-frame {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* actions under the map */
+
+.contact-map-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.contact-map-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.16s ease;
+}
+
+/* primary neon button */
+.contact-map-btn--primary {
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+  color: #05070d;
+  box-shadow:
+    0 0 12px rgba(0, 255, 240, 0.35),
+    0 0 18px rgba(156, 107, 255, 0.3);
+}
+
+/* ghost variant */
+.contact-map-btn--ghost {
+  background: rgba(4, 8, 16, 0.9);
+  color: var(--text);
+}
+
+/* hover states */
+.contact-map-btn:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.7),
+    0 0 16px rgba(0, 255, 240, 0.35);
+}

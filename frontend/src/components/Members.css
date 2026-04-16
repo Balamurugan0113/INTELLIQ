@@ -1,0 +1,517 @@
+/* ---------- Members - Centered Card with Continuous Neon Name + Continuous Glass Shine ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.members-section {
+  padding: 48px 16px;
+}
+.members-heading {
+  font-size: 1.6rem;
+  margin: 0 0 18px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: #EDEFF1;
+}
+
+/* grid tuned for 5 columns */
+.members-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: 14px;
+  align-items: start;
+}
+
+/* responsive fallbacks */
+@media (max-width: 1280px) { .members-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 1024px) { .members-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .members-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .members-grid { grid-template-columns: 1fr; } }
+
+/* compact centered card style */
+.member-card.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 12px;
+  padding: 14px 12px;
+  min-height: 130px;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  user-select: none;
+  text-align: center;
+  position: relative;
+  overflow: visible;
+}
+.member-card.centered:hover,
+.member-card.centered:focus {
+  transform: translateY(-8px);
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+  outline: none;
+}
+
+/* avatar center */
+.avatar-center {
+  width: 86px;
+  height: 86px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  overflow: hidden;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.02), transparent 40%);
+  position: relative;
+}
+.avatar-img-center,
+.avatar-fallback-center {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  background: rgba(255,255,255,0.01);
+  border: 1px solid rgba(255,255,255,0.04);
+  color: #fff;
+  font-size: 16px;
+}
+
+/* meta center */
+.meta-center {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  min-height: 56px;
+}
+
+/* ===================== NEON NAME (continuous) ===================== */
+/* create a moving-gradient + pulsing glow effect for name */
+.member-name-neon,
+.neon-inline {
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: .2px;
+  position: relative;
+  z-index: 2;
+  /* gradient fill (animated) */
+  background: linear-gradient(90deg,
+    #00FFF0 0%,
+    #9C6BFF 18%,
+    #FF00E6 36%,
+    #FF7A00 54%,
+    #9BFF00 72%,
+    #00FFF0 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* shadow / neon glow baseline */
+  text-shadow:
+    0 0 6px rgba(0,255,240,0.18),
+    0 0 12px rgba(156,107,255,0.12),
+    0 0 22px rgba(255,0,230,0.08);
+  filter: drop-shadow(0 0 6px rgba(0,255,240,0.12));
+  /* animate both gradient sweep and glow pulse */
+  animation: neonGradient 5s linear infinite, neonGlow 3.6s ease-in-out infinite;
+}
+
+/* gradient sweep */
+@keyframes neonGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* glow pulse */
+@keyframes neonGlow {
+  0% {
+    text-shadow:
+      0 0 6px rgba(0,255,240,0.12),
+      0 0 12px rgba(156,107,255,0.08),
+      0 0 20px rgba(255,0,230,0.04);
+    transform: translateY(0);
+    opacity: 0.98;
+  }
+  40% {
+    text-shadow:
+      0 0 14px rgba(0,255,240,0.32),
+      0 0 26px rgba(156,107,255,0.22),
+      0 0 40px rgba(255,0,230,0.18);
+    transform: translateY(-1px);
+    opacity: 1;
+  }
+  100% {
+    text-shadow:
+      0 0 8px rgba(0,255,240,0.14),
+      0 0 14px rgba(156,107,255,0.10),
+      0 0 22px rgba(255,0,230,0.06);
+    transform: translateY(0);
+    opacity: 0.98;
+  }
+}
+
+/* stronger halo behind name for ambient glow (subtle) */
+.member-card.centered .member-name-neon::before {
+  content: '';
+  position: absolute;
+  inset: -6px -12px -6px -12px;
+  z-index: -1;
+  filter: blur(18px);
+  opacity: 0.28;
+  background: radial-gradient(circle at 50% 30%, rgba(0,255,240,0.14), transparent 30%);
+  pointer-events: none;
+}
+
+/* ===================== GLASS ROLE (continuous shine) ===================== */
+/* base appearance for role */
+.member-role-glass,
+.glass-inline {
+  position: relative;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(242, 255, 2, 0.95);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  overflow: hidden;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: inset 0 -6px 12px rgba(0,0,0,0.25);
+  z-index: 0;
+}
+
+/* continuous diagonal shine using ::after that loops forever */
+/* the pseudo-element is wider/taller so the diagonal covers whole pill when translated */
+.member-role-glass::after,
+.glass-inline::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  transform: rotate(-25deg) translateX(-100%);
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0.18) 45%,
+    rgba(255,255,255,0.04) 60%);
+  filter: blur(8px);
+  opacity: 0.0;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+  animation: continuousShine 2.8s linear infinite;
+}
+
+/* make pseudo-element visible during most of its sweep */
+@keyframes continuousShine {
+  0%   { transform: rotate(-25deg) translateX(-120%); opacity: 0; }
+  8%   { opacity: 0.6; }
+  40%  { transform: rotate(-25deg) translateX(0%); opacity: 0.95; }
+  70%  { opacity: 0.5; }
+  100% { transform: rotate(-25deg) translateX(120%); opacity: 0; }
+}
+
+/* slightly intensify the inner gloss (always present) */
+.member-role-glass::before,
+.glass-inline::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ensure text stays above shine */
+.member-role-glass > *,
+.glass-inline > * { position: relative; z-index: 2; }
+
+/* links */
+.links-center {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 4px;
+}
+.icon-chip {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.01);
+  text-decoration: none;
+  color: rgba(245,247,249,0.95);
+  transition: transform .12s ease, background .12s ease;
+}
+.icon-chip:hover { transform: translateY(-3px); background: rgba(255,255,255,0.03); }
+
+/* accessibility focus */
+.member-card.centered:focus {
+  box-shadow: 0 0 0 5px rgba(0,200,255,0.06);
+  border-color: rgba(0,200,255,0.12);
+}
+
+/* Modal simplified & matching styles */
+.member-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: grid;
+  place-items: center;
+  z-index: 1200;
+  padding: 16px;
+}
+.member-modal.centered {
+  width: min(540px, 96%);
+  background: linear-gradient(180deg, rgba(18,18,20,0.98), rgba(14,14,16,0.98));
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.65);
+  color: #EEF0F2;
+}
+.modal-header {
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.modal-avatar {
+  width:64px;
+  height:64px;
+  border-radius:12px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,0.04);
+}
+.modal-name {
+  margin:0;
+  font-size:1.05rem;
+  font-weight:800;
+  color: #fff;
+  background: linear-gradient(90deg, #00FFF0, #9C6BFF, #FF00E6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 10px rgba(0,255,240,0.18);
+  animation: neonGradient 5s linear infinite, neonGlow 3.6s ease-in-out infinite;
+}
+.modal-role {
+  font-size:13px;
+  opacity:0.9;
+  margin-top:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.006));
+  border: 1px solid rgba(255,255,255,0.04);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  position: relative;
+}
+.modal-role::after {
+  /* modal role uses same continuous shine */
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  transform: rotate(-25deg) translateX(-100%);
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0.18) 45%,
+    rgba(255,255,255,0.04) 60%);
+  filter: blur(8px);
+  opacity: 0.0;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+  animation: continuousShine 2.8s linear infinite;
+}
+.modal-close {
+  margin-left:auto;
+  background: transparent;
+  border: none;
+  font-size:18px;
+  color: rgba(255,255,255,0.8);
+  cursor: pointer;
+}
+.modal-actions {
+  margin-top:12px;
+  display:flex;
+  gap:8px;
+}
+.btn.small {
+  padding: 8px 12px;
+  border-radius:8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  text-decoration: none;
+  color: #F5F7F9;
+}
+.btn.small:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* ---------------- Mobile optimization & accessibility tweaks ---------------- */
+
+/* mobile-first adjustments for very small screens */
+/* --------- MOBILE: 3 SMALL MEMBER BOXES PER ROW --------- */
+@media (max-width: 420px) {
+  .members-section {
+    padding: 20px 6px;
+  }
+
+  .members-heading {
+    font-size: 1.15rem;
+    margin-bottom: 8px;
+  }
+
+  /* 3 cards per row */
+  .members-grid {
+    width: 100%;
+    max-width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0;
+  }
+
+  /* ultra-compact card */
+  .member-card.centered {
+    padding: 6px;
+    width: 100%;
+    min-height: 86px;
+  }
+
+  /* smaller avatar */
+  .avatar-center {
+    width: 52px;
+    height: 52px;
+  }
+
+  .avatar-img-center,
+  .avatar-fallback-center {
+    width: 46px;
+    height: 46px;
+    font-size: 11px;
+  }
+
+  /* compact text */
+  .member-name-neon {
+    font-size: 11px;
+    line-height: 1.1;
+  }
+
+  .member-role-glass {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+
+  /* compact icons */
+  .links-center {
+    gap: 3px;
+    margin-top: 2px;
+  }
+
+  .icon-chip {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  /* mobile tap optimization */
+  .member-card.centered {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.08);
+  }
+}
+
+
+/* medium phones / small tablets adjustments */
+@media (min-width: 421px) and (max-width: 720px) {
+  .members-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .member-card.centered { min-height: 120px; padding: 12px; }
+  .avatar-center { width:78px; height:78px; }
+  .avatar-img-center, .avatar-fallback-center { width:72px; height:72px; }
+}
+
+/* reduce visuals on low-power devices: avoid heavy backdrop-filter on small screens */
+@media (max-width: 800px) {
+  .member-role-glass,
+  .modal-role {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+}
+
+/* prefers-reduced-motion — stop non-essential animations and reduce intensity */
+@media (prefers-reduced-motion: reduce) {
+  .member-name-neon,
+  .neon-inline {
+    animation: none !important;
+    text-shadow: 0 0 6px rgba(0,255,240,0.14) !important;
+    transform: none !important;
+  }
+
+  .member-role-glass::after,
+  .glass-inline::after,
+  .modal-role::after {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .member-card.centered:hover,
+  .member-card.centered:focus {
+    transform: none !important;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35) !important;
+  }
+}
+
+/* reduce animation intensity on touch devices (so the neon/gloss is subtle and performant) */
+@media (pointer: coarse) {
+  .member-name-neon { animation-duration: 6.5s; filter: drop-shadow(0 0 4px rgba(0,255,240,0.09)); }
+  .member-role-glass::after,
+  .glass-inline::after { animation-duration: 3.6s; filter: blur(6px); opacity: 0.85; }
+}
+
+/* active/tap state for immediate feedback */
+.member-card.centered:active,
+.icon-chip:active {
+  transform: translateY(0) scale(0.998);
+  transition-duration: 80ms;
+}
+
+/* performance hint: avoid will-change on many elements at once - apply only on hovered card */
+.member-card.centered { will-change: transform; }
+.member-card.centered:hover, .member-card.centered:focus { will-change: transform; }
+
+/* ensure avatar images are constrained and do not force layout shift */
+.avatar-img-center { max-width: 100%; height: auto; display: block; }
+
+/* optional: improve link hitbox on mobile - expand clickable area */
+.icon-chip {
+  position: relative;
+  z-index: 3; /* above gloss layer */
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/* If you plan to use srcset / responsive images, add a utility class */
+.avatar-img-center.responsive {
+  width: 100%;
+  height: auto;
+  max-width: 78px;
+  border-radius: 50%;
+}

@@ -1,0 +1,76 @@
+/* ---------- HERO / SECTIONS ---------- */
+.section {
+  padding:80px 16px;
+  scroll-margin-top: calc(var(--nav-height) + 10px);
+}
+.section .container {
+  max-width:1100px;
+  margin:0 auto;
+}
+.section h2 {
+  font-size:clamp(24px, 3vw, 38px);
+  margin:0 0 18px;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+
+/* ---------- PANELS ---------- */
+.panel {
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  padding:18px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.35);
+}
+
+/* ---------- CARDS (used by Events / About) ---------- */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+  gap:14px;
+}
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid var(--stroke);
+  border-radius:16px;
+  padding:14px;
+  /* let specialised cards (like .event-card) control transform via JS */
+  transition: box-shadow .2s ease;
+  will-change: transform;
+  perspective:800px;
+}
+.card:hover {
+  /* no transform; just glow */
+  box-shadow:0 8px 30px rgba(0,255,240,.15);
+}
+
+
+
+/* ---------- STATS ---------- */
+.stats {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:16px 0;
+}
+.stat {
+  flex:1 1 180px;
+  text-align:center;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid var(--stroke);
+  background:var(--glass);
+}
+
+/* ---------- COMPACT SECTION (Collaborators) ---------- */
+.section--compact {
+  padding-top: 36px;
+  padding-bottom: 36px;
+}
+
+@media (max-width: 480px) {
+  .section--compact {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}

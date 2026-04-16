@@ -1,0 +1,107 @@
+/* Payment modal backdrop and card */
+.payment-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4,6,8,0.6);
+  backdrop-filter: blur(6px);
+}
+
+/* Card */
+.payment-modal {
+  width: min(720px, calc(100% - 40px));
+  background: linear-gradient(180deg, rgba(12,12,16,0.96), rgba(8,8,10,0.92));
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.7);
+  color: var(--text);
+}
+
+/* Header */
+.payment-modal-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.payment-modal-header h3 {
+  margin:0;
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:0.6px;
+  color: #fff;
+}
+
+/* Close button */
+.payment-close {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 6px 9px;
+  cursor: pointer;
+  color: var(--text);
+}
+.payment-close:focus {
+  outline: 2px solid var(--cyan);
+}
+
+/* Body */
+.payment-modal-body {
+  margin-top:12px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:center;
+}
+.payment-desc {
+  margin:0;
+  opacity:0.9;
+  font-size:14px;
+  text-align:center;
+}
+
+/* QR wrap */
+.qr-wrap {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width: 260px;
+  height: 260px;
+  background: rgba(255,255,255,0.01);
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+.qr-image {
+  max-width: 100%;
+  max-height: 100%;
+  display:block;
+  object-fit:contain;
+  filter: drop-shadow(0 6px 20px rgba(0,255,240,0.05));
+}
+
+/* hint row */
+.payment-hint {
+  width: 100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  color: rgba(255,255,255,0.9);
+  font-size:13px;
+}
+.payment-hint strong { color: #fff; }
+
+/* Footer */
+.payment-modal-footer {
+  display:flex;
+  justify-content:flex-end;
+  margin-top:10px;
+  gap:10px;
+}

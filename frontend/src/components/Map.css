@@ -1,0 +1,140 @@
+/* frontend/src/components/Map.css
+   Responsive map container + neon marker (mobile-friendly)
+*/
+
+/* CSS vars so sizing is easy to tune per breakpoint */
+:root{
+  --map-desktop-h: 300px;
+  --map-tablet-h: 260px;
+  --map-mobile-h: 220px;
+}
+
+/* wrapper used by the React component (and panel) */
+.map-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(4,4,255,0.02));
+  position: relative;
+  width: 100%;
+  /* default height (desktop) — can be overridden by parent panel or a utility class */
+  height: var(--map-desktop-h);
+}
+
+/* keep panel > .leaflet-container consistent if used inside .panel */
+.panel > .leaflet-container {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inherit;
+  background: transparent;
+}
+
+/* Leaflet container should take full height of wrapper.
+   IMPORTANT: no !important, so other breakpoints or parent rules can override. */
+.leaflet-container {
+  background: transparent;
+  filter: contrast(0.95) brightness(0.95);
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Use media queries to tune the wrapper height — this keeps desktop visuals while adapting for small screens */
+@media (max-width: 920px) {
+  .map-wrap { height: var(--map-tablet-h); }
+}
+@media (max-width: 640px) {
+  .map-wrap { height: var(--map-mobile_h, var(--map-mobile-h)); }
+}
+
+/* Neon animated marker for Leaflet (INTELLIQ theme) */
+.intelliq-marker {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  transform: translate(-11px, -11px); /* center the marker on coords */
+  pointer-events: auto; /* marker interactive for popup */
+  display: inline-block;
+}
+
+/* core dot */
+.intelliq-marker .core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 35% 30%, #00fff0 0%, #00fff0 30%, #9c6bff 80%);
+  box-shadow:
+    0 0 6px rgba(0,255,240,0.9),
+    0 0 10px rgba(156,107,255,0.6),
+    0 0 20px rgba(255,0,230,0.25);
+  z-index: 3;
+}
+
+/* small inner highlight for depth */
+.intelliq-marker .inner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(253, 0, 0, 0.9);
+  z-index: 4;
+  filter: blur(0.2px);
+}
+
+/* animated expanding pulse */
+.intelliq-marker .pulse {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,255,240,0.14);
+  box-shadow: 0 0 14px rgba(0,255,240,0.12);
+  z-index: 1;
+  animation: intelliqPulse 1600ms ease-out infinite;
+}
+
+/* secondary slower pulse for depth */
+.intelliq-marker .pulse-2 {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(156,107,255,0.06);
+  box-shadow: 0 0 18px rgba(156,107,255,0.08);
+  z-index: 0;
+  animation: intelliqPulseSlow 2200ms ease-out infinite;
+}
+
+/* Pulse keyframes */
+@keyframes intelliqPulse {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.9; }
+  60% { transform: translate(-50%, -50%) scale(1.65); opacity: 0.16; }
+  100% { transform: translate(-50%, -50%) scale(2.1); opacity: 0; }
+}
+@keyframes intelliqPulseSlow {
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.7; }
+  60% { transform: translate(-50%, -50%) scale(1.9); opacity: 0.09; }
+  100% { transform: translate(-50%, -50%) scale(2.6); opacity: 0; }
+}
+
+/* Respect reduced motion: stop the pulse animations */
+@media (prefers-reduced-motion: reduce) {
+  .intelliq-marker .pulse,
+  .intelliq-marker .pulse-2 {
+    animation: none;
+    opacity: 0.12;
+  }
+}

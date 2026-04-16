@@ -1,0 +1,319 @@
+.overlay-chatbot-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 15px;
+}
+
+.overlay-audio-container {
+  position: fixed;
+  bottom: 25px;
+  left: 30px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+}
+
+.floating-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.audio-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(10, 10, 10, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 6px 12px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.audio-controls-group:hover {
+  background: rgba(10, 10, 10, 0.8);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.small-base-toggle-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.small-base-toggle-btn:hover {
+  color: #01cefc;
+  transform: scale(1.1);
+}
+.volume-slider-container {
+  overflow: hidden;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.volume-slider {
+  width: 100%;
+  cursor: pointer;
+  accent-color: #01cefc;
+}
+
+.base-toggle-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.base-toggle-btn:hover {
+  color: #01cefc;
+  transform: scale(1.1);
+}
+.hidden-player-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  opacity: 0.001;
+  pointer-events: none;
+  z-index: -9999;
+}
+
+.chat-toggle {
+  background: linear-gradient(135deg, #01cefc, #8800ff);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  font-size: 1.5rem;
+}
+
+@media (max-width: 480px) {
+  .chat-toggle {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+  .overlay-chatbot-container {
+    bottom: 12px;
+    right: 12px;
+    gap: 10px;
+  }
+  .overlay-audio-container {
+    bottom: 18px;
+    left: 12px;
+  }
+}
+
+.chat-toggle.active {
+  background: linear-gradient(135deg, #8800ff, #ff3de8);
+  transform: rotate(15deg);
+}
+
+/* Chatbot UI styles */
+.chatbot-window {
+  width: 350px;
+  max-width: calc(100vw - 24px);
+  height: min(480px, 75vh);
+  background: rgba(15, 15, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: slideUp 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chatbot-header {
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+.chatbot-header-title {
+  display: flex;
+  align-items: center;
+  color: #01cefc;
+}
+
+.chatbot-clear-btn, .chatbot-close-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.chatbot-clear-btn {
+  font-size: 0.8rem;
+  text-decoration: underline;
+}
+
+.chatbot-close-btn:hover {
+  color: #ff3de8;
+}
+
+.chatbot-body {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.chat-message-row {
+  display: flex;
+  width: 100%;
+  margin-bottom: 8px;
+  align-items: flex-end;
+}
+
+.chat-message-row.user {
+  justify-content: flex-end;
+}
+
+.chat-message-row.bot {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.chat-bot-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #01cefc, #8800ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  margin-bottom: 2px;
+}
+
+.chat-timestamp {
+  display: block;
+  font-size: 0.65rem;
+  opacity: 0.6;
+  text-align: right;
+  margin-top: 5px;
+  letter-spacing: 0.5px;
+}
+
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  border-bottom-left-radius: 2px;
+  width: fit-content;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.typing-dot {
+  width: 5px;
+  height: 5px;
+  background: #ccc;
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+.chat-bubble {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  line-height: 1.4;
+  font-size: 0.9rem;
+  word-wrap: break-word;
+}
+
+.chat-bubble.bot {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ddd;
+  border-bottom-left-radius: 2px;
+}
+
+.chat-bubble.user {
+  background: linear-gradient(135deg, #01cefc, #8800ff);
+  color: #fff;
+  border-bottom-right-radius: 2px;
+}
+
+.chatbot-footer {
+  padding: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.chatbot-footer input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 8px 15px;
+  color: white;
+  outline: none;
+}
+
+.chatbot-footer input:focus {
+  border-color: #01cefc;
+}
+
+.chatbot-send-btn {
+  background: #01cefc;
+  color: #000;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.chatbot-send-btn:hover {
+  transform: scale(1.1);
+}
