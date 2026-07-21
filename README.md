@@ -226,15 +226,43 @@ intelliq/
 
 ## 🐳 Deployment
 
-```bash
-# Docker (recommended)
-docker-compose up --build -d
+### Docker
 
-# Cloudflare Worker
+```bash
+docker-compose up --build -d
+```
+
+### Cloudflare Worker
+
+```bash
 npx wrangler deploy
 ```
 
+### Render (Recommended — Free Tier)
+
+This repo includes a [`render.yaml`](render.yaml) blueprint for one-click deployment on [Render](https://render.com).
+
+**What you get on the free tier:**
+- ✅ PostgreSQL database (90-day trial, then $7/mo or migrate)
+- ✅ FastAPI backend web service (sleeps after 15 min inactivity)
+- ✅ React frontend static site (always awake)
+
+**Deploy steps:**
+
+1. Push this repo to GitHub (already done)
+2. Go to **[dashboard.render.com](https://dashboard.render.com)** → **New** → **Blueprint**
+3. Connect your GitHub account and select the **INTELLIQ** repo
+4. Render reads [`render.yaml`](render.yaml) and creates all 3 services automatically
+5. When prompted, set the `ADMIN_TOKEN` environment variable (a secure random string)
+6. Click **Apply** and wait ~5 minutes for the first deploy
+7. Visit your live site at `https://intelliq.onrender.com`
+
+**Set ADMIN_TOKEN after deploy:**
+- Go to Dashboard → intelliq-api → Environment → Add `ADMIN_TOKEN` with a secure value
+- The backend uses this token for protected endpoints (create events, members, etc.)
+
 ### Manual
+
 1. Build frontend: `cd frontend && npm run build`
 2. Serve `frontend/dist/` via any static host (Vercel, Netlify, Cloudflare Pages)
 3. Deploy backend to Render, Railway, Fly.io, or AWS ECS
