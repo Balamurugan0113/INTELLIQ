@@ -1,12 +1,15 @@
 # Render Blueprint — https://render.com/docs/blueprint-spec
 services:
-  # ─── Backend API (FastAPI) ────────────────────────────────────
+  # ─── Backend API (FastAPI — Python native) ─────────────────
   - type: web
     name: intelliq-api
-    runtime: docker
-    dockerfilePath: ./backend/Dockerfile
+    runtime: python
     region: singapore
     plan: free
+    buildCommand: |
+      cd backend && pip install -r requirements.txt
+    startCommand: |
+      cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8000
     healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
