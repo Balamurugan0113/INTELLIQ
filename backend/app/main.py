@@ -1,5 +1,7 @@
 import os
-from fastapi import FastAPI
+import time
+from collections import defaultdict
+from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from .database import Base, engine, SessionLocal
 from . import models
@@ -10,11 +12,42 @@ load_dotenv()
 
 app = FastAPI(title="INTELLIQ API", version="1.0")
 
+# ============================================================================
+# IN-MEMORY SLIDING WINDOW RATE LIMITER (PROTECTS API FROM REQUEST FLOODS)
+# ============================================================================
+RATE_LIMIT_REQUESTS = 100  # Max requests per window
+RATE_LIMIT_WINDOW = 60    # Window size in seconds
+ip_request_history = defaultdict(list)
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    # Allow health checks without rate limiting
+    if request.url.path in ["/", "/api/health"]:
+        return await call_next(request)
+
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    now = time.time()
+    
+    # Filter out timestamps older than current window
+    history = [t for t in ip_request_history[client_ip] if now - t < RATE_LIMIT_WINDOW]
+    
+    if len(history) >= RATE_LIMIT_REQUESTS:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Rate limit exceeded. Please wait a moment before trying again."
+        )
+    
+    history.append(now)
+    ip_request_history[client_ip] = history
+    
+    response = await call_next(request)
+    return response
+
+
 # Configure CORS explicitly for GoDaddy custom domain & Vercel
 raw_origins = os.getenv("CORS_ORIGINS", "*")
 parsed_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
 
-# Include live production domains explicitly
 explicit_origins = [
     "https://www.intelliq.co.in",
     "https://intelliq.co.in",
@@ -30,7 +63,7 @@ for o in parsed_origins:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"] if raw_origins == "*" else explicit_origins,
-    allow_credentials=False,  # Set false so wildcard or multi-domain CORS works seamlessly
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

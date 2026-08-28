@@ -31,7 +31,7 @@ export default function App() {
       {!isLoading && (
         <>
           {/* SPLASH CURSOR TRAIL  */}
-          <CanvasWaterFluidCursor blur={16} coreSize={1.8} maxDrops={75} />
+          <CanvasWaterFluidCursor blur={6} coreSize={1.8} maxDrops={25} />
 
           {/* All content above the canvas */}
           <div style={{ position: "relative", zIndex: 1 }}>
