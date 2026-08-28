@@ -1,16 +1,25 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Hero.css";
-import { FaChevronUp } from "react-icons/fa";
-import { FaUsers, FaRocket, FaLightbulb } from "react-icons/fa";
+import { FaChevronUp, FaUsers, FaRocket, FaLightbulb } from "react-icons/fa";
 import PaymentModal from "./PaymentModal";
 import gsap from "gsap";
 
 export default function Hero() {
   const backToTopRef = useRef(null);
   const [paymentOpen, setPaymentOpen] = useState(false);
-  
   const titleRef = useRef(null);
   const taglineRef = useRef(null);
+
+  // Check if device is mobile to avoid downloading 6MB video on phones
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 768 : false
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // show/hide back to top button on scroll
   useEffect(() => {
@@ -29,7 +38,6 @@ export default function Hero() {
 
   // Text Animations
   useEffect(() => {
-    // Animate INTELLIQ characters with a cinematic vertical zoom
     if (titleRef.current) {
       const chars = titleRef.current.children;
       gsap.fromTo(chars, 
@@ -38,7 +46,6 @@ export default function Hero() {
       );
     }
     
-    // Animate WEFALLWERISEWEHOWL words loop
     if (taglineRef.current) {
       const words = taglineRef.current.children;
       const tl = gsap.timeline({ repeat: -1 });
@@ -55,10 +62,17 @@ export default function Hero() {
 
   return (
     <section className="hero" id="home" aria-label="Hero section">
-      {/* CINEMATIC VIDEO BACKGROUND */}
-      <video className="hero-video-bg" autoPlay loop muted playsInline poster="/hero-image.png">
-        <source src="/hero-bg.mp4" type="video/mp4" />
-      </video>
+      {/* CINEMATIC VIDEO BACKGROUND (DESKTOP ONLY - OMITTED ON MOBILE FOR MAXIMUM DATA & SPEED OPTIMIZATION) */}
+      {!isMobile ? (
+        <video className="hero-video-bg" autoPlay loop muted playsInline poster="/hero-image.png">
+          <source src="/hero-bg.mp4" type="video/mp4" />
+        </video>
+      ) : (
+        <div 
+          className="hero-video-bg mobile-poster-bg" 
+          style={{ backgroundImage: "url('/hero-image.png')", backgroundSize: "cover", backgroundPosition: "center" }}
+        />
+      )}
       <div className="hero-overlay"></div>
 
       {/* Main Content Overlay */}
@@ -106,7 +120,7 @@ export default function Hero() {
 
         {/* Animated Tagline Loop */}
         <div className="hero-tagline-big">
-          <div ref={taglineRef} style={{ position: "relative", height: "60px", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "2.5rem", letterSpacing: "8px", fontWeight: "bold", textAlign: "center", marginTop: "30px", color: "#e8ff4d" }}>
+          <div ref={taglineRef} style={{ position: "relative", height: "60px", display: "flex", justifyContent: "center", fontDisplay: "swap", alignItems: "center", fontSize: "2.5rem", letterSpacing: "8px", fontWeight: "bold", textAlign: "center", marginTop: "30px", color: "#e8ff4d" }}>
             {["WE FALL", "WE RISE", "WE HOWL"].map((phrase, index) => (
               <span key={index} style={{ position: "absolute", opacity: 0 }}>{phrase}</span>
             ))}
