@@ -26,3 +26,9 @@ def get_db():
         yield db
     finally:
         db.close()
+
+# Re-export admin_required for backwards compatibility
+try:
+    from .deps import admin_required
+except ImportError:
+    admin_required = None
