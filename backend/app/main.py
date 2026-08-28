@@ -10,14 +10,27 @@ load_dotenv()
 
 app = FastAPI(title="INTELLIQ API", version="1.0")
 
-# Configure CORS dynamically for Vercel & GoDaddy custom domain
+# Configure CORS explicitly for GoDaddy custom domain & Vercel
 raw_origins = os.getenv("CORS_ORIGINS", "*")
-origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
+parsed_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
+
+# Include live production domains explicitly
+explicit_origins = [
+    "https://www.intelliq.co.in",
+    "https://intelliq.co.in",
+    "https://intelliq-tan.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000"
+]
+
+for o in parsed_origins:
+    if o not in explicit_origins and o != "*":
+        explicit_origins.append(o)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins if origins != ["*"] else ["*"],
-    allow_credentials=True,
+    allow_origins=["*"] if raw_origins == "*" else explicit_origins,
+    allow_credentials=False,  # Set false so wildcard or multi-domain CORS works seamlessly
     allow_methods=["*"],
     allow_headers=["*"],
 )
