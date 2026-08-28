@@ -124,7 +124,7 @@ export const BOARD_MEMBERS_BY_BATCH = {
     { id: 'm29', name: 'Harishragavendraa M', role: 'PRO', avatar: '/avatars/Ragavendra.png', linkedin: 'www.linkedin.com/in/harishragavendraa', github: '' },
     { id: 'm30', name: 'Kamalesh V', role: 'PRO', avatar: '/avatars/Kamalesh.jpg', linkedin: 'https://www.linkedin.com/in/kamalesh-kamalesh-9b37b62a3', github: '' },
     { id: 'm31', name: 'Hakeem', role: 'PRO', avatar: '/avatars/Hakeem.jpg', linkedin: 'https://www.linkedin.com/in/hakeem-musthafa-2162a6387', github: '' },
-    { id: 'm32', name: 'Nithiya Sri', role: 'Student Executive', avatar: '/avatars/nithya.png', linkedin: 'https://www.linkedin.com/in/nithiya-sri-c-5119972a2', github: '' },
+    { id: 'm32', name: 'Nithiya Sri', role: 'Student Executive', avatar: '/avatars/nithya_sri.png', linkedin: 'https://www.linkedin.com/in/nithiya-sri-c-5119972a2', github: '' },
     { id: 'm33', name: 'Nijanthan Nehemiah S', role: 'Student Executive', avatar: '/avatars/Nijanthan.png', linkedin: 'https://www.linkedin.com/in/nijanthan-nehemiah-690478353', github: '' },
   ],
   "2026-27": [
