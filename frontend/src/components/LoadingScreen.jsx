@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./LoadingScreen.css";
+import logo from "../assests/logo.png";
 
 export default function LoadingScreen({ onFinished }) {
   const [progress, setProgress] = useState(0);
@@ -71,7 +72,7 @@ export default function LoadingScreen({ onFinished }) {
           <div className="orbit-ring ring-3"></div>
           <div className="energy-core-glow"></div>
 
-          <img src="D:\INTELLIQ\frontend\src\assests\logo.png" alt="INTELLIQ Logo" className="loading-logo" />
+          <img src={logo} alt="INTELLIQ Logo" className="loading-logo" />
         </div>
 
         {/* ANIMATED TEXT & PROGRESS GROUP */}
