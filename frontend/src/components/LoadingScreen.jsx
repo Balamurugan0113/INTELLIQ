@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./LoadingScreen.css";
-import logo from "../assests/logo.png";
 
 export default function LoadingScreen({ onFinished }) {
   const [progress, setProgress] = useState(0);
@@ -8,33 +7,33 @@ export default function LoadingScreen({ onFinished }) {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    // 1. Animated progress counter (0% to 100%)
+    // 1. Paced progress counter (0% to 100% in ~3.6s)
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           return 100;
         }
-        // Random increment for realistic tech loading feel
-        const diff = Math.floor(Math.random() * 12) + 5;
+        // Steady increment for cinematic loading feel
+        const diff = Math.floor(Math.random() * 6) + 4;
         return Math.min(prev + diff, 100);
       });
-    }, 90);
+    }, 150);
 
     // 2. Trigger hyper-zoom expansion once progress reaches 100%
     const zoomTimer = setTimeout(() => {
       setZoomMax(true);
-    }, 1800);
+    }, 3800);
 
     // 3. Initiate dissolve & page reveal
     const fadeTimer = setTimeout(() => {
       setFadeOut(true);
-    }, 2100);
+    }, 4200);
 
-    // 4. Complete transition and unmount loader
+    // 4. Complete transition and reveal website
     const finishTimer = setTimeout(() => {
       if (onFinished) onFinished();
-    }, 2700);
+    }, 4800);
 
     return () => {
       clearInterval(interval);
@@ -45,9 +44,9 @@ export default function LoadingScreen({ onFinished }) {
   }, [onFinished]);
 
   const getStatusText = (val) => {
-    if (val < 35) return "INITIALIZING NEURAL CORE...";
-    if (val < 70) return "LOADING AI & DS ECOSYSTEM...";
-    if (val < 100) return "SYNCHRONIZING INTELLIQ DATA...";
+    if (val < 30) return "INITIALIZING NEURAL CORE...";
+    if (val < 60) return "LOADING AI & DS ECOSYSTEM...";
+    if (val < 90) return "SYNCHRONIZING INTELLIQ DATA...";
     return "SYSTEM READY — LAUNCHING...";
   };
 
@@ -72,7 +71,7 @@ export default function LoadingScreen({ onFinished }) {
           <div className="orbit-ring ring-3"></div>
           <div className="energy-core-glow"></div>
 
-          <img src={logo} alt="INTELLIQ Logo" className="loading-logo" />
+          <img src="/Logo.png" alt="INTELLIQ Logo" className="loading-logo" />
         </div>
 
         {/* ANIMATED TEXT & PROGRESS GROUP */}
