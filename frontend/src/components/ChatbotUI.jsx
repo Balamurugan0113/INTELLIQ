@@ -7,7 +7,7 @@ const getTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minut
 
 const initialBotMessage = {
   role: 'bot',
-  text: `👋 **Welcome to INTELLIQ AI Assistant!**\n\nI can help you explore everything about our **Department of AI & Data Science** student association.\n\nTo get started, please type your **Name, Email, and College** (e.g. *Alex, alex@gmail.com, Info Institute*) or ask any question below!`,
+  text: `👋 **Welcome to INTELLIQ AI Assistant!**\n\nI am your intelligent guide for the **Department of Artificial Intelligence & Data Science**.\n\nPlease type your **Name, Email, and College** or ask any question below to begin!`,
   time: getTime()
 };
 
@@ -81,7 +81,7 @@ export default function ChatbotUI({ open, onClose, apiBase = '' }) {
     return { name: withoutEmail || 'Guest Enthusiast', email: email || 'not_provided@intelliq.co.in', college: 'Info Institute of Engineering' };
   };
 
-  // Comprehensive Knowledge Base Engine
+  // Comprehensive Knowledge Base Engine (Clean & Direct)
   const getAIResponse = (question) => {
     const lowerQ = question.toLowerCase();
 
@@ -118,11 +118,11 @@ export default function ChatbotUI({ open, onClose, apiBase = '' }) {
     // 7. GREETINGS
     if (lowerQ.includes('hi') || lowerQ.includes('hello') || lowerQ.includes('hey') || lowerQ.includes('namaste')) {
       const name = userProfile && userProfile.name ? userProfile.name : 'Friend';
-      return `👋 Hello **${name}**!\n\nHow can I assist you today? Ask me about **Events**, **Vision & Mission**, **Leadership Team**, **Student Achievements**, or **Contact Details**!`;
+      return `👋 Hello **${name}**!\n\nHow can I assist you today? I am ready to answer your questions regarding **INTELLIQ**.`;
     }
 
     // DEFAULT SMART FALLBACK
-    return `💡 **INTELLIQ AI Assistant**\n\nI can answer questions regarding:\n• **Events**: *"Tell me about events"*\n• **Leadership**: *"Who is the President?"*\n• **About Us**: *"What is INTELLIQ?"*\n• **Contact**: *"How to contact?"*\n\nFeel free to ask any specific question!`;
+    return `💡 **INTELLIQ AI Assistant**\n\nI can answer questions regarding:\n• **Events**\n• **Leadership & Team**\n• **Vision & Mission**\n• **Student Achievements**\n• **Contact & Social Handles**`;
   };
 
   const sendMessage = () => {
@@ -145,7 +145,7 @@ export default function ChatbotUI({ open, onClose, apiBase = '' }) {
           ...prev,
           { 
             role: 'bot', 
-            text: `✨ **Welcome ${profile.name}!**\nYour profile details have been saved.\n\nNow ask me anything about **INTELLIQ**! (Try asking: *"What events are coming up?"* or *"Who is the President?"*)`, 
+            text: `✨ **Welcome ${profile.name}!**\nYour profile details have been saved.\n\nAsk me anything about **INTELLIQ**!`, 
             time: getTime() 
           }
         ]);
@@ -204,7 +204,6 @@ export default function ChatbotUI({ open, onClose, apiBase = '' }) {
   const renderFormattedText = (text) => {
     return text.split('\n').map((line, idx) => {
       let content = line;
-      // Convert **text** to <strong>
       const parts = content.split(/(\*\*.*?\*\*)/g);
       return (
         <p key={idx} className="chat-line">
