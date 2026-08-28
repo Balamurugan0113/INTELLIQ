@@ -1,79 +1,75 @@
 import React from "react";
-import footerLogo from "../assests/logo.png";  // ✅ Correct local asset path
+import footerLogo from "../assests/logo.png";
+import { FaLinkedin, FaInstagram, FaEnvelope, FaHeart } from "react-icons/fa";
 import './Footer.css';
-
 
 export default function Footer() {
   return (
-    <footer className="footer">
-      <div className="footer-content">
-        {/* Brand Section */}
-        <div className="footer-brand">
+    <footer className="footer-compact">
+      <div className="footer-inner">
+        {/* Brand Micro-Block */}
+        <div className="footer-brand-micro">
           <img
-            src={footerLogo}   // ✅ Correct usage of imported asset
+            src={footerLogo}
             alt="INTELLIQ logo"
-            className="footer-logo"
-            width="50"
-            height="50"
+            className="footer-logo-mini"
+            width="38"
+            height="38"
           />
-          <div>
-            <h3>INTELLIQ</h3>
-            <p>
-              The Association of Artificial Intelligence & Data Science — fostering innovation,
-              intelligence, and collaboration for the future.
-            </p>
+          <div className="footer-brand-text">
+            <span className="brand-name-yellow">INTELLIQ</span>
+            <span className="brand-tagline-sub">AI &amp; DS Association</span>
           </div>
         </div>
 
-        {/* Explore Section */}
-        <div className="footer-column">
-          <h4>Explore</h4>
-          <ul>
-            <li><a href="#about">About</a></li>
-            <li><a href="#events">Events</a></li>
-            <li><a href="#members">Team</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
-        </div>
+        {/* Inline Navigation Links */}
+        <nav className="footer-nav-links" aria-label="Footer navigation">
+          <a href="#about">About</a>
+          <a href="#vision">Vision</a>
+          <a href="#events">Events</a>
+          <a href="#achievements">Achievements</a>
+          <a href="#members">Members</a>
+          <a href="#contact">Contact</a>
+        </nav>
 
-        {/* Connect Section */}
-        <div className="footer-column">
-          <h4>Connect</h4>
-          <ul>
-            <li>
-              <a
-                href="https://linkedin.com/company/intelliq"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LinkedIn
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.instagram.com/intelliq__info?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Instagram
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://mail.google.com/mail/?view=cm&fs=1&to=intelliqassociation@gmail.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Email Us
-              </a>
-            </li>
-          </ul>
+        {/* Social Chips */}
+        <div className="footer-social-chips">
+          <a
+            href="https://linkedin.com/company/intelliq"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="social-chip"
+            aria-label="LinkedIn"
+          >
+            <FaLinkedin />
+            <span>LinkedIn</span>
+          </a>
+          <a
+            href="https://www.instagram.com/intelliq__info?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+            target="_blank"
+            rel="noopener noreferrer"
+            className="social-chip"
+            aria-label="Instagram"
+          >
+            <FaInstagram />
+            <span>Instagram</span>
+          </a>
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=intelliqassociation@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="social-chip"
+            aria-label="Email"
+          >
+            <FaEnvelope />
+            <span>Email</span>
+          </a>
         </div>
       </div>
 
-      <div className="footer-bottom">
+      <div className="footer-bottom-mini">
         <p>
-          Made with ❤️ by students || © {new Date().getFullYear()} <strong>INTELLIQ</strong> • All rights reserved.
+          Made with <FaHeart style={{ color: '#ff3de8', margin: '0 4px', fontSize: '0.75rem' }} /> by students || &copy; {new Date().getFullYear()} <strong style={{ color: '#f0ff4a' }}>INTELLIQ</strong>. All rights reserved.
         </p>
       </div>
     </footer>

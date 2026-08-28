@@ -12,6 +12,8 @@ function shuffleArray(arr) {
   return a;
 }
 
+import { FaHandshake } from "react-icons/fa";
+
 export default function LogoFadeLoop({
   images = [],
   title = "OUR COLLABORATORS",
@@ -34,7 +36,12 @@ export default function LogoFadeLoop({
 
   return (
     <div className="logo-fade-wrapper">
-      <div className="logo-fade-title">{title}</div>
+      <div className="section-title-wrapper" style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+        <div className="out-of-the-box-heading">
+          <FaHandshake className="ootb-icon" />
+          <h2 className="section-title neon-heading">{title}</h2>
+        </div>
+      </div>
 
       <div
         className={`logo-marquee ${paused ? "paused" : ""}`}

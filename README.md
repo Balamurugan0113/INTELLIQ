@@ -13,6 +13,7 @@
     <a href="#-features"><strong>✨ Features</strong></a> ·
     <a href="#%EF%B8%8F-tech-stack"><strong>🛠️ Tech Stack</strong></a> ·
     <a href="#-getting-started"><strong>🚀 Get Started</strong></a> ·
+    <a href="commands.txt"><strong>📋 Commands</strong></a> ·
     <a href="#-api"><strong>🌐 API</strong></a> ·
     <a href="#-deployment"><strong>🐳 Deploy</strong></a>
   </p>
@@ -94,9 +95,34 @@
 
 ### 📋 Prerequisites
 - **Node.js** ≥ 18
-- **Python** ≥ 3.12
-- **PostgreSQL** (or SQLite for local)
-- **Docker** (optional, for containerized setup)
+- **Python** ≥ 3.12 (only needed for running the backend outside Docker)
+- **Docker Desktop** with Docker Compose (recommended for the complete stack)
+
+### ✅ Recommended: Run the complete stack
+
+From the repository root, use the example environment file explicitly. A root
+`.env` file is not included in the repository, and Compose needs these values
+to configure PostgreSQL and the API.
+
+```powershell
+docker compose --env-file .env.example up --build
+```
+
+Open these URLs after the containers finish starting:
+
+| Service | URL |
+|:--------|:----|
+| 🎨 Frontend | http://localhost:5173 |
+| ⚙️ API health | http://localhost:8000/api/health |
+| 📖 API docs | http://localhost:8000/docs |
+
+Stop the stack with `Ctrl+C`, or run this from another terminal:
+
+```powershell
+docker compose --env-file .env.example down
+```
+
+For a ready-to-copy command list, see [`commands.txt`](commands.txt).
 
 ### 💻 Frontend
 
@@ -115,7 +141,7 @@ python -m venv .venv
 source .venv/bin/activate       # Linux/macOS
 # .venv\Scripts\activate        # Windows
 pip install -r requirements.txt
-cp ../.env.example ../.env       # edit as needed
+# PowerShell: Copy-Item ..\.env.example ..\.env
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 # API docs → http://localhost:8000/docs 📖
 ```
@@ -123,7 +149,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ### 🐳 Docker (Full Stack)
 
 ```bash
-docker-compose up --build
+docker compose --env-file .env.example up --build
 ```
 
 | Service | Port | URL |
