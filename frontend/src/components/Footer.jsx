@@ -1,5 +1,4 @@
 import React from "react";
-import footerLogo from "../assests/logo.png";
 import { FaLinkedin, FaInstagram, FaEnvelope, FaHeart } from "react-icons/fa";
 import './Footer.css';
 
@@ -10,7 +9,7 @@ export default function Footer() {
         {/* Brand Micro-Block */}
         <div className="footer-brand-micro">
           <img
-            src={footerLogo}
+            src="/Logo.png"
             alt="INTELLIQ logo"
             className="footer-logo-mini"
             width="38"

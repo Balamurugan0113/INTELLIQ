@@ -172,8 +172,8 @@ export default function Navbar() {
           <a className="brand" href="#home" aria-label="INTELLIQ — Home">
             <img
               className="brand-logo neon"
-              src="/logo.png"
-              srcSet="/logo.png 1x, /logo@2x.png 2x"
+              src="/Logo.png"
+              srcSet="/Logo.png 1x, /logo@2x.png 2x"
               width="36"
               height="36"
               alt="INTELLIQ logo"
