@@ -601,46 +601,16 @@
   border-radius: 18px;
   overflow: hidden;
   z-index: 1;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 255, 255, 0.1);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
-}
-
-.sparkle-border-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  padding: 2px;
-  background: conic-gradient(
-    from var(--sparkle-angle, 0deg),
-    transparent 0%,
-    transparent 70%,
-    rgba(255, 255, 255, 0.25) 82%,
-    #ffffff 93%,
-    rgba(255, 255, 255, 0.7) 97%,
-    transparent 100%
-  );
-  animation: smoothSparkleOrbit 3.2s linear infinite;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  pointer-events: none;
-}
-
-@keyframes smoothSparkleOrbit {
-  0% {
-    --sparkle-angle: 0deg;
-  }
-  100% {
-    --sparkle-angle: 360deg;
-  }
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .sparkle-border-card:hover {
   transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 255, 255, 0.5);
+  border-color: #01cefc;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), 0 0 25px rgba(1, 206, 252, 0.4);
 }
 
 /* ACADEMICS COORDINATORS */
