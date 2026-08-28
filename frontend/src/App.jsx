@@ -1,5 +1,5 @@
 // frontend/src/App.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Section from './components/Section';
 import Events from './components/Events';
@@ -13,14 +13,48 @@ import PaymentModal from './components/PaymentModal';
 import Footer from './components/Footer';
 import Hero from './components/Hero';
 import LoadingScreen from './components/LoadingScreen';
+import CountdownPage from './components/CountdownPage';
 import OverlayControls from './components/OverlayControls';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+// ============================================================================
+// 🎯 WEBSITE LAUNCH REVEAL COUNTDOWN CONFIGURATION (EDIT TIMER HERE!)
+// Line 23: Change the target date/time below to adjust when the website reveals!
+// Format: "YYYY-MM-DDTHH:MM:SS" (e.g. "2026-09-01T15:00:00" = Sept 1, 2026 at 3:00 PM)
+// ============================================================================
+export const TARGET_REVEAL_DATE_STRING = "2026-09-01T15:00:00+05:30"; // Line 23
+const TARGET_REVEAL_TIMESTAMP = new Date(TARGET_REVEAL_DATE_STRING).getTime();
+
 export default function App() {
   const [supportOpen, setSupportOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRevealed, setIsRevealed] = useState(false);
 
+  useEffect(() => {
+    // Check if current time has passed the reveal target date
+    const now = new Date().getTime();
+    const hasPassedTarget = now >= TARGET_REVEAL_TIMESTAMP;
+
+    // Check for admin preview override query parameter (e.g. https://www.intelliq.co.in/?preview=true)
+    const isPreview = typeof window !== 'undefined' && window.location.search.includes('preview=true');
+
+    if (hasPassedTarget || isPreview) {
+      setIsRevealed(true);
+    }
+  }, []);
+
+  // 1. IF COUNTDOWN IS ACTIVE (BEFORE REVEAL DATE), SHOW ONLY COUNTDOWN PAGE!
+  if (!isRevealed) {
+    return (
+      <CountdownPage
+        targetDate={TARGET_REVEAL_TIMESTAMP}
+        onReveal={() => setIsRevealed(true)}
+      />
+    );
+  }
+
+  // 2. AFTER COUNTDOWN REACHES 00:00:00:00, REVEAL FULL WEBSITE!
   return (
     <>
       {/* STARTUP LOGO LOADING PAGE */}
