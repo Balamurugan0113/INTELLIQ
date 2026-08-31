@@ -20,7 +20,6 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // ============================================================================
 // 🎯 WEBSITE LAUNCH REVEAL COUNTDOWN CONFIGURATION (EDIT TIMER HERE!)
-// Line 23: Change the target date/time below to adjust when the website reveals!
 // Format: "YYYY-MM-DDTHH:MM:SS" (e.g. "2026-09-01T15:00:00" = Sept 1, 2026 at 3:00 PM)
 // ============================================================================
 export const TARGET_REVEAL_DATE_STRING = "2026-09-01T15:00:00+05:30"; // Line 23
