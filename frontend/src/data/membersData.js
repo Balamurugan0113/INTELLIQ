@@ -145,7 +145,7 @@ export const BOARD_MEMBERS_BY_BATCH = {
     { id: 'm26-15', name: 'Sanjay Ram S', role: 'Documentation Lead', avatar: '/avatars/Sanjay.png', linkedin: 'http://www.linkedin.com/in/sanjay-ram-645104377', github: 'https://github.com/sanjayram99869-byte' },
     { id: 'm26-16', name: 'Santhosh Barathi L', role: 'Editorial Head', avatar: '/avatars/Santhosh.png', linkedin: 'https://www.linkedin.com/in/santhosh-barathi-32918a330', github: '' },
     { id: 'm26-17', name: 'Salodis Benny L', role: 'Editorial Lead', avatar: '/avatars/Benny.png', linkedin: 'https://www.linkedin.com/in/benny-l-524b0b431', github: '' },
-    { id: 'm26-18', name: 'Vignesh S', role: 'Editorial Lead', avatar: '/avatars/Vignesh.png', linkedin: '', github: '' },
+    { id: 'm26-18', name: 'Vignesh S', role: 'Editorial Lead', avatar: '/avatars/Vignesh.png', linkedin: '', github: 'https://github.com/vigneshvinith333' },
     { id: 'm26-19', name: 'Jeevith P', role: 'PRO', avatar: '/avatars/Jeevith.png', linkedin: 'https://www.linkedin.com/in/jeevith-p-3a6bb237b', github: '' },
     { id: 'm26-20', name: 'Rithik R', role: 'PRO', avatar: '/avatars/Rithik.png', linkedin: 'https://www.linkedin.com/in/rithik-r-331025431', github: '' },
     { id: 'm26-21', name: 'Gayathri J', role: 'Student Executive', avatar: '/avatars/Gayathiri.png', linkedin: '', github: 'https://github.com/gayathrijagadeesa' },
