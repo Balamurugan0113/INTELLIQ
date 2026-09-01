@@ -24,7 +24,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 // ============================================================================
 export const TARGET_REVEAL_DATE_STRING = "2026-09-01T15:00:00+05:30"; // Line 23
 const TARGET_REVEAL_TIMESTAMP = new Date(TARGET_REVEAL_DATE_STRING).getTime();
-
+                                                                                                          
 export default function App() {
   const [supportOpen, setSupportOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
