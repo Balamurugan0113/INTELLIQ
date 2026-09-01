@@ -86,7 +86,7 @@ export default function CountdownPage({ targetDate, onReveal }) {
         {/* TARGET REVEAL BANNER */}
         <div className="reveal-info-box">
           <FaClock style={{ color: "#01cefc", marginRight: "6px" }} />
-          <span>Target Reveal: <strong>September 1, 2026 at 4:00 PM</strong></span>
+          <span>Target Reveal: <strong>September 1, 2026 at 3:45 PM</strong></span>
         </div>
 
         {/* SOCIAL & CONNECT LINKS */}
