@@ -22,7 +22,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 // 🎯 WEBSITE LAUNCH REVEAL COUNTDOWN CONFIGURATION (EDIT TIMER HERE!)
 // Format: "YYYY-MM-DDTHH:MM:SS" (e.g. "2026-09-01T15:00:00" = Sept 1, 2026 at 3:00 PM)
 // ============================================================================
-export const TARGET_REVEAL_DATE_STRING = "2026-09-01T15:00:00+05:30"; // Line 23
+export const TARGET_REVEAL_DATE_STRING = "2026-09-01T16:00:00+05:30"; // Line 23
 const TARGET_REVEAL_TIMESTAMP = new Date(TARGET_REVEAL_DATE_STRING).getTime();
                                                                                                           
 export default function App() {
