@@ -13,3 +13,5 @@ venv/
 # Other
 *.log
 .env
+frontend/dist/
+dist/
