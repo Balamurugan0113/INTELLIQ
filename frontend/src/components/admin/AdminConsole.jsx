@@ -1,5 +1,5 @@
 // frontend/src/components/admin/AdminConsole.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './AdminConsole.css';
 import {
   getEvents,
@@ -25,7 +25,8 @@ import { INITIAL_ACHIEVEMENTS } from '../../data/initialData';
 import {
   formatGoogleDriveUrl,
   compressImageFile,
-  processLocalFiles
+  processLocalFilesWithMetadata,
+  formatFileSize
 } from '../../utils/imageHelpers';
 import {
   FaCalendarAlt,
@@ -48,11 +49,28 @@ import {
   FaSyncAlt,
   FaLink,
   FaImage,
-  FaBars
+  FaBars,
+  FaDice,
+  FaCheckCircle,
+  FaFolderOpen
 } from 'react-icons/fa';
 
 const DEFAULT_ADMIN_PASSWORD = 'intelliq@admin2026';
 const AUTH_STORAGE_KEY = 'intelliq_admin_session_auth';
+
+// Curated vibrant cyberpunk gradients matching INTELLIQ neon aesthetic
+const CYBER_GRADIENT_PRESETS = [
+  { id: 'cyan-blue', label: 'Cyber Ocean', colors: ['#00d2ff', '#0078d4'] },
+  { id: 'neon-fuchsia', label: 'Neon Cyber', colors: ['#ff007f', '#7928ca'] },
+  { id: 'electric-iris', label: 'Electric Iris', colors: ['#8a2be2', '#4a00e0'] },
+  { id: 'solar-flare', label: 'Solar Flare', colors: ['#ff416c', '#ff4b2b'] },
+  { id: 'hyper-gold', label: 'Hyper Gold', colors: ['#fa709a', '#fee140'] },
+  { id: 'matrix-teal', label: 'Matrix Teal', colors: ['#00f2fe', '#4facfe'] },
+  { id: 'synthwave', label: 'Synthwave', colors: ['#ff3de8', '#01cefc'] },
+  { id: 'cosmic-mist', label: 'Cosmic Mist', colors: ['#6366f1', '#06b6d4'] },
+  { id: 'aurora-emerald', label: 'Aurora Emerald', colors: ['#10b981', '#059669'] },
+  { id: 'deep-space', label: 'Deep Space', colors: ['#3a7bd5', '#3a6073'] }
+];
 
 export default function AdminConsole({ onExitToSite }) {
   // Authentication state
@@ -63,10 +81,10 @@ export default function AdminConsole({ onExitToSite }) {
   const [passwordInput, setPasswordInput] = useState('');
   const [authError, setAuthError] = useState('');
 
-  // Active navigation tab
-  const [activeTab, setActiveTab] = useState('events'); // 'events' | 'posters' | 'achievements'
+  // Active navigation tab: 'events' | 'posters' | 'achievements'
+  const [activeTab, setActiveTab] = useState('events');
 
-  // Data states
+  // Live data states
   const [events, setEvents] = useState(() => getEvents());
   const [posters, setPosters] = useState(() => getPosters());
   const [achievements, setAchievements] = useState(() => getAchievements());
@@ -80,13 +98,14 @@ export default function AdminConsole({ onExitToSite }) {
   const [eventForm, setEventForm] = useState({
     title: '',
     date: '',
-    time: '',
-    venue: '',
+    time: '10:00 AM - 04:00 PM',
+    venue: 'Seminar Hall, INFO INSTITUTE OF ENGINEERING',
     type: 'Workshop',
     description: '',
     fullDetails: '',
     link: '#',
-    imagesText: ''
+    imagesText: '',
+    uploadedFiles: [] // [{ name, sizeFormatted, dataUrl }]
   });
 
   const [posterModalOpen, setPosterModalOpen] = useState(false);
@@ -94,18 +113,18 @@ export default function AdminConsole({ onExitToSite }) {
   const [posterForm, setPosterForm] = useState({
     title: '',
     category: 'Workshop',
-    date: '',
+    date: '2026',
     image: '',
     color1: '#00d2ff',
     color2: '#0078d4',
-    description: '',
-    fullDetails: ''
+    uploadedFile: null // { name, sizeFormatted, dataUrl }
   });
 
   // Achievements management states
   const [newAchievementImg, setNewAchievementImg] = useState('');
   const [driveAchievementUrl, setDriveAchievementUrl] = useState('');
   const [achievementAddMode, setAchievementAddMode] = useState('upload'); // 'upload' | 'drive' | 'url'
+  const [recentAchievementUploads, setRecentAchievementUploads] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -128,7 +147,7 @@ export default function AdminConsole({ onExitToSite }) {
     setToast(message);
     setTimeout(() => {
       setToast(null);
-    }, 3200);
+    }, 3500);
   };
 
   // Login handler
@@ -164,13 +183,30 @@ export default function AdminConsole({ onExitToSite }) {
       description: '',
       fullDetails: '',
       link: '#',
-      imagesText: '/Events/PowerBi_1.png'
+      imagesText: '/Events/PowerBi_1.png',
+      uploadedFiles: []
     });
     setEventModalOpen(true);
   };
 
   const openEditEventModal = item => {
     setEditingEvent(item);
+    const images = Array.isArray(item.images) ? item.images : [item.image || ''];
+    const localUploaded = [];
+    const textPaths = [];
+
+    images.forEach((img, idx) => {
+      if (img && img.startsWith('data:')) {
+        localUploaded.push({
+          name: `Image_${idx + 1}.png`,
+          sizeFormatted: 'Embedded',
+          dataUrl: img
+        });
+      } else if (img) {
+        textPaths.push(img);
+      }
+    });
+
     setEventForm({
       title: item.title || '',
       date: item.date || '',
@@ -180,7 +216,8 @@ export default function AdminConsole({ onExitToSite }) {
       description: item.description || '',
       fullDetails: item.fullDetails || '',
       link: item.link || '#',
-      imagesText: Array.isArray(item.images) ? item.images.join('\n') : item.image || ''
+      imagesText: textPaths.join('\n'),
+      uploadedFiles: localUploaded
     });
     setEventModalOpen(true);
   };
@@ -190,15 +227,13 @@ export default function AdminConsole({ onExitToSite }) {
     if (!files || files.length === 0) return;
     setIsUploading(true);
     try {
-      const dataUrls = await processLocalFiles(files);
-      if (dataUrls.length > 0) {
-        const current = eventForm.imagesText.trim();
-        const added = dataUrls.join('\n');
+      const metaList = await processLocalFilesWithMetadata(files);
+      if (metaList.length > 0) {
         setEventForm(prev => ({
           ...prev,
-          imagesText: current ? `${current}\n${added}` : added
+          uploadedFiles: [...(prev.uploadedFiles || []), ...metaList]
         }));
-        showToast(`Uploaded ${dataUrls.length} image(s) from device`);
+        showToast(`Uploaded ${metaList.length} image(s) from device`);
       }
     } catch (err) {
       alert('Upload failed: ' + err.message);
@@ -208,6 +243,13 @@ export default function AdminConsole({ onExitToSite }) {
     }
   };
 
+  const handleRemoveEventUploadedFile = idxToRemove => {
+    setEventForm(prev => ({
+      ...prev,
+      uploadedFiles: (prev.uploadedFiles || []).filter((_, i) => i !== idxToRemove)
+    }));
+  };
+
   const handleSaveEvent = e => {
     e.preventDefault();
     if (!eventForm.title.trim()) {
@@ -215,10 +257,13 @@ export default function AdminConsole({ onExitToSite }) {
       return;
     }
 
-    const imagesList = eventForm.imagesText
+    const textImages = eventForm.imagesText
       .split('\n')
       .map(s => formatGoogleDriveUrl(s.trim()))
       .filter(Boolean);
+
+    const deviceImages = (eventForm.uploadedFiles || []).map(f => f.dataUrl);
+    const combinedImages = [...deviceImages, ...textImages];
 
     const payload = {
       title: eventForm.title,
@@ -229,7 +274,7 @@ export default function AdminConsole({ onExitToSite }) {
       description: eventForm.description,
       fullDetails: eventForm.fullDetails || eventForm.description,
       link: eventForm.link || '#',
-      images: imagesList.length > 0 ? imagesList : ['/Events/PowerBi_1.png']
+      images: combinedImages.length > 0 ? combinedImages : ['/Events/PowerBi_1.png']
     };
 
     if (editingEvent) {
@@ -251,19 +296,20 @@ export default function AdminConsole({ onExitToSite }) {
   };
 
   // ==========================================================================
-  // POSTER HANDLERS
+  // POSTER HANDLERS (Description removed + Auto-gradient enabled)
   // ==========================================================================
   const openNewPosterModal = () => {
     setEditingPoster(null);
+    // Automatically select a vibrant gradient preset matching poster count
+    const autoPreset = CYBER_GRADIENT_PRESETS[posters.length % CYBER_GRADIENT_PRESETS.length];
     setPosterForm({
       title: '',
       category: 'Workshop',
       date: '2026',
       image: '/Events/PowerBi_1.png',
-      color1: '#00d2ff',
-      color2: '#0078d4',
-      description: '',
-      fullDetails: ''
+      color1: autoPreset.colors[0],
+      color2: autoPreset.colors[1],
+      uploadedFile: null
     });
     setPosterModalOpen(true);
   };
@@ -273,14 +319,32 @@ export default function AdminConsole({ onExitToSite }) {
     setPosterForm({
       title: item.title || '',
       category: item.category || 'Workshop',
-      date: item.date || '',
+      date: item.date || '2026',
       image: item.image || '',
       color1: item.gradient?.[0] || '#00d2ff',
       color2: item.gradient?.[1] || '#0078d4',
-      description: item.description || '',
-      fullDetails: item.fullDetails || ''
+      uploadedFile: null
     });
     setPosterModalOpen(true);
+  };
+
+  const handlePickRandomGradient = () => {
+    const randomPreset =
+      CYBER_GRADIENT_PRESETS[Math.floor(Math.random() * CYBER_GRADIENT_PRESETS.length)];
+    setPosterForm(prev => ({
+      ...prev,
+      color1: randomPreset.colors[0],
+      color2: randomPreset.colors[1]
+    }));
+    showToast(`Applied "${randomPreset.label}" gradient`);
+  };
+
+  const handleSelectGradientPreset = preset => {
+    setPosterForm(prev => ({
+      ...prev,
+      color1: preset.colors[0],
+      color2: preset.colors[1]
+    }));
   };
 
   const handlePosterImageUpload = async e => {
@@ -291,9 +355,14 @@ export default function AdminConsole({ onExitToSite }) {
       const dataUrl = await compressImageFile(file);
       setPosterForm(prev => ({
         ...prev,
-        image: dataUrl
+        image: dataUrl,
+        uploadedFile: {
+          name: file.name,
+          sizeFormatted: formatFileSize(file.size),
+          dataUrl
+        }
       }));
-      showToast('Uploaded poster from computer');
+      showToast(`Uploaded "${file.name}" (${formatFileSize(file.size)}) from computer`);
     } catch (err) {
       alert('Upload failed: ' + err.message);
     } finally {
@@ -314,9 +383,8 @@ export default function AdminConsole({ onExitToSite }) {
       category: posterForm.category || 'Workshop',
       date: posterForm.date || '2026',
       image: formatGoogleDriveUrl(posterForm.image.trim()),
-      gradient: [posterForm.color1, posterForm.color2],
-      description: posterForm.description,
-      fullDetails: posterForm.fullDetails || posterForm.description
+      gradient: [posterForm.color1, posterForm.color2]
+      // Note: description removed as requested
     };
 
     if (editingPoster) {
@@ -338,17 +406,20 @@ export default function AdminConsole({ onExitToSite }) {
   };
 
   // ==========================================================================
-  // STUDENT ACHIEVEMENTS HANDLERS
+  // STUDENT ACHIEVEMENTS HANDLERS (Appends to last position)
   // ==========================================================================
   const handleLocalAchievementsUpload = async e => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     setIsUploading(true);
     try {
-      const dataUrls = await processLocalFiles(files);
-      if (dataUrls.length > 0) {
+      const metaList = await processLocalFilesWithMetadata(files);
+      if (metaList.length > 0) {
+        const dataUrls = metaList.map(m => m.dataUrl);
+        // Appends to last position in dataService
         addAchievements(dataUrls);
-        showToast(`Uploaded ${dataUrls.length} image(s) from computer!`);
+        setRecentAchievementUploads(metaList);
+        showToast(`Uploaded ${metaList.length} photo(s) — saved to the last image of gallery!`);
       }
     } catch (err) {
       alert('Failed to upload image(s): ' + err.message);
@@ -358,28 +429,39 @@ export default function AdminConsole({ onExitToSite }) {
     }
   };
 
+  // Google Drive URL detector helper
+  const detectedDriveId = useMemo(() => {
+    if (!driveAchievementUrl || !driveAchievementUrl.includes('drive.google.com')) return null;
+    const match =
+      driveAchievementUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) ||
+      driveAchievementUrl.match(/id=([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+  }, [driveAchievementUrl]);
+
   const handleDriveAchievementAdd = e => {
     e.preventDefault();
     if (!driveAchievementUrl.trim()) return;
     const directUrl = formatGoogleDriveUrl(driveAchievementUrl.trim());
+    // Appends to last position in dataService
     addAchievement(directUrl);
     setDriveAchievementUrl('');
-    showToast('Added Google Drive photo to achievements!');
+    showToast('Added Google Drive photo to end of achievements gallery!');
   };
 
   const handleAddAchievement = e => {
     e.preventDefault();
     if (!newAchievementImg.trim()) return;
     const directUrl = formatGoogleDriveUrl(newAchievementImg.trim());
+    // Appends to last position in dataService
     addAchievement(directUrl);
     setNewAchievementImg('');
-    showToast('Added achievement photo to gallery');
+    showToast('Added photo to end of achievements gallery!');
   };
 
   const handleDeleteAchievement = (imgUrl, idx) => {
-    if (window.confirm('Remove this achievement photo from the gallery?')) {
+    if (window.confirm(`Remove achievement photo #${idx + 1} from the gallery?`)) {
       deleteAchievement(idx);
-      showToast('Removed achievement photo');
+      showToast(`Removed photo #${idx + 1}`);
     }
   };
 
@@ -390,12 +472,13 @@ export default function AdminConsole({ onExitToSite }) {
       )
     ) {
       saveAchievements(INITIAL_ACHIEVEMENTS);
+      setRecentAchievementUploads([]);
       showToast('Restored all 13 original project achievement photos!');
     }
   };
 
   // ==========================================================================
-  // BACKUP HANDLERS
+  // BACKUP & LIVE SITE HANDLERS
   // ==========================================================================
   const handleExportBackup = () => {
     const json = exportAllData();
@@ -432,6 +515,7 @@ export default function AdminConsole({ onExitToSite }) {
       )
     ) {
       resetAllData();
+      setRecentAchievementUploads([]);
       showToast('Reset all datasets to initial defaults');
     }
   };
@@ -442,11 +526,9 @@ export default function AdminConsole({ onExitToSite }) {
     let targetUrl;
 
     if (host.startsWith('admin.') || host.startsWith('console.')) {
-      // Strip admin. or console. to open the real website domain: e.g. https://intelliq.co.in/?preview=true
       const primaryHost = host.replace(/^(admin|console)\./, '');
       targetUrl = `${window.location.protocol}//${primaryHost}/?preview=true`;
     } else {
-      // On same domain (e.g. localhost or intelliq.co.in/admin)
       targetUrl = `/?preview=true`;
     }
 
@@ -534,19 +616,30 @@ export default function AdminConsole({ onExitToSite }) {
         </div>
       )}
 
-      {/* Top Header Bar */}
+      {/* Top Header Bar - Cohesive Cyber Glass Header */}
       <header className="admin-topbar">
         <div className="admin-topbar-inner">
           <div className="admin-brand">
-            <img
-              src="/Logo.png"
-              alt="INTELLIQ Logo"
-              className="admin-brand-logo neon"
-              width="32"
-              height="32"
-            />
-            <span className="brand-text">INTELLIQ</span>
-            <span className="admin-badge">CONSOLE</span>
+            <div className="admin-brand-icon-wrapper">
+              <img
+                src="/Logo.png"
+                alt="INTELLIQ Logo"
+                className="admin-brand-logo neon"
+                width="34"
+                height="34"
+              />
+              <span className="brand-pulse-ring" />
+            </div>
+            <div className="brand-title-col">
+              <div className="brand-title-row">
+                <span className="brand-text">INTELLIQ</span>
+                <span className="admin-badge">CONSOLE</span>
+              </div>
+              <div className="brand-live-status">
+                <span className="status-live-dot" />
+                <span className="status-live-text">SYSTEM ONLINE &bull; SYNC ACTIVE</span>
+              </div>
+            </div>
           </div>
 
           <div className="admin-topbar-right">
@@ -554,9 +647,9 @@ export default function AdminConsole({ onExitToSite }) {
               type="button"
               className="admin-action-btn view-live"
               onClick={handleViewLiveSite}
-              title="View Live Website in new tab"
+              title="Open the live website with synchronized preview"
             >
-              <FaExternalLinkAlt /> <span>View Live Site</span>
+              <FaExternalLinkAlt className="action-btn-icon" /> <span>View Live Site</span>
             </button>
 
             {/* Mobile hamburger toggle */}
@@ -579,13 +672,13 @@ export default function AdminConsole({ onExitToSite }) {
                   handleExportBackup();
                   setMobileMenuOpen(false);
                 }}
-                title="Download full JSON backup"
+                title="Download full JSON backup of events, posters, and achievements"
               >
-                <FaDownload /> <span>Export JSON</span>
+                <FaDownload className="action-btn-icon" /> <span>Export JSON</span>
               </button>
 
               <label className="admin-action-btn import" title="Import JSON backup file">
-                <FaUpload /> <span>Import</span>
+                <FaUpload className="action-btn-icon" /> <span>Import</span>
                 <input
                   type="file"
                   accept=".json"
@@ -606,7 +699,7 @@ export default function AdminConsole({ onExitToSite }) {
                 }}
                 title="Reset to default data"
               >
-                <FaUndo /> <span>Reset Defaults</span>
+                <FaUndo className="action-btn-icon" /> <span>Reset Defaults</span>
               </button>
 
               <button
@@ -618,7 +711,7 @@ export default function AdminConsole({ onExitToSite }) {
                 }}
                 title="Lock & Logout"
               >
-                <FaSignOutAlt /> <span>Lock</span>
+                <FaSignOutAlt className="action-btn-icon" /> <span>Lock</span>
               </button>
             </div>
           </div>
@@ -641,47 +734,70 @@ export default function AdminConsole({ onExitToSite }) {
 
       {/* Main Container */}
       <main className="admin-main-container">
-        {/* Navigation Tabs - Centered & Aligned perfectly with grid */}
+        {/* Navigation Tabs - Animatic Cyber Boxes with Icons & Match Color Code */}
         <div className="admin-tabs-wrapper">
           <nav className="admin-tabs-nav" aria-label="Admin Navigation Tabs">
+            {/* Box 1: Events Manager */}
             <button
               type="button"
-              className={`admin-tab-btn ${activeTab === 'events' ? 'active' : ''}`}
+              className={`admin-tab-box ${activeTab === 'events' ? 'active' : ''}`}
               onClick={() => setActiveTab('events')}
             >
-              <FaCalendarAlt />
-              <span className="tab-label">Events Manager</span>
+              <div className="tab-icon-badge events-badge">
+                <FaCalendarAlt className="tab-icon" />
+              </div>
+              <div className="tab-text-group">
+                <span className="tab-label">Events Manager</span>
+                <span className="tab-sublabel">Flagship 3D Stacks</span>
+              </div>
               <span className="admin-count-pill">{events.length}</span>
+              <div className="tab-active-glow-bar" />
             </button>
 
+            {/* Box 2: Posters Manager */}
             <button
               type="button"
-              className={`admin-tab-btn ${activeTab === 'posters' ? 'active' : ''}`}
+              className={`admin-tab-box ${activeTab === 'posters' ? 'active' : ''}`}
               onClick={() => setActiveTab('posters')}
             >
-              <FaImages />
-              <span className="tab-label">Posters Manager</span>
+              <div className="tab-icon-badge posters-badge">
+                <FaImages className="tab-icon" />
+              </div>
+              <div className="tab-text-group">
+                <span className="tab-label">Posters Manager</span>
+                <span className="tab-sublabel">3D Ambient Carousel</span>
+              </div>
               <span className="admin-count-pill">{posters.length}</span>
+              <div className="tab-active-glow-bar" />
             </button>
 
+            {/* Box 3: Student Achievements */}
             <button
               type="button"
-              className={`admin-tab-btn ${activeTab === 'achievements' ? 'active' : ''}`}
+              className={`admin-tab-box ${activeTab === 'achievements' ? 'active' : ''}`}
               onClick={() => setActiveTab('achievements')}
             >
-              <FaTrophy />
-              <span className="tab-label">Student Achievements</span>
+              <div className="tab-icon-badge achievements-badge">
+                <FaTrophy className="tab-icon" />
+              </div>
+              <div className="tab-text-group">
+                <span className="tab-label">Student Achievements</span>
+                <span className="tab-sublabel">Curved Motion Gallery</span>
+              </div>
               <span className="admin-count-pill">{achievements.length}</span>
+              <div className="tab-active-glow-bar" />
             </button>
           </nav>
         </div>
+
         {/* ================================================================= */}
         {/* TAB 1: EVENTS MANAGER */}
         {/* ================================================================= */}
         {activeTab === 'events' && (
           <div className="admin-section-block">
             <div className="admin-section-header">
-              <div>
+              <div className="section-title-col">
+                <div className="section-badge-pill">EVENTS DECK</div>
                 <h3 className="admin-section-title">Events Management</h3>
                 <p className="admin-section-desc">
                   Create, edit, and organize flagship events showcased in the 3D CardSwap stack.
@@ -699,11 +815,15 @@ export default function AdminConsole({ onExitToSite }) {
             <div className="admin-items-grid">
               {events.map((evt, idx) => {
                 const coverImg = evt.images?.[0] || '/Events/PowerBi_1.png';
+                const totalPhotos = Array.isArray(evt.images) ? evt.images.length : 1;
                 return (
                   <div key={evt.id || idx} className="admin-item-card">
                     <div className="admin-item-media">
                       <img src={coverImg} alt={evt.title} />
                       <span className="admin-card-badge">{evt.type}</span>
+                      <span className="admin-photo-count-badge">
+                        <FaImage /> {totalPhotos} {totalPhotos === 1 ? 'photo' : 'photos'}
+                      </span>
                     </div>
 
                     <div className="admin-item-body">
@@ -741,15 +861,16 @@ export default function AdminConsole({ onExitToSite }) {
         )}
 
         {/* ================================================================= */}
-        {/* TAB 2: POSTERS MANAGER */}
+        {/* TAB 2: POSTERS MANAGER (No Description + Auto Gradients) */}
         {/* ================================================================= */}
         {activeTab === 'posters' && (
           <div className="admin-section-block">
             <div className="admin-section-header">
-              <div>
+              <div className="section-title-col">
+                <div className="section-badge-pill">3D POSTERS DECK</div>
                 <h3 className="admin-section-title">Posters Management</h3>
                 <p className="admin-section-desc">
-                  Manage the 3D Gradient Carousel posters and customized ambient background tints.
+                  Manage the 3D Gradient Carousel posters. Dual-color ambient gradients are automatically set!
                 </p>
               </div>
               <button
@@ -783,7 +904,15 @@ export default function AdminConsole({ onExitToSite }) {
                       </div>
 
                       <h4 className="admin-item-title">{poster.title}</h4>
-                      <p className="admin-item-desc">{poster.description}</p>
+
+                      {/* Gradient Badge Pill */}
+                      <div className="poster-gradient-info-chip">
+                        <span
+                          className="poster-color-dot"
+                          style={{ background: `linear-gradient(135deg, ${g1}, ${g2})` }}
+                        />
+                        <span className="poster-color-hex">{g1} &rarr; {g2}</span>
+                      </div>
 
                       <div className="admin-card-actions">
                         <button
@@ -810,22 +939,23 @@ export default function AdminConsole({ onExitToSite }) {
         )}
 
         {/* ================================================================= */}
-        {/* TAB 3: STUDENT ACHIEVEMENTS */}
+        {/* TAB 3: STUDENT ACHIEVEMENTS (Appends to last + High Contrast Inputs) */}
         {/* ================================================================= */}
         {activeTab === 'achievements' && (
           <div className="admin-section-block">
             <div className="admin-section-header">
-              <div>
+              <div className="section-title-col">
+                <div className="section-badge-pill">STUDENT GALLERY</div>
                 <h3 className="admin-section-title">Student Achievements Gallery</h3>
                 <p className="admin-section-desc">
-                  Add photos directly from your computer or Google Drive, or restore the original 13 project photos.
+                  Add photos directly from your device, computer, or Google Drive. New photos are appended to the <strong>last position</strong>.
                 </p>
               </div>
               <button
                 type="button"
                 className="admin-action-btn restore-project-btn"
                 onClick={handleRestoreOriginalAchievements}
-                title="Restore original 13 project achievement images from public/Achievements"
+                title="Restore original 13 project achievement photos from public/Achievements"
               >
                 <FaSyncAlt /> <span>Restore 13 Project Photos</span>
               </button>
@@ -876,59 +1006,123 @@ export default function AdminConsole({ onExitToSite }) {
                       </div>
                       <div className="dropzone-text">
                         <strong>Click or tap to select image files from your computer or phone</strong>
-                        <p>Supports PNG, JPG, JPEG, and WEBP. You can select multiple photos at once.</p>
+                        <p>Supports PNG, JPG, JPEG, and WEBP. You can select multiple photos at once. Photos will save to the end of the gallery.</p>
                       </div>
                       <span className="studio-browse-btn">
-                        {isUploading ? 'Compressing & Adding...' : 'Choose Photos from Device'}
+                        {isUploading ? 'Compressing & Adding to Last...' : 'Choose Photos from Device'}
                       </span>
                     </label>
+
+                    {/* Confirmation list of uploaded files showing path/name & size */}
+                    {recentAchievementUploads.length > 0 && (
+                      <div className="upload-confirmation-deck">
+                        <div className="deck-header">
+                          <FaCheckCircle className="deck-check-icon" />
+                          <span>Recently Uploaded ({recentAchievementUploads.length} Photos Added to Last Position)</span>
+                        </div>
+                        <div className="deck-files-grid">
+                          {recentAchievementUploads.map((file, idx) => (
+                            <div key={idx} className="deck-file-card">
+                              <img src={file.dataUrl} alt={file.name} className="deck-file-thumb" />
+                              <div className="deck-file-details">
+                                <span className="deck-file-name" title={file.name}>{file.name}</span>
+                                <span className="deck-file-meta">{file.sizeFormatted} &bull; Uploaded</span>
+                              </div>
+                              <span className="deck-file-badge">Appended &rarr; End</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
-                {/* 2. GOOGLE DRIVE LINK */}
+                {/* 2. GOOGLE DRIVE LINK - High-contrast readable input with live verification */}
                 {achievementAddMode === 'drive' && (
-                  <form onSubmit={handleDriveAchievementAdd} className="studio-form-row">
-                    <div className="studio-input-with-icon">
-                      <FaGoogleDrive className="studio-field-icon drive-icon" />
-                      <input
-                        type="text"
-                        placeholder="Paste Google Drive share link (e.g. https://drive.google.com/file/d/.../view?usp=sharing)"
-                        value={driveAchievementUrl}
-                        onChange={e => setDriveAchievementUrl(e.target.value)}
-                        required
-                      />
+                  <form onSubmit={handleDriveAchievementAdd} className="studio-form-stack">
+                    <div className="drive-input-container">
+                      <div className="studio-input-with-icon high-contrast">
+                        <FaGoogleDrive className="studio-field-icon drive-icon" />
+                        <input
+                          type="text"
+                          className="high-contrast-input"
+                          placeholder="Paste Google Drive share link (e.g. https://drive.google.com/file/d/1aB2c.../view?usp=sharing)"
+                          value={driveAchievementUrl}
+                          onChange={e => setDriveAchievementUrl(e.target.value)}
+                          required
+                        />
+                        {driveAchievementUrl && (
+                          <button
+                            type="button"
+                            className="input-clear-btn"
+                            onClick={() => setDriveAchievementUrl('')}
+                            title="Clear link"
+                          >
+                            <FaTimes />
+                          </button>
+                        )}
+                      </div>
+                      <button type="submit" className="admin-primary-btn drive-submit-btn">
+                        <FaPlus /> <span>Add to End of Gallery</span>
+                      </button>
                     </div>
-                    <button type="submit" className="admin-primary-btn">
-                      <FaPlus /> <span>Add from Drive</span>
-                    </button>
-                    <p className="studio-hint">
-                      * Note: In Google Drive, ensure the file permission is set to <strong>"Anyone with the link can view"</strong>.
-                    </p>
+
+                    {/* Live Drive Link Recognition Feedback */}
+                    {detectedDriveId ? (
+                      <div className="drive-detection-feedback success">
+                        <FaCheckCircle className="feedback-icon" />
+                        <div className="feedback-info">
+                          <strong>Valid Google Drive Link Detected!</strong>
+                          <span>File ID: <code>{detectedDriveId}</code> &bull; Auto-converting to direct streamable image URL</span>
+                        </div>
+                      </div>
+                    ) : driveAchievementUrl ? (
+                      <div className="drive-detection-feedback info">
+                        <span>Pasting direct URL. We will automatically convert standard Google Drive sharing links.</span>
+                      </div>
+                    ) : (
+                      <p className="studio-hint">
+                        * Note: In Google Drive, ensure the file permission is set to <strong>"Anyone with the link can view"</strong> so it displays publicly.
+                      </p>
+                    )}
                   </form>
                 )}
 
                 {/* 3. IMAGE URL OR PROJECT PATH */}
                 {achievementAddMode === 'url' && (
-                  <form onSubmit={handleAddAchievement} className="studio-form-row">
-                    <div className="studio-input-with-icon">
-                      <FaLink className="studio-field-icon" />
-                      <input
-                        type="text"
-                        placeholder="Enter image path (e.g. /Achievements/Achievements_1.png or https://...)"
-                        value={newAchievementImg}
-                        onChange={e => setNewAchievementImg(e.target.value)}
-                        required
-                      />
+                  <form onSubmit={handleAddAchievement} className="studio-form-stack">
+                    <div className="drive-input-container">
+                      <div className="studio-input-with-icon high-contrast">
+                        <FaLink className="studio-field-icon" />
+                        <input
+                          type="text"
+                          className="high-contrast-input"
+                          placeholder="Enter image path (e.g. /Achievements/Achievements_1.png or https://...)"
+                          value={newAchievementImg}
+                          onChange={e => setNewAchievementImg(e.target.value)}
+                          required
+                        />
+                        {newAchievementImg && (
+                          <button
+                            type="button"
+                            className="input-clear-btn"
+                            onClick={() => setNewAchievementImg('')}
+                            title="Clear"
+                          >
+                            <FaTimes />
+                          </button>
+                        )}
+                      </div>
+                      <button type="submit" className="admin-primary-btn drive-submit-btn">
+                        <FaPlus /> <span>Add to End of Gallery</span>
+                      </button>
                     </div>
-                    <button type="submit" className="admin-primary-btn">
-                      <FaPlus /> <span>Add Image</span>
-                    </button>
                   </form>
                 )}
               </div>
             </div>
 
-            {/* Achievements Photos Grid */}
+            {/* Achievements Photos Grid - Clearly showing index numbers */}
             <div className="admin-achievements-grid">
               {achievements.map((imgSrc, idx) => (
                 <div key={idx} className="admin-achievement-thumb-card">
@@ -936,12 +1130,17 @@ export default function AdminConsole({ onExitToSite }) {
                     <img src={imgSrc} alt={`Achievement ${idx + 1}`} />
                   </div>
                   <div className="thumb-footer">
-                    <span className="thumb-index">#{idx + 1}</span>
+                    <div className="thumb-index-badge">
+                      <span className="thumb-index">#{idx + 1}</span>
+                      {idx === achievements.length - 1 && (
+                        <span className="last-photo-indicator">LAST</span>
+                      )}
+                    </div>
                     <button
                       type="button"
                       className="thumb-delete-btn"
                       onClick={() => handleDeleteAchievement(imgSrc, idx)}
-                      title="Remove image"
+                      title={`Remove photo #${idx + 1}`}
                     >
                       <FaTrash />
                     </button>
@@ -1052,9 +1251,10 @@ export default function AdminConsole({ onExitToSite }) {
                 />
               </div>
 
+              {/* Uploaded Images Deck with File Names & Sizes */}
               <div className="form-group">
                 <div className="label-with-actions">
-                  <label>Image Paths / URLs (One per line; first image is Cover)</label>
+                  <label>Event Photos &amp; Banners</label>
                   <label className="admin-file-upload-pill" title="Upload photos from device">
                     <FaUpload /> <span>Upload from Device</span>
                     <input
@@ -1067,14 +1267,42 @@ export default function AdminConsole({ onExitToSite }) {
                     />
                   </label>
                 </div>
+
+                {/* Show uploaded device files visually with filenames & sizes */}
+                {eventForm.uploadedFiles && eventForm.uploadedFiles.length > 0 && (
+                  <div className="modal-uploaded-files-list">
+                    <span className="modal-uploaded-label">Uploaded Device Files:</span>
+                    {eventForm.uploadedFiles.map((file, idx) => (
+                      <div key={idx} className="modal-uploaded-file-row">
+                        <img src={file.dataUrl} alt={file.name} className="modal-uploaded-thumb" />
+                        <div className="modal-uploaded-info">
+                          <span className="modal-uploaded-name" title={file.name}>{file.name}</span>
+                          <span className="modal-uploaded-size">{file.sizeFormatted} &bull; Ready</span>
+                        </div>
+                        {idx === 0 && <span className="modal-cover-badge">Cover</span>}
+                        <button
+                          type="button"
+                          className="modal-remove-file-btn"
+                          onClick={() => handleRemoveEventUploadedFile(idx)}
+                          title="Remove this photo"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Manual Textarea for Image paths / Google Drive links */}
+                <label className="sub-field-label">Additional Image Paths or Google Drive links (one per line):</label>
                 <textarea
-                  rows="3"
+                  rows="2"
                   value={eventForm.imagesText}
                   onChange={e => setEventForm({ ...eventForm, imagesText: e.target.value })}
                   placeholder="/Events/PowerBi_1.png&#10;Paste Google Drive links or image paths here..."
                 />
                 <span className="field-hint">
-                  Tip: You can paste Google Drive share links directly — they are automatically converted to direct images.
+                  Tip: Google Drive share links are automatically converted to direct streamable images.
                 </span>
               </div>
 
@@ -1096,7 +1324,7 @@ export default function AdminConsole({ onExitToSite }) {
       )}
 
       {/* =================================================================== */}
-      {/* MODAL: ADD / EDIT POSTER */}
+      {/* MODAL: ADD / EDIT POSTER (No Description + Auto Gradients) */}
       {/* =================================================================== */}
       {posterModalOpen && (
         <div className="admin-modal-overlay" onClick={() => setPosterModalOpen(false)}>
@@ -1124,10 +1352,11 @@ export default function AdminConsole({ onExitToSite }) {
                 />
               </div>
 
+              {/* Poster Image: Upload from Device or enter URL/Path */}
               <div className="form-group">
                 <div className="label-with-actions">
-                  <label>Poster Image Path, URL, or Google Drive Link *</label>
-                  <label className="admin-file-upload-pill" title="Upload poster from computer">
+                  <label>Poster Image *</label>
+                  <label className="admin-file-upload-pill" title="Upload poster image from device">
                     <FaUpload /> <span>Upload from Device</span>
                     <input
                       type="file"
@@ -1138,15 +1367,39 @@ export default function AdminConsole({ onExitToSite }) {
                     />
                   </label>
                 </div>
+
+                {/* If uploaded from device, show file confirmation card */}
+                {posterForm.uploadedFile && (
+                  <div className="poster-uploaded-preview-card">
+                    <img
+                      src={posterForm.uploadedFile.dataUrl}
+                      alt={posterForm.uploadedFile.name}
+                      className="poster-preview-thumb"
+                    />
+                    <div className="poster-preview-info">
+                      <span className="poster-preview-filename">{posterForm.uploadedFile.name}</span>
+                      <span className="poster-preview-size">{posterForm.uploadedFile.sizeFormatted} &bull; Uploaded from computer</span>
+                    </div>
+                    <span className="poster-preview-status">✓ Ready</span>
+                  </div>
+                )}
+
                 <input
                   type="text"
+                  className="high-contrast-input"
                   value={posterForm.image}
-                  onChange={e => setPosterForm({ ...posterForm, image: formatGoogleDriveUrl(e.target.value) })}
+                  onChange={e =>
+                    setPosterForm({
+                      ...posterForm,
+                      image: formatGoogleDriveUrl(e.target.value),
+                      uploadedFile: null
+                    })
+                  }
                   placeholder="e.g. /Events/PowerBi_1.png or Google Drive link"
                   required
                 />
                 <span className="field-hint">
-                  Tip: Upload from device, enter a path, or paste a Google Drive share link.
+                  Tip: Upload from device, or paste a Google Drive share link / project path.
                 </span>
               </div>
 
@@ -1157,7 +1410,7 @@ export default function AdminConsole({ onExitToSite }) {
                     type="text"
                     value={posterForm.category}
                     onChange={e => setPosterForm({ ...posterForm, category: e.target.value })}
-                    placeholder="Workshop, AI & Data, Automation..."
+                    placeholder="Workshop, AI &amp; Data, Automation..."
                   />
                 </div>
 
@@ -1172,59 +1425,92 @@ export default function AdminConsole({ onExitToSite }) {
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="form-group flex-1">
-                  <label>Gradient Start Color</label>
-                  <div className="color-picker-input">
-                    <input
-                      type="color"
-                      value={posterForm.color1}
-                      onChange={e => setPosterForm({ ...posterForm, color1: e.target.value })}
-                    />
-                    <input
-                      type="text"
-                      value={posterForm.color1}
-                      onChange={e => setPosterForm({ ...posterForm, color1: e.target.value })}
-                    />
-                  </div>
+              {/* Automatic Dual-Color Gradient Palette */}
+              <div className="form-group gradient-studio-group">
+                <div className="label-with-actions">
+                  <label>Ambient Gradient Colors (Automatically Assigned)</label>
+                  <button
+                    type="button"
+                    className="admin-dice-btn"
+                    onClick={handlePickRandomGradient}
+                    title="Auto-pick random vibrant cyberpunk gradient"
+                  >
+                    <FaDice /> <span>Auto-Pick Gradient</span>
+                  </button>
                 </div>
 
-                <div className="form-group flex-1">
-                  <label>Gradient End Color</label>
-                  <div className="color-picker-input">
-                    <input
-                      type="color"
-                      value={posterForm.color2}
-                      onChange={e => setPosterForm({ ...posterForm, color2: e.target.value })}
-                    />
-                    <input
-                      type="text"
-                      value={posterForm.color2}
-                      onChange={e => setPosterForm({ ...posterForm, color2: e.target.value })}
-                    />
+                {/* Live Gradient Preview Bar */}
+                <div
+                  className="admin-gradient-live-preview"
+                  style={{
+                    background: `linear-gradient(90deg, ${posterForm.color1}, ${posterForm.color2})`
+                  }}
+                >
+                  <span className="gradient-preview-text">
+                    Ambient Background Tint: {posterForm.color1} &rarr; {posterForm.color2}
+                  </span>
+                </div>
+
+                {/* Quick Swatch Presets */}
+                <div className="gradient-presets-ribbon">
+                  {CYBER_GRADIENT_PRESETS.map(preset => {
+                    const isSelected =
+                      posterForm.color1.toLowerCase() === preset.colors[0].toLowerCase() &&
+                      posterForm.color2.toLowerCase() === preset.colors[1].toLowerCase();
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        className={`gradient-chip ${isSelected ? 'selected' : ''}`}
+                        style={{
+                          background: `linear-gradient(135deg, ${preset.colors[0]}, ${preset.colors[1]})`
+                        }}
+                        onClick={() => handleSelectGradientPreset(preset)}
+                        title={preset.label}
+                      >
+                        {isSelected && <FaCheck className="chip-check" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Fine-tuning Color Pickers */}
+                <div className="form-row" style={{ marginTop: '8px' }}>
+                  <div className="form-group flex-1">
+                    <span className="sub-field-label">Start Color</span>
+                    <div className="color-picker-input">
+                      <input
+                        type="color"
+                        value={posterForm.color1}
+                        onChange={e => setPosterForm({ ...posterForm, color1: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        value={posterForm.color1}
+                        onChange={e => setPosterForm({ ...posterForm, color1: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group flex-1">
+                    <span className="sub-field-label">End Color</span>
+                    <div className="color-picker-input">
+                      <input
+                        type="color"
+                        value={posterForm.color2}
+                        onChange={e => setPosterForm({ ...posterForm, color2: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        value={posterForm.color2}
+                        onChange={e => setPosterForm({ ...posterForm, color2: e.target.value })}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Gradient Preview Pill */}
-              <div
-                className="admin-gradient-live-preview"
-                style={{
-                  background: `linear-gradient(90deg, ${posterForm.color1}, ${posterForm.color2})`
-                }}
-              >
-                Ambient Tint Preview
-              </div>
-
-              <div className="form-group">
-                <label>Description</label>
-                <textarea
-                  rows="2"
-                  value={posterForm.description}
-                  onChange={e => setPosterForm({ ...posterForm, description: e.target.value })}
-                  placeholder="Summary of poster highlights"
-                />
-              </div>
+              {/* Note: Poster Description field has been completely removed as requested */}
 
               <div className="admin-modal-footer">
                 <button

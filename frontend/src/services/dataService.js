@@ -260,7 +260,8 @@ export function saveAchievements(achievements) {
 export function addAchievement(imgUrl) {
   if (!imgUrl || typeof imgUrl !== 'string') return;
   const current = getAchievements();
-  const updated = [imgUrl.trim(), ...current];
+  // Append new photo to the end (last position) as requested
+  const updated = [...current, imgUrl.trim()];
   saveAchievements(updated);
 }
 
@@ -268,7 +269,8 @@ export function addAchievements(imgUrls) {
   if (!Array.isArray(imgUrls) || imgUrls.length === 0) return;
   const current = getAchievements();
   const valid = imgUrls.map(u => (typeof u === 'string' ? u.trim() : '')).filter(Boolean);
-  const updated = [...valid, ...current];
+  // Append new photos to the end (last positions) as requested
+  const updated = [...current, ...valid];
   saveAchievements(updated);
 }
 

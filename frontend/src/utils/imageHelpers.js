@@ -99,6 +99,17 @@ export function compressImageFile(file, maxWidth = 1600, maxHeight = 1600, quali
 }
 
 /**
+ * Format file size in human-readable bytes (KB, MB).
+ */
+export function formatFileSize(bytes) {
+  if (!bytes || bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+}
+
+/**
  * Process a batch of files uploaded from local device/computer.
  */
 export async function processLocalFiles(fileList) {
@@ -109,6 +120,31 @@ export async function processLocalFiles(fileList) {
     try {
       const dataUrl = await compressImageFile(file);
       results.push(dataUrl);
+    } catch (err) {
+      console.error('Failed to process image file:', file.name, err);
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Process a batch of files uploaded from local device/computer, preserving file metadata.
+ */
+export async function processLocalFilesWithMetadata(fileList) {
+  const files = Array.from(fileList || []);
+  const results = [];
+
+  for (const file of files) {
+    try {
+      const dataUrl = await compressImageFile(file);
+      results.push({
+        name: file.name,
+        size: file.size,
+        sizeFormatted: formatFileSize(file.size),
+        type: file.type,
+        dataUrl
+      });
     } catch (err) {
       console.error('Failed to process image file:', file.name, err);
     }
