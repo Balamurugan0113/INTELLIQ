@@ -1,5 +1,5 @@
 // frontend/src/components/Events.jsx
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import CardSwap, { Card } from './ui/CardSwap';
 import './Events.css';
 import {
@@ -152,21 +152,9 @@ const REAL_EVENTS = [
 
 export default function Events() {
   const [events] = useState(REAL_EVENTS);
-  const [filter, setFilter] = useState('All');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const cardSwapRef = useRef(null);
-
-  // Extract unique chips dynamically from real-time events
-  const chips = useMemo(() => {
-    const types = Array.from(new Set(events.map(e => e.type)));
-    return ['All', ...types];
-  }, [events]);
-
-  const show = useMemo(() => {
-    if (filter === 'All') return events;
-    return events.filter(e => e.type.toLowerCase() === filter.toLowerCase());
-  }, [events, filter]);
 
   const openEventModal = ev => {
     setSelectedEvent(ev);
@@ -188,58 +176,36 @@ export default function Events() {
   return (
     <section aria-label="Events Stack" className="events-section">
       <div className="events-container">
-        {/* Filters row */}
-        <div className="events-filters-row">
-          <div className="event-filters">
-            {chips.map(c => (
-              <button
-                key={c}
-                type="button"
-                className={`event-filter-btn ${filter === c ? 'is-active' : ''}`}
-                aria-pressed={filter === c}
-                onClick={() => setFilter(c)}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* View Mode: CardSwap 3D Stack */}
+        {/* View Mode: CardSwap 3D Stack Alone */}
         <div className="events-swap-showcase">
-          {show.length === 0 ? (
-            <div className="events-empty">No events found in this category.</div>
-          ) : (
-            <>
-              <div className="events-swap-wrapper">
-                <CardSwap
-                  ref={cardSwapRef}
-                  key={filter}
-                  width={460}
-                  height={380}
-                  cardDistance={55}
-                  verticalDistance={65}
-                  depth={85}
-                  skewAmount={5}
-                  delay={4500}
-                  autoplay={true}
-                  pauseOnHover={true}
-                  draggable={true}
-                  speed={1}
-                  theme="dark"
-                >
-                  {show.map((e, index) => {
-                    const coverImage =
-                      e.images && e.images.length > 0
-                        ? e.images[0]
-                        : 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=80&auto=format&fit=crop';
-                    const catSlug = e.type.toLowerCase().replace(/\s+/g, '-');
-                    return (
-                      <Card
-                        key={e.id || `${e.title}-${index}`}
-                        className="event-swap-card"
-                        onClick={() => openEventModal(e)}
-                      >
+          <div className="events-swap-wrapper">
+            <CardSwap
+              ref={cardSwapRef}
+              width={520}
+              height={420}
+              cardDistance={60}
+              verticalDistance={70}
+              depth={90}
+              skewAmount={5}
+              delay={4500}
+              autoplay={true}
+              pauseOnHover={true}
+              draggable={true}
+              speed={1}
+              theme="dark"
+            >
+              {events.map((e, index) => {
+                const coverImage =
+                  e.images && e.images.length > 0
+                    ? e.images[0]
+                    : 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=80&auto=format&fit=crop';
+                const catSlug = e.type.toLowerCase().replace(/\s+/g, '-');
+                return (
+                  <Card
+                    key={e.id || `${e.title}-${index}`}
+                    className="event-swap-card"
+                    onClick={() => openEventModal(e)}
+                  >
                         <div className="event-card-swap-content">
                           <div className="event-card-swap-media">
                             <img src={coverImage} alt={e.title} draggable={false} />
@@ -285,32 +251,30 @@ export default function Events() {
                     );
                   })}
                 </CardSwap>
-              </div>
+          </div>
 
-              {/* CardSwap Controls (Arrows only) */}
-              <div className="events-swap-controls">
-                <button
-                  type="button"
-                  className="swap-nav-btn prev"
-                  onClick={handlePrev}
-                  aria-label="Previous event card"
-                  title="Previous card"
-                >
-                  <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
-                </button>
+          {/* CardSwap Controls (Below Arrow) */}
+          <div className="events-swap-controls">
+            <button
+              type="button"
+              className="swap-nav-btn prev"
+              onClick={handlePrev}
+              aria-label="Previous event card"
+              title="Previous card"
+            >
+              <HugeiconsIcon icon={ArrowLeft01Icon} size={20} />
+            </button>
 
-                <button
-                  type="button"
-                  className="swap-nav-btn next"
-                  onClick={handleNext}
-                  aria-label="Next event card"
-                  title="Next card"
-                >
-                  <HugeiconsIcon icon={ArrowRight01Icon} size={18} />
-                </button>
-              </div>
-            </>
-          )}
+            <button
+              type="button"
+              className="swap-nav-btn next"
+              onClick={handleNext}
+              aria-label="Next event card"
+              title="Next card"
+            >
+              <HugeiconsIcon icon={ArrowRight01Icon} size={20} />
+            </button>
+          </div>
         </div>
       </div>
 
