@@ -7,7 +7,12 @@
 }
 
 .members-section {
-  padding: 48px 16px;
+  padding: 20px 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  width: 100%;
 }
 .members-heading {
   font-size: 1.6rem;
@@ -515,3 +520,345 @@
   max-width: 78px;
   border-radius: 50%;
 }
+
+/* ==========================================================================
+   ACADEMIC & STAFF COORDINATORS & BATCH SWITCHER STYLES
+   ========================================================================== */
+
+.coordinators-block {
+  margin-bottom: 40px;
+}
+
+/* OUT-OF-THE-BOX HIGHLIGHTED HEADINGS IN YELLOW (COMPACT) */
+.out-of-the-box-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(240, 255, 74, 0.12), rgba(15, 23, 42, 0.95));
+  border: 1px solid rgba(240, 255, 74, 0.5);
+  box-shadow: 0 0 18px rgba(240, 255, 74, 0.25), inset 0 0 12px rgba(240, 255, 74, 0.12);
+  padding: 6px 18px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.out-of-the-box-heading::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #f0ff4a, #ffc74d, #ffffff);
+}
+
+.out-of-the-box-heading:hover {
+  transform: translateY(-2px);
+  border-color: #f0ff4a;
+  box-shadow: 0 0 25px rgba(240, 255, 74, 0.45);
+}
+
+.ootb-icon {
+  font-size: 1.15rem;
+  color: #f0ff4a;
+  filter: drop-shadow(0 0 8px rgba(240, 255, 74, 0.8));
+}
+
+.neon-heading {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #f0ff4a;
+  text-shadow: 0 0 10px rgba(240, 255, 74, 0.4);
+  margin: 0;
+  letter-spacing: 0.8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.batch-tag {
+  font-size: 0.9rem;
+  color: #ffffff;
+  background: rgba(240, 255, 74, 0.2);
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-weight: 700;
+}
+
+/* MOVING WHITE SPARKLE BORDER ANIMATION LOOP FOR STUDENT BOARD CARDS */
+@property --sparkle-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.sparkle-border-card {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  z-index: 1;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sparkle-border-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  border-color: #01cefc;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), 0 0 25px rgba(1, 206, 252, 0.4);
+}
+
+/* ACADEMICS COORDINATORS */
+.academic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.academic-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(240, 255, 74, 0.3);
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.academic-card:hover {
+  transform: translateY(-4px);
+  border-color: #f0ff4a;
+  box-shadow: 0 12px 35px rgba(240, 255, 74, 0.2);
+}
+
+.academic-avatar-wrapper {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, #f0ff4a, #ffc74d);
+  margin-bottom: 16px;
+}
+
+.academic-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #0f172a;
+}
+
+.academic-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+}
+
+.academic-position-badge {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #05070d;
+  background: linear-gradient(135deg, #f0ff4a, #ffc74d);
+  border: 1px solid rgba(240, 255, 74, 0.5);
+  padding: 4px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.academic-message {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  font-style: italic;
+  margin: 0;
+}
+
+/* STAFF COORDINATORS & BATCH SWITCHER */
+.staff-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.batch-switcher {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.8);
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(240, 255, 74, 0.3);
+}
+
+.batch-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #a0aec0;
+}
+
+.batch-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #cbd5e1;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.batch-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.batch-btn.active {
+  background: linear-gradient(135deg, #f0ff4a, #ffc74d);
+  color: #05070d;
+  font-weight: 800;
+  box-shadow: 0 0 18px rgba(240, 255, 74, 0.5);
+}
+
+.staff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.staff-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.staff-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(240, 255, 74, 0.6);
+}
+
+.staff-avatar-wrapper {
+  width: 54px;
+  height: 54px;
+  min-width: 54px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, #f0ff4a, #ff8a00);
+}
+
+.staff-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #0f172a;
+}
+
+.staff-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+}
+
+.staff-position {
+  font-size: 0.8rem;
+  color: #f0ff4a;
+}
+
+@media (max-width: 768px) {
+  .staff-header-flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .coordinators-block {
+    margin-bottom: 24px;
+  }
+  .out-of-the-box-heading {
+    padding: 6px 16px;
+    gap: 8px;
+    margin-bottom: 14px;
+    max-width: 100%;
+  }
+  .ootb-icon {
+    font-size: 1.05rem;
+  }
+  .neon-heading {
+    font-size: 1.05rem;
+  }
+  .batch-tag {
+    font-size: 0.88rem;
+  }
+  .academic-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .academic-card {
+    padding: 16px 14px;
+    border-radius: 14px;
+  }
+  .academic-avatar-wrapper {
+    width: 68px;
+    height: 68px;
+    margin-bottom: 10px;
+  }
+  .academic-name {
+    font-size: 1.02rem;
+  }
+  .academic-position-badge {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+  }
+  .academic-message {
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+  .staff-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .staff-card {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .staff-avatar-wrapper {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+  }
+  .staff-name {
+    font-size: 0.9rem;
+  }
+  .staff-position {
+    font-size: 0.75rem;
+  }
+  .batch-switcher {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+  .batch-btn {
+    padding: 4px 10px;
+    font-size: 0.78rem;
+  }
+}
+
+

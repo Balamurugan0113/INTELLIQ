@@ -43,6 +43,20 @@ function Icon({ name, size = 20 }) {
           <path d="M12 8v.01M11 12h1v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
         </svg>
       );
+    case "vision":
+      return (
+        <svg {...common}>
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="1.4" />
+          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.4" />
+        </svg>
+      );
+    case "achievements":
+      return (
+        <svg {...common}>
+          <path d="M8 21h8M12 17v4M6 4h12v5a6 6 0 0 1-12 0V4z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M6 6H4a2 2 0 0 0-2 2v1a3 3 0 0 0 3 3h1M18 6h2a2 2 0 0 1 2 2v1a3 3 0 0 1-3 3h-1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+        </svg>
+      );
     case "contact":
       return (
         <svg {...common}>
@@ -132,9 +146,11 @@ export default function Navbar() {
 
   const NAV_ITEMS = [
     { id: "home", href: "#home", label: "Home", icon: "home" },
-    { id: "events", href: "#events", label: "Events", icon: "events" },
-    { id: "members", href: "#members", label: "Members", icon: "members" },
     { id: "about", href: "#about", label: "About", icon: "about" },
+    { id: "vision", href: "#vision", label: "Vision", icon: "vision" },
+    { id: "events", href: "#events", label: "Events", icon: "events" },
+    { id: "achievements", href: "#achievements", label: "Achievements", icon: "achievements" },
+    { id: "members", href: "#members", label: "Members", icon: "members" },
     { id: "contact", href: "#contact", label: "Contact", icon: "contact" },
   ];
 
@@ -156,8 +172,8 @@ export default function Navbar() {
           <a className="brand" href="#home" aria-label="INTELLIQ — Home">
             <img
               className="brand-logo neon"
-              src="/logo.png"
-              srcSet="/logo.png 1x, /logo@2x.png 2x"
+              src="/Logo.png"
+              srcSet="/Logo.png 1x, /logo@2x.png 2x"
               width="36"
               height="36"
               alt="INTELLIQ logo"

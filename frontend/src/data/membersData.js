@@ -1,0 +1,155 @@
+// Dedicated file for Academic Coordinators, Staff Coordinators, and Board Members by Batch Year
+
+export const ACADEMIC_COORDINATORS = [
+  {
+    id: "ac-1",
+    name: "Dr. N.KOTTISWARAN",
+    position: "Principal",
+    avatar: "/avatars/principal.png",
+    message: "Empowering young minds in Artificial Intelligence & Data Science to lead global technological advancements with excellence, ethics, and innovation.",
+  },
+  {
+    id: "ac-2",
+    name: "Dr. K. Baskaran",
+    position: "Dean - Academics",
+    avatar: "/avatars/dean.png",
+    message: "Fostering an ecosystem of continuous learning, cutting-edge research, and industry engagement to nurture world-class AI professionals.",
+  },
+  {
+    id: "ac-3",
+    name: "Dr. P. SANGEETHA",
+    position: "HOD - AI & DS Department",
+    avatar: "/avatars/hod.png",
+    message: "Guiding INTELLIQ members to push the boundaries of technology through hands-on innovation, problem solving, and impactful community collaboration.",
+  },
+];
+
+export const STAFF_COORDINATORS_BY_BATCH = {
+  "2025-26": [
+    {
+      id: "sc-1",
+      name: "Mr. P. K. Prakaash",
+      position: "Assistant Professor",
+      avatar: "/avatars/staff1.png",
+    },
+    {
+      id: "sc-2",
+      name: "Mrs. S. Kayal Vizhi",
+      position: "Assistant Professor",
+      avatar: "/avatars/staff2.png",
+    },
+    {
+      id: "sc-3",
+      name: "Ms. T. Shampavi",
+      position: "Assistant Professor",
+      avatar: "/avatars/staff3.png",
+    }
+  ],
+  "2026-27": [
+    {
+      id: "sc-1",
+      name: "Mr. P. K. Prakaash",
+      position: "Assistant Professor",
+      avatar: "/avatars/staff1.png",
+    },
+    {
+      id: "sc-2",
+      name: "Mrs. S. Kayal Vizhi",
+      position: "Assistant Professor",
+      avatar: "/avatars/staff2.png",
+    },
+    {
+      id: "sc-3",
+      name: "Ms. T. Shampavi",
+      position: "Assistant Professor",
+      avatar: "/avatars/staff3.png",
+    },
+    {
+      id: "sc-4",
+      name: "Mr. K. Divakaran",
+      position: "Assistant Professor",
+      avatar: "/avatars/staff4.png",
+    },
+    {
+      id: "sc-5",
+      name: "Mr. T. R. Vignesh",
+      position: "Assistant Professor",
+      avatar: "/avatars/staff5.png",
+    },
+    {
+      id: "sc-6",
+      name: "Ms. P. Dhana Sri",
+      position: "Teaching Assistant",
+      avatar: "/avatars/staff6.png",
+    },
+    {
+      id: "sc-7",
+      name: "Ms. K. Thenmozhi",
+      position: "Assistant Professor",
+      avatar: "/avatars/staff7.png",
+    }
+  ],
+};
+
+export const BOARD_MEMBERS_BY_BATCH = {
+  "2025-26": [
+    { id: 'm1', name: 'Veera Muthu Prakash S', role: 'President', avatar: '/avatars/vm.png', linkedin: 'https://linkedin.com/in/veera-muthu-prakash-swaminathan-a15a4b291', github: 'https://github.com/vmprakash-swaminathan' },
+    { id: 'm2', name: 'Ajayan S', role: 'Vice President', avatar: '/avatars/ajayan.jpg', linkedin: 'https://www.linkedin.com/in/ajayan-suresh-1479902a2', github: '' },
+    { id: 'm3', name: 'Abishek M', role: 'Secretary', avatar: '/avatars/abishek.png', linkedin: 'https://linkedin.com/in/abishekmurugesan14', github: '' },
+    { id: 'm4', name: 'Lithika Shree P', role: 'Joint Secretary', avatar: '/avatars/lithika.jpg', linkedin: 'https://www.linkedin.com/in/lithika-shree-7907bb2a3', github: '' },
+    { id: 'm5', name: 'Gowri R', role: 'Treasurer', avatar: '/avatars/gowri.jpg', linkedin: 'https://www.linkedin.com/in/gowri-r-ramesh-2649962a2', github: '' },
+    { id: 'm6', name: 'Atchaya S', role: 'Joint Treasurer', avatar: '/avatars/atchaya.jpg', linkedin: 'https://www.linkedin.com/in/atchaya-shanmugamoorthy-5278853a7', github: 'https://github.com/atchaya234' },
+    { id: 'm7', name: 'Josuva J', role: 'Technical Lead', avatar: '/avatars/josuva-j.jpg', linkedin: 'https://linkedin.com/in/josuva-anand-271427291', github: 'https://github.com/JosuvaAnand' },
+    { id: 'm8', name: 'Harish SS', role: 'Technical Core Member', avatar: '/avatars/harishss.png', linkedin: 'https://www.linkedin.com/in/harish-harish-181539292', github: '' },
+    { id: 'm9', name: 'Easter Raj', role: 'Technical Core Member', avatar: '/avatars/easter.jpg', linkedin: 'https://www.linkedin.com/in/p-s-easter-raj-85a638299', github: '' },
+    { id: 'm10', name: 'Logeshwaran M', role: 'Technical Core Member', avatar: '/avatars/logesh.jpg', linkedin: 'https://www.linkedin.com/in/logeshwaran-logesh-00209637a', github: '' },
+    { id: 'm11', name: 'Navinesh S', role: 'Technical Core Member', avatar: '/avatars/navinesh.jpg', linkedin: 'https://www.linkedin.com/in/navinesh-s-2073b7324', github: '' },
+    { id: 'm12', name: 'Deepika E', role: 'Non-Technical Committee', avatar: '/avatars/Deepika.jpg', linkedin: 'https://www.linkedin.com/in/deepika-eswaran-a737b72a3', github: '' },
+    { id: 'm13', name: 'Sweatha R', role: 'Non-Technical Committee', avatar: '/avatars/Sweatha.png', linkedin: 'https://www.linkedin.com/in/sweatha-r-10398a2a2', github: 'https://github.com/SWEA2105' },
+    { id: 'm14', name: 'Saranya Devi S', role: 'Non-Technical Committee', avatar: '/avatars/saranya.png', linkedin: '', github: '' },
+    { id: 'm15', name: 'Sham J', role: 'Non-Technical Committee', avatar: '/avatars/Sham.png', linkedin: 'https://www.linkedin.com/in/sham-justin-875b7a328', github: '' },
+    { id: 'm16', name: 'Vijaya Shree M V', role: 'Event Coordinator Head', avatar: '/avatars/Viji.png', linkedin: 'https://www.linkedin.com/in/vijaya-shree-0a8a76224', github: '' },
+    { id: 'm17', name: 'Harish K', role: 'Event Coordinators', avatar: '/avatars/Harish.K.png', linkedin: 'https://www.linkedin.com/in/harish-kannusamy-110166386', github: '' },
+    { id: 'm18', name: 'Sandhiya S', role: 'Event Coordinators', avatar: '/avatars/sandhiya.png', linkedin: 'https://www.linkedin.com/in/sandhiya-s-9a49982a2', github: '' },
+    { id: 'm19', name: 'Mohana Priya G', role: 'Event Coordinators', avatar: '/avatars/Mohanapriya.png', linkedin: 'https://www.linkedin.com/in/mohana-priya-047b25364', github: '' },
+    { id: 'm20', name: 'Shriram M', role: 'Event Coordinators', avatar: '/avatars/shriram.png', linkedin: 'https://www.linkedin.com/in/m-shriram-8a645b394', github: '' },
+    { id: 'm21', name: 'Vaishnavi P', role: 'Documentation Committee', avatar: '/avatars/vaishnavi.png', linkedin: 'https://www.linkedin.com/in/vaishnavi-prakash-435382294', github: 'https://github.com/Vaishprakash123' },
+    { id: 'm22', name: 'Dhivya P', role: 'Documentation Committee', avatar: '/avatars/Dhivya.png', linkedin: 'https://www.linkedin.com/in/dhivya-palanisamy-9388072a3', github: '' },
+    { id: 'm23', name: 'Sridhar', role: 'Documentation Committee', avatar: '/avatars/sridhar.png', linkedin: 'https://www.linkedin.com/in/sridhar-srija-a65296293', github: '' },
+    { id: 'm24', name: 'Vishva R', role: 'Documentation Committee', avatar: '/avatars/Vishwa.R.png', linkedin: 'http://www.linkedin.com/in/vishva-tech', github: '' },
+    { id: 'm25', name: 'Balamurugan C', role: 'Chief Editor', avatar: '/avatars/bala.png', linkedin: 'https://linkedin.com/in/balamurugan-c-5507b82a3', github: 'https://github.com/Balamurugan0113' },
+    { id: 'm26', name: 'Yaswanth S', role: 'Associate Editor', avatar: '/avatars/Yash.png', linkedin: 'https://www.linkedin.com/in/yaswanth-sachithananthan-950276320', github: '' },
+    { id: 'm27', name: 'Shaheer A', role: 'Design Head', avatar: '/avatars/Shaheer.png', linkedin: 'https://www.linkedin.com/in/shaheer-naz-5766133a8', github: '' },
+    { id: 'm28', name: 'Santhosh Barathi L', role: 'Creative Head', avatar: '/avatars/Santhosh.png', linkedin: 'https://www.linkedin.com/in/santhosh-barathi-32918a330', github: '' },
+    { id: 'm29', name: 'Harishragavendraa M', role: 'PRO', avatar: '/avatars/Ragavendra.png', linkedin: 'www.linkedin.com/in/harishragavendraa', github: '' },
+    { id: 'm30', name: 'Kamalesh V', role: 'PRO', avatar: '/avatars/Kamalesh.jpg', linkedin: 'https://www.linkedin.com/in/kamalesh-kamalesh-9b37b62a3', github: '' },
+    { id: 'm31', name: 'Hakeem', role: 'PRO', avatar: '/avatars/Hakeem.jpg', linkedin: 'https://www.linkedin.com/in/hakeem-musthafa-2162a6387', github: '' },
+    { id: 'm32', name: 'Nithiya Sri', role: 'Student Executive', avatar: '/avatars/nithya_sri.png', linkedin: 'https://www.linkedin.com/in/nithiya-sri-c-5119972a2', github: '' },
+    { id: 'm33', name: 'Nijanthan Nehemiah S', role: 'Student Executive', avatar: '/avatars/Nijanthan.png', linkedin: 'https://www.linkedin.com/in/nijanthan-nehemiah-690478353', github: '' },
+  ],
+  "2026-27": [
+    { id: 'm26-1', name: 'Abishek M', role: 'President', avatar: '/avatars/abishek.png', linkedin: 'https://linkedin.com/in/abishekmurugesan14', github: '' },
+    { id: 'm26-2', name: 'Nijanthan Nehemiah S', role: 'Vice President', avatar: '/avatars/Nijanthan.png', linkedin: 'https://www.linkedin.com/in/nijanthan-nehemiah-690478353', github: 'https://github.com/Nijanthan1607' },
+    { id: 'm26-3', name: 'Mohana Priya G', role: 'Secretary', avatar: '/avatars/Mohanapriya.png', linkedin: 'https://www.linkedin.com/in/mohana-priya-047b25364', github: 'https://github.com/gmohanapriya-DA' },
+    { id: 'm26-4', name: 'Nithya Dharshini T', role: 'Joint Secretary', avatar: '/avatars/nithya.png', linkedin: 'https://www.linkedin.com/in/nithya-t-b945b03a0', github: 'https://github.com/nithyakira' },
+    { id: 'm26-5', name: 'Jaya Sanju S', role: 'Treasurer', avatar: '/avatars/Jayasanju.png', linkedin: 'https://www.linkedin.com/in/jaya-sanju-1237b632b', github: '' },
+    { id: 'm26-6', name: 'Sowmya P', role: 'Joint Treasurer', avatar: '/avatars/Sowmya.png', linkedin: 'https://www.linkedin.com/in/sowmya-undefined-a43024431', github: 'https://github.com/sowmiprakash4272-arch' },
+    { id: 'm26-7', name: 'Kumaresan S A', role: 'Technical Head', avatar: '/avatars/Kumaresan.png', linkedin: 'https://www.linkedin.com/in/kumaresan-sa-2005ai', github: '' },
+    { id: 'm26-8', name: 'Sham J', role: 'Technical Lead', avatar: '/avatars/Sham.png', linkedin: 'https://www.linkedin.com/in/sham-justin-875b7a328', github: '' },
+    { id: 'm26-9', name: 'Ashwathaman G', role: 'Technical Lead', avatar: '/avatars/Ashwathaman.png', linkedin: 'https://www.linkedin.com/in/ashwathaman-ganesan-01b077387', github: 'https://github.com/ashwathaman267-rgb' },
+    { id: 'm26-10', name: 'Madhubalan N', role: 'Event Coordinator Head', avatar: '/avatars/madhubalan.png', linkedin: 'https://www.linkedin.com/in/madhubalan06', github: 'https://github.com/madhubalanns-06' },
+    { id: 'm26-11', name: 'Shimona A', role: 'Event Coordinators', avatar: '/avatars/Shimona.png', linkedin: 'https://www.linkedin.com/in/shimona-anto-2163043a9', github: 'https://github.com/pyshimona-droid' },
+    { id: 'm26-12', name: 'Sai Abirami A', role: 'Event Coordinators', avatar: '/avatars/SaiAbirami.png', linkedin: 'https://www.linkedin.com/in/sai-abirami-997a0838a', github: '' },
+    { id: 'm26-13', name: 'Sweatha R', role: 'Documentation Head', avatar: '/avatars/Sweatha.png', linkedin: 'https://www.linkedin.com/in/sweatha-r-10398a2a2', github: 'https://github.com/SWEA2105' },
+    { id: 'm26-14', name: 'Silpa Thomas', role: 'Documentation Lead', avatar: '/avatars/Shilpa.png', linkedin: 'https://www.linkedin.com/in/shilpa-s-7039853a6', github: 'https://github.com/mewwwmewww2005-beep' },
+    { id: 'm26-15', name: 'Sanjay Ram S', role: 'Documentation Lead', avatar: '/avatars/Sanjay.png', linkedin: 'http://www.linkedin.com/in/sanjay-ram-645104377', github: 'https://github.com/sanjayram99869-byte' },
+    { id: 'm26-16', name: 'Santhosh Barathi L', role: 'Editorial Head', avatar: '/avatars/Santhosh.png', linkedin: 'https://www.linkedin.com/in/santhosh-barathi-32918a330', github: '' },
+    { id: 'm26-17', name: 'Salodis Benny L', role: 'Editorial Lead', avatar: '/avatars/Benny.png', linkedin: 'https://www.linkedin.com/in/benny-l-524b0b431', github: '' },
+    { id: 'm26-18', name: 'Vignesh S', role: 'Editorial Lead', avatar: '/avatars/Vignesh.png', linkedin: '', github: 'https://github.com/vigneshvinith333' },
+    { id: 'm26-19', name: 'Jeevith P', role: 'PRO', avatar: '/avatars/Jeevith.png', linkedin: 'https://www.linkedin.com/in/jeevith-p-3a6bb237b', github: '' },
+    { id: 'm26-20', name: 'Rithik R', role: 'PRO', avatar: '/avatars/Rithik.png', linkedin: 'https://www.linkedin.com/in/rithik-r-331025431', github: '' },
+    { id: 'm26-21', name: 'Gayathri J', role: 'Student Executive', avatar: '/avatars/Gayathiri.png', linkedin: '', github: 'https://github.com/gayathrijagadeesa' },
+    { id: 'm26-22', name: 'Sopna I', role: 'Student Executive', avatar: '/avatars/sopna.png', linkedin: 'https://www.linkedin.com/in/sopna-ilayaraja-723600431', github: '' },
+    { id: 'm26-23', name: 'Sachin G', role: 'Student Executive', avatar: '/avatars/SachinG.png', linkedin: 'https://www.linkedin.com/in/sachin-avox-a8a312391', github: '' },
+  ]
+};

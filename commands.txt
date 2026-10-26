@@ -1,0 +1,72 @@
+INTELLIQ - COMMANDS
+===================
+
+Run these commands from the repository root: D:\INTELLIQ
+
+RECOMMENDED: COMPLETE STACK WITH DOCKER
+---------------------------------------
+
+Validate the Compose configuration:
+docker compose --env-file .env.example config
+
+Build and start PostgreSQL, the FastAPI backend, and the Vite frontend:
+docker compose --env-file .env.example up --build
+
+Run the stack in the background:
+docker compose --env-file .env.example up --build -d
+
+View service status and logs:
+docker compose --env-file .env.example ps
+docker compose --env-file .env.example logs -f
+
+Check the API from PowerShell:
+Invoke-RestMethod http://localhost:8000/api/health
+
+Open in a browser:
+Frontend: http://localhost:5173
+API docs: http://localhost:8000/docs
+
+Stop the containers:
+docker compose --env-file .env.example down
+
+Stop containers and delete the PostgreSQL volume:
+docker compose --env-file .env.example down -v
+
+
+LOCAL FRONTEND
+--------------
+
+Set-Location frontend
+npm install
+npm run dev
+
+Frontend production build:
+npm run build
+
+Preview the production build:
+npm run preview
+
+
+LOCAL BACKEND
+-------------
+
+Set-Location backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+Backend health check:
+Invoke-RestMethod http://localhost:8000/api/health
+
+
+DEPLOYMENT
+----------
+
+Build the frontend for deployment:
+Set-Location frontend
+npm run build
+
+Deploy the Cloudflare Worker from the repository root:
+Set-Location ..
+npx wrangler deploy

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "./About.css";
+import { FaRocket, FaBrain, FaUsers, FaLightbulb, FaGraduationCap, FaCalendarAlt, FaChalkboardTeacher } from "react-icons/fa";
 
 export default function About() {
   const a = useRef(null),
@@ -8,7 +9,7 @@ export default function About() {
 
   useEffect(() => {
     const elms = [a.current, b.current, c.current];
-    const targets = [150, 5, 10];
+    const targets = [200, 7, 10];
     let raf;
     const start = performance.now();
 
@@ -26,32 +27,83 @@ export default function About() {
   }, []);
 
   return (
-    <section className="about">
-      <p className="about-text">
-        INTELLIQ is the student-led Association of Artificial Intelligence &amp;
-        Data Science. We organize hands-on workshops, research meetups,
-        hackathons, speaker sessions, and community projects that push the
-        boundaries of AI and DS.
-      </p>
+    <section className="about-animated-wrapper">
+      {/* BACKGROUND FLOATING ORBS */}
+      <div className="about-orb orb-cyan"></div>
+      <div className="about-orb orb-magenta"></div>
 
-      <ul className="about-points">
-        <li><strong>Mission:</strong> Learn by building.</li>
-        <li><strong>Focus:</strong> ML, CV, NLP, Data Engineering, MLOps.</li>
-        <li><strong>Culture:</strong> Open, collaborative, mentor-driven.</li>
-      </ul>
+      {/* INTRO TEXT BOX */}
+      <div className="about-intro-card glass-animated-panel">
+        <p className="about-text">
+          <strong>INTELLIQ</strong> – Intelligence Learners and Leaders in AI &amp; Data Science is the student association of the Department of Artificial Intelligence and Data Science, focused on creating an interactive platform where students can learn, explore, collaborate, and grow beyond the classroom.
+        </p>
 
+        <p className="about-text">
+          With the spirit of <em>“Innovation through Unity,”</em> INTELLIQ brings together students with a shared interest in Artificial Intelligence, Data Science, emerging technologies, and hands-on innovation.
+        </p>
+      </div>
+
+      {/* INTERACTIVE FEATURE CARDS WITH GLOWING ICONS */}
+      <div className="about-features-grid">
+        <div className="about-feature-card card-cyan">
+          <div className="feature-icon-wrapper">
+            <FaRocket className="feature-icon" />
+          </div>
+          <div className="feature-content">
+            <h4>Mission</h4>
+            <p>Learn by building real-world AI projects &amp; intelligent applications.</p>
+          </div>
+        </div>
+
+        <div className="about-feature-card card-magenta">
+          <div className="feature-icon-wrapper">
+            <FaBrain className="feature-icon" />
+          </div>
+          <div className="feature-content">
+            <h4>Focus Areas</h4>
+            <p>Machine Learning, Computer Vision, NLP, Data Engineering &amp; MLOps.</p>
+          </div>
+        </div>
+
+        <div className="about-feature-card card-violet">
+          <div className="feature-icon-wrapper">
+            <FaUsers className="feature-icon" />
+          </div>
+          <div className="feature-content">
+            <h4>Culture</h4>
+            <p>Open, collaborative, student-centric, and mentor-driven environment.</p>
+          </div>
+        </div>
+
+        <div className="about-feature-card card-emerald">
+          <div className="feature-icon-wrapper">
+            <FaLightbulb className="feature-icon" />
+          </div>
+          <div className="feature-content">
+            <h4>Vision</h4>
+            <p>Empowering the next generation of technology enthusiasts &amp; AI leaders.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* STATS COUNTER GRID */}
       <div className="about-stats">
-        <div className="stat">
+        <div className="stat stat-card-cyan">
+          <div className="stat-icon-badge"><FaGraduationCap /></div>
           <div className="stat-number" ref={a}>0</div>
-          <div className="stat-label">Members</div>
+          <div className="stat-label">Active Members</div>
         </div>
-        <div className="stat">
+
+        <div className="stat stat-card-magenta">
+          <div className="stat-icon-badge"><FaCalendarAlt /></div>
           <div className="stat-number" ref={b}>0</div>
-          <div className="stat-label">Events</div>
+          <div className="stat-label">Technical Events</div>
         </div>
-        <div className="stat">
+
+        <div className="stat stat-card-violet">
+          <div className="stat-icon-badge"><FaChalkboardTeacher /></div>
           <div className="stat-number" ref={c}>0</div>
-          <div className="stat-label">Mentors</div>
+          <div className="stat-label">Mentors &amp; Advisors</div>
         </div>
       </div>
     </section>

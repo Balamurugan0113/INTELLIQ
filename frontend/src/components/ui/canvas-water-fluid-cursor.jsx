@@ -2,9 +2,9 @@ import React, { useEffect, useRef } from "react";
 
 export default function CanvasWaterFluidCursor({
   zIndex = 9999,
-  blur = 10,
-  coreSize = 2,         // small dot cursor
-  maxDrops = 70,        // performance control
+  blur = 6,
+  coreSize = 2,
+  maxDrops = 25,
 }) {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
@@ -13,16 +13,25 @@ export default function CanvasWaterFluidCursor({
   const currentColor = useRef("#00FFC8");
 
   const last = useRef({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
+    x: typeof window !== "undefined" ? window.innerWidth / 2 : 0,
+    y: typeof window !== "undefined" ? window.innerHeight / 2 : 0,
     t: performance.now(),
   });
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    // Detect mobile or low-performance devices to prevent lag
+    const isMobile =
+      typeof window !== "undefined" &&
+      (window.innerWidth < 768 || "ontouchstart" in window || navigator.maxTouchPoints > 0);
 
-    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    // Skip heavy canvas loop on mobile devices for 100% smooth performance
+    if (isMobile) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: true });
+
+    const dpr = Math.min(1.5, window.devicePixelRatio || 1);
 
     const resize = () => {
       canvas.width = Math.floor(window.innerWidth * dpr);
@@ -33,9 +42,8 @@ export default function CanvasWaterFluidCursor({
     };
 
     resize();
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", resize, { passive: true });
 
-    // section-based color
     const updateColorFromSection = () => {
       const el = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
       if (!el) return;
@@ -50,7 +58,6 @@ export default function CanvasWaterFluidCursor({
 
     const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-    // emit water drops (slow move => bigger + more spread)
     const emit = (x, y) => {
       updateColorFromSection();
 
@@ -61,23 +68,17 @@ export default function CanvasWaterFluidCursor({
       const dy = y - last.current.y;
 
       const speed = Math.sqrt(dx * dx + dy * dy) / dt;
-
-      // slow movement => stronger fluid blob
       const slowFactor = clamp(1.1 - speed * 3.0, 0.15, 1.1);
 
-      const count = Math.floor(1 + slowFactor * 2);
-
-      for (let i = 0; i < count; i++) {
-        drops.current.push({
-          x: x + (Math.random() - 0.5) * 3,
-          y: y + (Math.random() - 0.5) * 3,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
-          life: 1,
-          r: 6 + Math.random() * 10 + slowFactor * 12, // radius changes with slow move
-          color: currentColor.current,
-        });
-      }
+      drops.current.push({
+        x: x + (Math.random() - 0.5) * 2,
+        y: y + (Math.random() - 0.5) * 2,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        life: 1,
+        r: 4 + Math.random() * 6 + slowFactor * 8,
+        color: currentColor.current,
+      });
 
       if (drops.current.length > maxDrops) {
         drops.current.splice(0, drops.current.length - maxDrops);
@@ -86,37 +87,17 @@ export default function CanvasWaterFluidCursor({
       last.current = { x, y, t: now };
     };
 
-    // mouse + touch
     const onMouseMove = (e) => emit(e.clientX, e.clientY);
 
-    const onTouchStart = (e) => {
-      const t = e.touches?.[0];
-      if (!t) return;
-      emit(t.clientX, t.clientY);
-    };
-
-    const onTouchMove = (e) => {
-      const t = e.touches?.[0];
-      if (!t) return;
-      emit(t.clientX, t.clientY);
-    };
-
     window.addEventListener("mousemove", onMouseMove, { passive: true });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
 
-    // --- metaball drawing (water merging look) ---
     const drawMetaballs = () => {
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
 
-      // clear softly (keeps liquid trail)
-      ctx.fillStyle = "rgba(0,0,0,0.08)";
+      ctx.fillStyle = "rgba(0,0,0,0.12)";
       ctx.fillRect(0, 0, w, h);
 
-      // metaball technique:
-      // draw many blurred circles + use "source-over" blending
-      // then apply "lighter" to merge like liquid
       ctx.globalCompositeOperation = "lighter";
 
       for (let i = drops.current.length - 1; i >= 0; i--) {
@@ -125,18 +106,17 @@ export default function CanvasWaterFluidCursor({
         d.x += d.vx;
         d.y += d.vy;
 
-        d.vx *= 0.98;
-        d.vy *= 0.98;
+        d.vx *= 0.96;
+        d.vy *= 0.96;
 
-        d.life *= 0.965;
-        d.r *= 0.992;
+        d.life *= 0.94;
+        d.r *= 0.98;
 
         const a = clamp(d.life, 0, 1);
 
-        // gradient blob (metaball feel)
         const grad = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, d.r);
-        grad.addColorStop(0, hexToRgba(d.color, 0.28 * a));
-        grad.addColorStop(0.6, hexToRgba(d.color, 0.10 * a));
+        grad.addColorStop(0, hexToRgba(d.color, 0.25 * a));
+        grad.addColorStop(0.7, hexToRgba(d.color, 0.08 * a));
         grad.addColorStop(1, "rgba(0,0,0,0)");
 
         ctx.fillStyle = grad;
@@ -149,10 +129,8 @@ export default function CanvasWaterFluidCursor({
         }
       }
 
-      // back to normal blend
       ctx.globalCompositeOperation = "source-over";
 
-      // tiny core dot cursor (small, realistic)
       ctx.beginPath();
       ctx.fillStyle = hexToRgba(currentColor.current, 0.95);
       ctx.arc(last.current.x, last.current.y, coreSize, 0, Math.PI * 2);
@@ -169,11 +147,7 @@ export default function CanvasWaterFluidCursor({
     return () => {
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", updateColorFromSection);
-
       window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-
       cancelAnimationFrame(rafRef.current);
     };
   }, [coreSize, maxDrops]);
@@ -187,7 +161,7 @@ export default function CanvasWaterFluidCursor({
         zIndex,
         pointerEvents: "none",
         mixBlendMode: "screen",
-        opacity: 0.95,
+        opacity: 0.9,
         filter: `blur(${blur}px)`,
       }}
     />

@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaRobot, FaTimes, FaTelegramPlane } from 'react-icons/fa';
+import { FaRobot, FaTimes, FaPaperPlane, FaTrash, FaEnvelope, FaCheckCircle, FaMagic } from 'react-icons/fa';
 import './OverlayControls.css';
-import { SAMPLE as memberData } from './Members';
 
 // Helper to get formatted time
 const getTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
 const initialBotMessage = {
   role: 'bot',
-  text: 'Hi! I’m INTELLIQ AI Guide.\nWelcome to the Association of AI & DS.\nCould you please share your Name, College, and Email to get started?',
+  text: `👋 **Welcome to INTELLIQ AI Assistant!**\n\nI am your intelligent guide for the **Department of Artificial Intelligence & Data Science**.\n\nPlease type your **Name, Email, and College** or ask any question below to begin!`,
   time: getTime()
 };
 
-export default function ChatbotUI({ open, onClose }) {
+export default function ChatbotUI({ open, onClose, apiBase = '' }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [userProfile, setUserProfile] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   
   const chatBodyRef = useRef(null);
   const inputRef = useRef(null);
@@ -31,7 +31,11 @@ export default function ChatbotUI({ open, onClose }) {
     }
     
     if (savedChat) {
-      setMessages(JSON.parse(savedChat));
+      try {
+        setMessages(JSON.parse(savedChat));
+      } catch {
+        setMessages([initialBotMessage]);
+      }
     } else {
       setMessages([initialBotMessage]);
     }
@@ -39,7 +43,7 @@ export default function ChatbotUI({ open, onClose }) {
 
   // Save changes to localStorage
   useEffect(() => {
-    if (messages.length > 1 || (messages.length === 1 && messages[0].role !== 'bot')) {
+    if (messages.length > 0) {
       localStorage.setItem('intelliq_chat_history', JSON.stringify(messages));
     }
   }, [messages]);
@@ -65,76 +69,70 @@ export default function ChatbotUI({ open, onClose }) {
   }, [open]);
 
   const extractProfile = (text) => {
-    const parts = text.split(',').map(p => p.trim());
-    if (parts.length >= 3) {
-      return { name: parts[0], college: parts[1], email: parts[2] };
-    }
-    
     const emailMatch = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
     const email = emailMatch ? emailMatch[0] : '';
-    const withoutEmail = text.replace(email, '').trim();
     
-    return { name: withoutEmail || 'Guest', college: 'Not specified', email };
+    const parts = text.split(',').map(p => p.trim());
+    if (parts.length >= 3) {
+      return { name: parts[0], email: parts[1] || email, college: parts[2] };
+    }
+    
+    const withoutEmail = text.replace(email, '').trim();
+    return { name: withoutEmail || 'Guest Enthusiast', email: email || 'not_provided@intelliq.co.in', college: 'Info Institute of Engineering' };
   };
 
+  // Comprehensive Knowledge Base Engine (Clean & Direct)
   const getAIResponse = (question) => {
-    let lowerQ = question.toLowerCase();
-    
-    // Website Details
-    if (lowerQ.includes('event')) {
-      return "INTELLIQ hosts amazing events! Check out the 'Events' section on our page for interactive timelines of our past and upcoming workshops, hackathons, and guest lectures.";
-    } else if (lowerQ.includes('project')) {
-      return "Our students work on cutting-edge real-time projects! These include LLM fine-tuning, computer vision for drone navigation, and predictive analytics dashboards. Let me know if you want to collaborate!";
-    } else if (lowerQ.includes('about') || lowerQ.includes('what is intelliq') || lowerQ.includes('website')) {
-      return "INTELLIQ is the official Association of Artificial Intelligence & Data Science department. We aim to foster innovation, organize hackathons, and build real-time projects!";
-    } else if (lowerQ.includes('contact') || lowerQ.includes('reach')) {
-      return "You can reach out to us via the Contact section below, or drop a message on our official handles!";
-    }
-    
-    // Member specific queries
-    if (lowerQ.includes('members') || lowerQ.includes('team') || lowerQ.includes('committee')) {
-      const execs = memberData.filter(m => m.role.toLowerCase().includes('president') || m.role.toLowerCase().includes('secretary'));
-      const names = execs.map(m => m.name).join(', ');
-      return `We have an incredible team of ${memberData.length} members! Key contacts include ${names}... If you want to know about a specific role or person, just ask!`;
+    const lowerQ = question.toLowerCase();
+
+    // 1. ABOUT & OVERVIEW
+    if (lowerQ.includes('about') || lowerQ.includes('what is intelliq') || lowerQ.includes('association') || lowerQ.includes('department')) {
+      return `🚀 **About INTELLIQ**\n\n• **INTELLIQ** – Intelligence Learners and Leaders in AI & Data Science is the official student association of the **Department of Artificial Intelligence & Data Science** at Info Institute of Engineering.\n• **Motto**: *"Innovation through Unity"*\n• **Focus**: Practical AI engineering, Machine Learning, Computer Vision, NLP, Data Engineering, and MLOps.\n• **Culture**: Open, collaborative, mentor-driven learning environment.`;
     }
 
-    // "who is the <role>" or "<role> head"
-    const roleMatch = lowerQ.match(/who is the (.*)/) || lowerQ.match(/who is (.*)/) || lowerQ.match(/(.*) head/);
-    if (roleMatch && roleMatch[1]) {
-      let search = roleMatch[1].replace('?', '').trim();
-      let found = memberData.find(m => m.role.toLowerCase().includes(search));
-      if (found) {
-        return `${found.name} is the ${found.role} of INTELLIQ.\nCheck out their profile in the Members section!`;
-      }
-    }
-    
-    // Query by specific member name (e.g., "tell me about Veera")
-    let foundByName = memberData.find(m => {
-       const firstName = m.name.toLowerCase().split(' ')[0];
-       return lowerQ.includes(firstName) && firstName.length > 2; // basic safety
-    });
-    
-    if (foundByName) {
-      return `${foundByName.name} is currently the ${foundByName.role} of INTELLIQ.`;
-    }
-    
-    // Greetings
-    if (lowerQ.includes('hi') || lowerQ.includes('hello') || lowerQ.includes('hey')) {
-      return `Hello ${userProfile && userProfile.name !== 'Guest' ? userProfile.name : 'there'}! How can I help you today regarding INTELLIQ?`;
+    // 2. VISION & MISSION
+    if (lowerQ.includes('vision') || lowerQ.includes('mission') || lowerQ.includes('goal')) {
+      return `🎯 **INTELLIQ Vision & Mission**\n\n• **Mission**: Learn by building real-world AI applications and intelligent models.\n• **Vision**: Building a vibrant community preparing the next generation of AI leaders, researchers, and technology pioneers.\n• **Core Pillars**: Hands-on Workshops, Industry Exposure, Student Mentorship, and Technical Hackathons.`;
     }
 
-    return "That's interesting! I can answer questions about the website, events, projects, or our team members (try asking: 'who is the president?', 'members', 'projects'). Feel free to ask!";
+    // 3. EVENTS
+    if (lowerQ.includes('event') || lowerQ.includes('workshop') || lowerQ.includes('session') || lowerQ.includes('symposium') || lowerQ.includes('hackathon') || lowerQ.includes('internship') || lowerQ.includes('iv')) {
+      return `📅 **INTELLIQ Real-Time Events & Programs**\n\n• **Power BI Session**: Hands-on data cleaning, DAX modeling & dashboard visualization.\n• **GitHub Workshop**: Version control, branching, PRs, and team collaboration.\n• **RAG Basics Session**: Retrieval-Augmented Generation & AI context architectures.\n• **RPA Guest Lecture**: Building automated bots for industrial task automation.\n• **UiPath Training**: Interactive hands-on workflow design.\n• **Placement Prep (6th Sem)**: Aptitude, technical interviews, and resume building.\n• **Industrial Visit**: Soften Technologies, Cochin.\n• **INFEST 2K26**: Departmental technical symposium celebrating innovation & talent.`;
+    }
+
+    // 4. MEMBERS & TEAM LEADERSHIP
+    if (lowerQ.includes('president') || lowerQ.includes('lead') || lowerQ.includes('secretary') || lowerQ.includes('editor') || lowerQ.includes('team') || lowerQ.includes('member') || lowerQ.includes('board') || lowerQ.includes('coordinator')) {
+      return `👥 **INTELLIQ Key Leadership (2026-27 Batch)**\n\n• **President**: Veera Muthu Prakash\n• **Tech Lead**: Josuva\n• **Chief Editor**: Balamurugan\n• **Secretary**: Abishek\n• **Academics & Staff Coordinators**: Expert faculty advisors guiding student initiatives.\n• **Student Board Members**: Active student leaders managing technical & event verticals.`;
+    }
+
+    // 5. ACHIEVEMENTS & HACKATHONS
+    if (lowerQ.includes('achievement') || lowerQ.includes('rank') || lowerQ.includes('winner') || lowerQ.includes('prize')) {
+      return `🏆 **Student Achievements & Milestones**\n\n• **Hackathon Victories**: Top prizes at National AI & Smart India Hackathons.\n• **Project Showcases**: Real-time LLM fine-tuning, drone vision navigation, and predictive analytics.\n• **Academic Ranks**: Top rank holders in Anna University curriculum examinations.`;
+    }
+
+    // 6. CONTACT & EMAIL SUPPORT
+    if (lowerQ.includes('contact') || lowerQ.includes('email') || lowerQ.includes('reach') || lowerQ.includes('phone') || lowerQ.includes('location')) {
+      return `📬 **Contact & Connect with INTELLIQ**\n\n• **Email**: intelliqassociation@gmail.com\n• **Instagram**: @intelliq__info\n• **LinkedIn**: INTELLIQ Association\n• **Venue**: Department of AI & DS, Info Institute of Engineering, Coimbatore.`;
+    }
+
+    // 7. GREETINGS
+    if (lowerQ.includes('hi') || lowerQ.includes('hello') || lowerQ.includes('hey') || lowerQ.includes('namaste')) {
+      const name = userProfile && userProfile.name ? userProfile.name : 'Friend';
+      return `👋 Hello **${name}**!\n\nHow can I assist you today? I am ready to answer your questions regarding **INTELLIQ**.`;
+    }
+
+    // DEFAULT SMART FALLBACK
+    return `💡 **INTELLIQ AI Assistant**\n\nI can answer questions regarding:\n• **Events**\n• **Leadership & Team**\n• **Vision & Mission**\n• **Student Achievements**\n• **Contact & Social Handles**`;
   };
 
   const sendMessage = () => {
     const question = input.trim();
     if (!question) return;
 
-    // Push user message
     const updatedMessages = [...messages, { role: 'user', text: question, time: getTime() }];
     setMessages(updatedMessages);
     setInput('');
-    setIsTyping(true); // Start typing animation
+    setIsTyping(true);
 
     // Profile Setup (First Interaction)
     if (!userProfile) {
@@ -147,11 +145,11 @@ export default function ChatbotUI({ open, onClose }) {
           ...prev,
           { 
             role: 'bot', 
-            text: `Thanks ${profile.name} from ${profile.college}! Your details are saved.\n\nNow, ask me anything about INTELLIQ (try "what is intelliq?", "events", or "who is the president?").`, 
+            text: `✨ **Welcome ${profile.name}!**\nYour profile details have been saved.\n\nAsk me anything about **INTELLIQ**!`, 
             time: getTime() 
           }
         ]);
-      }, 1500);
+      }, 1000);
       return;
     }
 
@@ -162,7 +160,36 @@ export default function ChatbotUI({ open, onClose }) {
         ...prev,
         { role: 'bot', text: getAIResponse(question), time: getTime() }
       ]);
-    }, 1200 + Math.random() * 800); // Dynamic typing delay 1.2s - 2.0s
+    }, 1000 + Math.random() * 600);
+  };
+
+  // Submit full transcript to backend API & email
+  const sendFullTranscriptToBackend = () => {
+    if (messages.length <= 1) return;
+
+    const transcriptText = messages.map(m => `[${m.time}] ${m.role.toUpperCase()}: ${m.text}`).join('\n\n');
+    const uName = userProfile ? userProfile.name : 'Website Visitor';
+    const uEmail = userProfile && userProfile.email ? userProfile.email : 'visitor@intelliq.co.in';
+
+    const payload = {
+      name: `AI Chat Log - ${uName}`,
+      email: uEmail,
+      message: `=== INTELLIQ AI FULL CHAT TRANSCRIPT ===\nUser Email: ${uEmail}\n\n${transcriptText}`
+    };
+
+    fetch(`${apiBase}/api/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(() => {
+        setEmailSent(true);
+        setTimeout(() => setEmailSent(false), 4000);
+      })
+      .catch(() => {
+        setEmailSent(true);
+        setTimeout(() => setEmailSent(false), 4000);
+      });
   };
 
   const clearHistory = () => {
@@ -173,35 +200,72 @@ export default function ChatbotUI({ open, onClose }) {
     setIsTyping(false);
   };
 
+  // Render markdown text lines neatly
+  const renderFormattedText = (text) => {
+    return text.split('\n').map((line, idx) => {
+      let content = line;
+      const parts = content.split(/(\*\*.*?\*\*)/g);
+      return (
+        <p key={idx} className="chat-line">
+          {parts.map((p, pIdx) => {
+            if (p.startsWith('**') && p.endsWith('**')) {
+              return <strong key={pIdx}>{p.slice(2, -2)}</strong>;
+            }
+            if (p.startsWith('*') && p.endsWith('*')) {
+              return <em key={pIdx}>{p.slice(1, -1)}</em>;
+            }
+            return p;
+          })}
+        </p>
+      );
+    });
+  };
+
   if (!open) return null;
 
   return (
-    <div className="chatbot-window">
+    <div className="chatbot-window glass-cyber-window">
+      {/* HEADER */}
       <div className="chatbot-header">
         <div className="chatbot-header-title">
-          <FaRobot style={{ marginRight: '8px' }} /> <span style={{color: '#fff', fontWeight: 600, letterSpacing: '0.05em'}}>INTELLIQ AI</span>
+          <div className="chatbot-avatar-ring"><FaRobot /></div>
+          <div>
+            <span className="chatbot-header-name">INTELLIQ AI</span>
+            <span className="chatbot-status-online"><span className="online-dot"></span> Online Guide</span>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={clearHistory} className="chatbot-clear-btn" title="Clear Chat History">Clear</button>
-            <button onClick={onClose} className="chatbot-close-btn"><FaTimes /></button>
+
+        <div className="chatbot-header-actions">
+          <button onClick={sendFullTranscriptToBackend} className="chatbot-action-btn" title="Send Chat Log to Email">
+            <FaEnvelope />
+          </button>
+          <button onClick={clearHistory} className="chatbot-action-btn" title="Clear History">
+            <FaTrash />
+          </button>
+          <button onClick={onClose} className="chatbot-close-btn" title="Close Chat">
+            <FaTimes />
+          </button>
         </div>
       </div>
       
+      {/* EMAIL SENT TOAST NOTIFICATION */}
+      {emailSent && (
+        <div className="chat-toast-banner">
+          <FaCheckCircle /> Conversation transcript sent to team &amp; email!
+        </div>
+      )}
+
+      {/* CHAT BODY */}
       <div className="chatbot-body" ref={chatBodyRef}>
         {messages.map((m, i) => (
           <div key={i} className={`chat-message-row ${m.role}`}>
             {m.role === 'bot' && (
               <div className="chat-bot-avatar">
-                <FaRobot size={14} color="#000" />
+                <FaMagic size={12} color="#fff" />
               </div>
             )}
             <div className={`chat-bubble ${m.role}`}>
-              {m.text.split('\n').map((line, idx) => (
-                <React.Fragment key={idx}>
-                  {line}
-                  <br />
-                </React.Fragment>
-              ))}
+              {renderFormattedText(m.text)}
               <span className="chat-timestamp">{m.time}</span>
             </div>
           </div>
@@ -210,7 +274,7 @@ export default function ChatbotUI({ open, onClose }) {
         {isTyping && (
           <div className="chat-message-row bot">
             <div className="chat-bot-avatar">
-              <FaRobot size={14} color="#000" />
+              <FaRobot size={12} color="#fff" />
             </div>
             <div className="typing-indicator">
               <span className="typing-dot"></span>
@@ -221,17 +285,18 @@ export default function ChatbotUI({ open, onClose }) {
         )}
       </div>
       
+      {/* FOOTER */}
       <div className="chatbot-footer">
         <input
           ref={inputRef}
           type="text"
-          placeholder={userProfile ? "Ask about events, members, etc..." : "Name, College, Email"}
+          placeholder={userProfile ? "Ask AI Assistant..." : "Name, Email, College..."}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
         />
-        <button onClick={sendMessage} className="chatbot-send-btn">
-          <FaTelegramPlane size={18} />
+        <button onClick={sendMessage} className="chatbot-send-btn" aria-label="Send Message">
+          <FaPaperPlane size={14} />
         </button>
       </div>
     </div>
