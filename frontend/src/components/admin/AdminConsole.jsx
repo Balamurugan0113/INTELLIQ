@@ -717,104 +717,109 @@ export default function AdminConsole({ onExitToSite }) {
         </div>
       )}
 
-      {/* Top Header Bar - Cohesive Cyber Glass Header */}
-      <header className="admin-topbar">
-        <div className="admin-topbar-inner">
-          <div className="admin-brand">
-            <div className="admin-brand-icon-wrapper">
-              <img
-                src="/Logo.png"
-                alt="INTELLIQ Logo"
-                className="admin-brand-logo neon"
-                width="34"
-                height="34"
-              />
-              <span className="brand-pulse-ring" />
-            </div>
-            <div className="brand-title-col">
-              <div className="brand-title-row">
-                <span className="brand-text">INTELLIQ</span>
-                <span className="admin-badge">CONSOLE</span>
-              </div>
-              <div className="brand-live-status">
-                <span className="status-live-dot" />
-                <span className="status-live-text">SYSTEM ONLINE &bull; SYNC ACTIVE</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="admin-topbar-right">
-            <button
-              type="button"
-              className="admin-action-btn view-live"
-              onClick={handleViewLiveSite}
-              title="Open the live website with synchronized preview"
-            >
-              <FaExternalLinkAlt className="action-btn-icon" /> <span>View Live Site</span>
-            </button>
-
-            {/* Mobile hamburger toggle */}
-            <button
-              type="button"
-              className={`admin-mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
-              onClick={() => setMobileMenuOpen(prev => !prev)}
-              aria-label="Toggle admin actions"
-              title="More actions"
-            >
-              {mobileMenuOpen ? <FaTimes /> : <FaBars />}
-            </button>
-
-            {/* Top Actions Drawer / Row */}
-            <div className={`admin-top-actions ${mobileMenuOpen ? 'open' : ''}`}>
-              <button
-                type="button"
-                className="admin-action-btn export"
-                onClick={() => {
-                  handleExportBackup();
-                  setMobileMenuOpen(false);
-                }}
-                title="Download full JSON backup of events, posters, and achievements"
-              >
-                <FaDownload className="action-btn-icon" /> <span>Export JSON</span>
-              </button>
-
-              <label className="admin-action-btn import" title="Import JSON backup file">
-                <FaUpload className="action-btn-icon" /> <span>Import</span>
-                <input
-                  type="file"
-                  accept=".json"
-                  style={{ display: 'none' }}
-                  onChange={e => {
-                    handleImportBackup(e);
-                    setMobileMenuOpen(false);
-                  }}
+      {/* Unified Sticky Glassy Navbar: Top Logo + 3 Navigation Boxes (Clutter-Free, Zero Top Space) */}
+      <header className="admin-sticky-navbar">
+        <div className="admin-navbar-inner">
+          {/* Row 1: Logo & Actions Bar (Tight, sleek, no top gap) */}
+          <div className="admin-logo-bar">
+            <div className="admin-brand">
+              <div className="admin-brand-icon-wrapper">
+                <img
+                  src="/Logo.png"
+                  alt="INTELLIQ Logo"
+                  className="admin-brand-logo neon"
+                  width="32"
+                  height="32"
                 />
-              </label>
+                <span className="brand-pulse-ring" />
+              </div>
+              <div className="brand-title-col">
+                <div className="brand-title-row">
+                  <span className="brand-text">INTELLIQ</span>
+                  <span className="admin-badge">CONSOLE</span>
+                </div>
+                <div className="brand-live-status">
+                  <span className="status-live-dot" />
+                  <span className="status-live-text">ONLINE &bull; SYNC ACTIVE</span>
+                </div>
+              </div>
+            </div>
 
+            <div className="admin-navbar-actions">
               <button
                 type="button"
-                className="admin-action-btn reset"
-                onClick={() => {
-                  handleResetDefaults();
-                  setMobileMenuOpen(false);
-                }}
-                title="Reset to default data"
+                className="admin-action-btn view-live"
+                onClick={handleViewLiveSite}
+                title="Open the live website with synchronized preview"
               >
-                <FaUndo className="action-btn-icon" /> <span>Reset Defaults</span>
+                <FaExternalLinkAlt className="action-btn-icon" /> <span>View Live Site</span>
               </button>
 
               <button
                 type="button"
                 className="admin-action-btn logout"
-                onClick={() => {
-                  handleLogout();
-                  setMobileMenuOpen(false);
-                }}
+                onClick={handleLogout}
                 title="Lock & Logout"
               >
                 <FaSignOutAlt className="action-btn-icon" /> <span>Lock</span>
               </button>
             </div>
+          </div>
+
+          {/* Row 2: Top 3 Navigation Boxes with Titles Alone */}
+          <div className="admin-boxes-bar">
+            <nav className="admin-tabs-nav" aria-label="Admin Navigation Tabs">
+              {/* Box 1: Events Manager */}
+              <button
+                type="button"
+                className={`admin-tab-box ${activeTab === 'events' ? 'active' : ''}`}
+                onClick={() => setActiveTab('events')}
+              >
+                <div className="tab-icon-badge events-badge">
+                  <FaCalendarAlt className="tab-icon" />
+                </div>
+                <div className="tab-text-group">
+                  <span className="tab-label">Events Manager</span>
+                  <span className="tab-sublabel">Flagship 3D Stacks</span>
+                </div>
+                <span className="admin-count-pill">{events.length}</span>
+                <div className="tab-active-glow-bar" />
+              </button>
+
+              {/* Box 2: Posters Manager */}
+              <button
+                type="button"
+                className={`admin-tab-box ${activeTab === 'posters' ? 'active' : ''}`}
+                onClick={() => setActiveTab('posters')}
+              >
+                <div className="tab-icon-badge posters-badge">
+                  <FaImages className="tab-icon" />
+                </div>
+                <div className="tab-text-group">
+                  <span className="tab-label">Posters Manager</span>
+                  <span className="tab-sublabel">3D Ambient Carousel</span>
+                </div>
+                <span className="admin-count-pill">{posters.length}</span>
+                <div className="tab-active-glow-bar" />
+              </button>
+
+              {/* Box 3: Student Achievements */}
+              <button
+                type="button"
+                className={`admin-tab-box ${activeTab === 'achievements' ? 'active' : ''}`}
+                onClick={() => setActiveTab('achievements')}
+              >
+                <div className="tab-icon-badge achievements-badge">
+                  <FaTrophy className="tab-icon" />
+                </div>
+                <div className="tab-text-group">
+                  <span className="tab-label">Student Achievements</span>
+                  <span className="tab-sublabel">Curved Motion Gallery</span>
+                </div>
+                <span className="admin-count-pill">{achievements.length}</span>
+                <div className="tab-active-glow-bar" />
+              </button>
+            </nav>
           </div>
         </div>
       </header>
@@ -832,64 +837,6 @@ export default function AdminConsole({ onExitToSite }) {
           title="Admin Cross-Domain Sync Bridge"
         />
       )}
-
-      {/* Sticky Glassy Navigation Bar: Top 3 boxes with titles alone */}
-      <div className="admin-sticky-tabs-bar">
-        <div className="admin-sticky-tabs-inner">
-          <nav className="admin-tabs-nav" aria-label="Admin Navigation Tabs">
-            {/* Box 1: Events Manager */}
-            <button
-              type="button"
-              className={`admin-tab-box ${activeTab === 'events' ? 'active' : ''}`}
-              onClick={() => setActiveTab('events')}
-            >
-              <div className="tab-icon-badge events-badge">
-                <FaCalendarAlt className="tab-icon" />
-              </div>
-              <div className="tab-text-group">
-                <span className="tab-label">Events Manager</span>
-                <span className="tab-sublabel">Flagship 3D Stacks</span>
-              </div>
-              <span className="admin-count-pill">{events.length}</span>
-              <div className="tab-active-glow-bar" />
-            </button>
-
-            {/* Box 2: Posters Manager */}
-            <button
-              type="button"
-              className={`admin-tab-box ${activeTab === 'posters' ? 'active' : ''}`}
-              onClick={() => setActiveTab('posters')}
-            >
-              <div className="tab-icon-badge posters-badge">
-                <FaImages className="tab-icon" />
-              </div>
-              <div className="tab-text-group">
-                <span className="tab-label">Posters Manager</span>
-                <span className="tab-sublabel">3D Ambient Carousel</span>
-              </div>
-              <span className="admin-count-pill">{posters.length}</span>
-              <div className="tab-active-glow-bar" />
-            </button>
-
-            {/* Box 3: Student Achievements */}
-            <button
-              type="button"
-              className={`admin-tab-box ${activeTab === 'achievements' ? 'active' : ''}`}
-              onClick={() => setActiveTab('achievements')}
-            >
-              <div className="tab-icon-badge achievements-badge">
-                <FaTrophy className="tab-icon" />
-              </div>
-              <div className="tab-text-group">
-                <span className="tab-label">Student Achievements</span>
-                <span className="tab-sublabel">Curved Motion Gallery</span>
-              </div>
-              <span className="admin-count-pill">{achievements.length}</span>
-              <div className="tab-active-glow-bar" />
-            </button>
-          </nav>
-        </div>
-      </div>
 
       {/* Main Container - Below cards scroll up underneath with glassy navbar effect */}
       <main className="admin-main-container">

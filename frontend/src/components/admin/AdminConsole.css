@@ -246,48 +246,63 @@
 }
 
 /* ==========================================================================
-   3. TOPBAR HEADER (NATURALLY SCROLLS AT TOP OF PAGE)
+   3. UNIFIED STICKY GLASSY NAVBAR (LOGO ROW + TOP 3 BOXES WITH ZERO TOP GAP)
    ========================================================================== */
-.admin-topbar {
-  position: relative;
+.admin-sticky-navbar {
+  position: sticky;
+  top: 0;
   width: 100%;
-  background: rgba(7, 12, 26, 0.95);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 14px 0;
-  z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  background: rgba(6, 10, 22, 0.86);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(1, 206, 252, 0.24);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 30px rgba(1, 206, 252, 0.1);
+  margin: 0;
+  padding: 8px 0 10px;
+  transition: all 0.25s ease;
 }
 
-.admin-topbar-inner {
+.admin-navbar-inner {
   max-width: 1360px;
   width: 100%;
   margin: 0 auto;
   padding: 0 24px;
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Row 1: Logo and Action Buttons */
+.admin-logo-bar {
+  display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* Brand & Animated Pulse Icon */
 .admin-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   user-select: none;
 }
 
 .admin-brand-icon-wrapper {
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .admin-brand-logo {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: 8px;
   display: block;
   z-index: 2;
@@ -313,17 +328,17 @@
 .brand-title-col {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .brand-title-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 
 .admin-brand .brand-text {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 900;
   letter-spacing: 2px;
   background: linear-gradient(135deg, #ffffff 20%, #01cefc 65%, #ff3de8 100%);
@@ -341,24 +356,24 @@
 .admin-badge {
   font-size: 9px;
   font-weight: 800;
-  letter-spacing: 1.2px;
+  letter-spacing: 1px;
   background: linear-gradient(135deg, #01cefc, #ff3de8);
   color: #030712;
-  padding: 2px 7px;
-  border-radius: 6px;
+  padding: 1px 6px;
+  border-radius: 5px;
   text-transform: uppercase;
-  box-shadow: 0 0 10px rgba(1, 206, 252, 0.4);
+  box-shadow: 0 0 8px rgba(1, 206, 252, 0.4);
 }
 
 .brand-live-status {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .status-live-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: #10b981;
   box-shadow: 0 0 8px #10b981;
@@ -373,34 +388,33 @@
 .status-live-text {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.7px;
   color: #94a3b8;
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Topbar Right Actions */
-.admin-topbar-right {
+/* Navbar Right Actions (Only View Live Site & Lock) */
+.admin-navbar-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
-  position: relative;
+  gap: 10px;
 }
 
 .admin-action-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 600;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.22s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .admin-action-btn .action-btn-icon {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 /* View Live Site button: signature cyan/pink glow */
@@ -415,45 +429,13 @@
   background: linear-gradient(135deg, #01cefc, #ff3de8);
   color: #030712;
   border-color: #01cefc;
-  box-shadow: 0 0 24px rgba(1, 206, 252, 0.5);
+  box-shadow: 0 0 22px rgba(1, 206, 252, 0.5);
   transform: translateY(-1px);
-}
-
-.admin-top-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.admin-action-btn.export,
-.admin-action-btn.import {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #cbd5e1;
-}
-
-.admin-action-btn.export:hover,
-.admin-action-btn.import:hover {
-  background: rgba(1, 206, 252, 0.15);
-  border-color: #01cefc;
-  color: #01cefc;
-}
-
-.admin-action-btn.reset {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #94a3b8;
-}
-
-.admin-action-btn.reset:hover {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: #f59e0b;
-  color: #fbbf24;
 }
 
 .admin-action-btn.logout {
   background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.35);
   color: #f87171;
 }
 
@@ -463,57 +445,24 @@
   color: #ffffff;
 }
 
-.admin-mobile-toggle {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(1, 206, 252, 0.3);
-  color: #01cefc;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/* ==========================================================================
-   4. STICKY GLASSY NAVBAR: TOP 3 BOXES WITH TITLES ALONE
-   ========================================================================== */
-.admin-sticky-tabs-bar {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  z-index: 950;
-  background: rgba(6, 10, 22, 0.82);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(1, 206, 252, 0.22);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), 0 0 25px rgba(1, 206, 252, 0.1);
-  padding: 12px 0;
-  transition: all 0.25s ease;
-}
-
-.admin-sticky-tabs-inner {
-  max-width: 1360px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 0 24px;
+/* Row 2: Top 3 Navigation Boxes */
+.admin-boxes-bar {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .admin-tabs-nav {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  gap: 12px;
   width: 100%;
   max-width: 1000px;
   background: rgba(10, 16, 32, 0.7);
-  padding: 6px;
-  border-radius: 18px;
-  border: 1px solid rgba(1, 206, 252, 0.25);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(1, 206, 252, 0.08);
+  padding: 5px;
+  border-radius: 16px;
+  border: 1px solid rgba(1, 206, 252, 0.22);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 16px rgba(1, 206, 252, 0.08);
 }
 
 /* Individual Tab Box */
@@ -1841,18 +1790,23 @@
 }
 
 /* ==========================================================================
-   12. RESPONSIVE DESIGN & MOBILE DRAWER
+   12. RESPONSIVE DESIGN FOR STICKY NAVBAR (MOBILE & DESKTOP)
    ========================================================================== */
 @media (max-width: 960px) {
-  .admin-sticky-tabs-inner {
+  .admin-navbar-inner {
     padding: 0 16px;
+    gap: 6px;
+  }
+
+  .admin-sticky-navbar {
+    padding: 6px 0 8px;
   }
 
   .admin-tabs-nav {
     display: flex;
     overflow-x: auto;
     gap: 8px;
-    padding: 6px;
+    padding: 4px;
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
@@ -1863,63 +1817,80 @@
 
   .admin-tab-box {
     flex: 1;
-    min-width: 145px;
-    padding: 10px 12px;
+    min-width: 135px;
+    padding: 8px 10px;
     gap: 8px;
   }
 
   .tab-icon-badge {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    font-size: 15px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .tab-label {
+    font-size: 12px;
+    white-space: nowrap;
   }
 
   .tab-sublabel {
     display: none;
   }
+
+  .admin-count-pill {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
 }
 
-@media (max-width: 860px) {
-  .admin-topbar-inner {
-    padding: 0 16px;
+@media (max-width: 640px) {
+  .admin-navbar-inner {
+    padding: 0 10px;
+    gap: 5px;
   }
 
-  .admin-mobile-toggle {
-    display: inline-flex;
+  .admin-sticky-navbar {
+    padding: 4px 0 6px;
   }
 
-  .admin-top-actions {
+  .admin-brand-icon-wrapper {
+    width: 28px;
+    height: 28px;
+  }
+
+  .admin-brand-logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .admin-brand .brand-text {
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+
+  .admin-badge {
+    font-size: 8px;
+    padding: 1px 4px;
+  }
+
+  .brand-live-status {
     display: none;
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    width: 230px;
-    background: rgba(8, 14, 30, 0.98);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(1, 206, 252, 0.4);
-    border-radius: 16px;
-    padding: 14px;
-    flex-direction: column;
-    gap: 10px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85),
-                0 0 25px rgba(1, 206, 252, 0.2);
-    z-index: 1005;
   }
 
-  .admin-top-actions.open {
-    display: flex;
-    animation: fadeInModal 0.2s ease;
+  .admin-navbar-actions {
+    gap: 6px;
   }
 
-  .admin-top-actions .admin-action-btn {
-    width: 100%;
-    justify-content: flex-start;
+  .admin-navbar-actions .admin-action-btn {
+    padding: 6px 9px;
+    font-size: 11px;
+    gap: 4px;
   }
 
   .admin-main-container {
-    padding: 20px 16px 50px;
+    padding: 16px 12px 45px;
   }
 
   .form-row {
