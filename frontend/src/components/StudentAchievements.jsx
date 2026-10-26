@@ -1,32 +1,29 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import './StudentAchievements.css';
-import { ACHIEVEMENT_IMAGES } from '../data/achievementsData';
+import { getAchievements, subscribeData } from '../services/dataService';
 import { FaTimes, FaSearchPlus, FaImages, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-// Dynamically discover all images inside frontend/public/Achievements/ folder
-const folderImageFiles = Object.keys(
-  import.meta.glob('/public/Achievements/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,svg,gif}', { eager: true })
-).map((path) => path.replace('/public', ''));
-
-// Use folder images if present, otherwise fallback to ACHIEVEMENT_IMAGES array or default logos
-const ALL_GALLERY_IMAGES = folderImageFiles.length > 0
-  ? folderImageFiles
-  : (ACHIEVEMENT_IMAGES.length > 0
-      ? ACHIEVEMENT_IMAGES
-      : ['/hero-image.png', '/logos/logo1.png', '/logos/logo2.png', '/logos/logo3.png', '/logos/logo4.png', '/logos/logo5.png']);
-
 export default function StudentAchievements() {
+  const [achievements, setAchievements] = useState(() => getAchievements());
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [activeImgIndex, setActiveImgIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
-  // Duplicate image array for seamless infinite looping
-  const loopImages = useMemo(() => {
-    return [...ALL_GALLERY_IMAGES, ...ALL_GALLERY_IMAGES];
+  useEffect(() => {
+    return subscribeData(() => {
+      setAchievements(getAchievements());
+    });
   }, []);
 
+  const galleryImages = achievements.length > 0 ? achievements : ['/Achievements/achievements_1.png'];
+
+  // Duplicate image array for seamless infinite looping
+  const loopImages = useMemo(() => {
+    return [...galleryImages, ...galleryImages];
+  }, [galleryImages]);
+
   const openGalleryModal = (index = 0) => {
-    setActiveImgIndex(index % ALL_GALLERY_IMAGES.length);
+    setActiveImgIndex(index % galleryImages.length);
     setGalleryOpen(true);
   };
 
@@ -36,12 +33,12 @@ export default function StudentAchievements() {
 
   const prevImage = (e) => {
     e.stopPropagation();
-    setActiveImgIndex((prev) => (prev === 0 ? ALL_GALLERY_IMAGES.length - 1 : prev - 1));
+    setActiveImgIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
   };
 
   const nextImage = (e) => {
     e.stopPropagation();
-    setActiveImgIndex((prev) => (prev === ALL_GALLERY_IMAGES.length - 1 ? 0 : prev + 1));
+    setActiveImgIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
   };
 
   return (
@@ -84,7 +81,7 @@ export default function StudentAchievements() {
           onClick={() => openGalleryModal(0)}
         >
           <FaImages style={{ marginRight: '8px' }} />
-          View More Images ({ALL_GALLERY_IMAGES.length}) &rarr;
+          View More Images ({galleryImages.length}) &rarr;
         </button>
       </div>
 
@@ -101,22 +98,21 @@ export default function StudentAchievements() {
 
           <div className="lightbox-image-container" onClick={(e) => e.stopPropagation()}>
             <img
-              src={ALL_GALLERY_IMAGES[activeImgIndex]}
+              src={galleryImages[activeImgIndex]}
               alt=""
               className="lightbox-full-img"
             />
 
             {/* THUMBNAIL STRIP TO VIEW ALL OTHER IMAGES */}
             <div className="lightbox-thumbnails-strip">
-              {ALL_GALLERY_IMAGES.map((src, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  className={`modal-thumb-btn ${i === activeImgIndex ? 'active' : ''}`}
-                  onClick={() => setActiveImgIndex(i)}
+              {galleryImages.map((thumbSrc, tIdx) => (
+                <div
+                  key={tIdx}
+                  className={`thumb-item ${tIdx === activeImgIndex ? 'active' : ''}`}
+                  onClick={() => setActiveImgIndex(tIdx)}
                 >
-                  <img src={src} alt="" />
-                </button>
+                  <img src={thumbSrc} alt="" />
+                </div>
               ))}
             </div>
           </div>

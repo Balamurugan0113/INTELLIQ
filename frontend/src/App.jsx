@@ -16,6 +16,7 @@ import Hero from './components/Hero';
 import LoadingScreen from './components/LoadingScreen';
 import CountdownPage from './components/CountdownPage';
 import OverlayControls from './components/OverlayControls';
+import AdminConsole from './components/admin/AdminConsole';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -25,13 +26,47 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 // ============================================================================
 export const TARGET_REVEAL_DATE_STRING = "2026-09-01T15:39:00+05:30"; // Line 23
 const TARGET_REVEAL_TIMESTAMP = new Date(TARGET_REVEAL_DATE_STRING).getTime();
-                                                                                                          
+
+// Helper to check if current visitor is requesting the hidden Admin Console
+// Supported triggers:
+// 1. Subdomains: admin.intelliq.co.in or console.intelliq.co.in
+// 2. Paths: /admin or /console
+// 3. Query params: ?admin=true or ?console=true
+// 4. Hash: #admin or #console
+function checkIsAdminView() {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname.toLowerCase();
+  const path = window.location.pathname.toLowerCase();
+  const search = window.location.search.toLowerCase();
+  const hash = window.location.hash.toLowerCase();
+
+  return (
+    host.startsWith('admin.') ||
+    host.startsWith('console.') ||
+    path === '/admin' ||
+    path.startsWith('/admin/') ||
+    path === '/console' ||
+    path.startsWith('/console/') ||
+    search.includes('admin=true') ||
+    search.includes('console=true') ||
+    hash === '#admin' ||
+    hash === '#console'
+  );
+}
+
 export default function App() {
+  const [isAdmin, setIsAdmin] = useState(checkIsAdminView);
   const [supportOpen, setSupportOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => {
+    const handleLocationChange = () => {
+      setIsAdmin(checkIsAdminView());
+    };
+    window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
+
     // Check if current time has passed the reveal target date
     const now = new Date().getTime();
     const hasPassedTarget = now >= TARGET_REVEAL_TIMESTAMP;
@@ -42,7 +77,30 @@ export default function App() {
     if (hasPassedTarget || isPreview) {
       setIsRevealed(true);
     }
+
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
+    };
   }, []);
+
+  // 0. IF ACCESSING ADMIN CONSOLE VIA SUBDOMAIN OR HIDDEN ROUTE:
+  if (isAdmin) {
+    return (
+      <AdminConsole
+        onExitToSite={() => {
+          if (window.location.search.includes('admin=true') || window.location.search.includes('console=true')) {
+            window.location.href = window.location.pathname;
+          } else if (window.location.hash === '#admin' || window.location.hash === '#console') {
+            window.location.hash = '';
+            window.location.reload();
+          } else {
+            window.location.href = '/';
+          }
+        }}
+      />
+    );
+  }
 
   // 1. IF COUNTDOWN IS ACTIVE (BEFORE REVEAL DATE), SHOW ONLY COUNTDOWN PAGE!
   if (!isRevealed) {

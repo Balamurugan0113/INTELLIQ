@@ -1,7 +1,8 @@
 // frontend/src/components/Events.jsx
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import CardSwap, { Card } from './ui/CardSwap';
 import './Events.css';
+import { getEvents, subscribeData } from '../services/dataService';
 import {
   FaCalendarAlt,
   FaMapMarkerAlt,
@@ -151,10 +152,16 @@ const REAL_EVENTS = [
 ];
 
 export default function Events() {
-  const [events] = useState(REAL_EVENTS);
+  const [events, setEvents] = useState(() => getEvents());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const cardSwapRef = useRef(null);
+
+  useEffect(() => {
+    return subscribeData(() => {
+      setEvents(getEvents());
+    });
+  }, []);
 
   const openEventModal = ev => {
     setSelectedEvent(ev);
