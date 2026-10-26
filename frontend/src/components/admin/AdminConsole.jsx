@@ -18,7 +18,8 @@ import {
   exportAllData,
   importAllData,
   resetAllData,
-  subscribeData
+  subscribeData,
+  initCrossDomainSync
 } from '../../services/dataService';
 import { INITIAL_ACHIEVEMENTS } from '../../data/initialData';
 import {
@@ -46,7 +47,8 @@ import {
   FaCloudUploadAlt,
   FaSyncAlt,
   FaLink,
-  FaImage
+  FaImage,
+  FaBars
 } from 'react-icons/fa';
 
 const DEFAULT_ADMIN_PASSWORD = 'intelliq@admin2026';
@@ -105,14 +107,21 @@ export default function AdminConsole({ onExitToSite }) {
   const [driveAchievementUrl, setDriveAchievementUrl] = useState('');
   const [achievementAddMode, setAchievementAddMode] = useState('upload'); // 'upload' | 'drive' | 'url'
   const [isUploading, setIsUploading] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Subscribe to live reactive updates
+  // Subscribe to live reactive updates and cross-domain synchronization
   useEffect(() => {
-    return subscribeData(() => {
+    const unsubscribeSync = initCrossDomainSync();
+    const unsubscribeData = subscribeData(() => {
       setEvents(getEvents());
       setPosters(getPosters());
       setAchievements(getAchievements());
     });
+
+    return () => {
+      unsubscribeSync();
+      unsubscribeData();
+    };
   }, []);
 
   const showToast = message => {
@@ -525,14 +534,49 @@ export default function AdminConsole({ onExitToSite }) {
         </div>
       )}
 
-      {/* Top Header Bar */}
+      {/* Top Header Bar with Integrated Responsive Navigation */}
       <header className="admin-topbar">
-        <div className="admin-brand">
-          <span className="admin-badge">ADMIN CONSOLE</span>
-          <h2 className="admin-site-title">INTELLIQ Control Center</h2>
+        <div className="admin-topbar-left">
+          <div className="admin-brand">
+            <span className="admin-badge">ADMIN</span>
+            <h2 className="admin-site-title">INTELLIQ Console</h2>
+          </div>
+
+          {/* Main Navigation Tabs */}
+          <nav className="admin-tabs-nav" aria-label="Admin Navigation Tabs">
+            <button
+              type="button"
+              className={`admin-tab-btn ${activeTab === 'events' ? 'active' : ''}`}
+              onClick={() => setActiveTab('events')}
+            >
+              <FaCalendarAlt />
+              <span className="tab-label">Events</span>
+              <span className="admin-count-pill">{events.length}</span>
+            </button>
+
+            <button
+              type="button"
+              className={`admin-tab-btn ${activeTab === 'posters' ? 'active' : ''}`}
+              onClick={() => setActiveTab('posters')}
+            >
+              <FaImages />
+              <span className="tab-label">Posters</span>
+              <span className="admin-count-pill">{posters.length}</span>
+            </button>
+
+            <button
+              type="button"
+              className={`admin-tab-btn ${activeTab === 'achievements' ? 'active' : ''}`}
+              onClick={() => setActiveTab('achievements')}
+            >
+              <FaTrophy />
+              <span className="tab-label">Achievements</span>
+              <span className="admin-count-pill">{achievements.length}</span>
+            </button>
+          </nav>
         </div>
 
-        <div className="admin-top-actions">
+        <div className="admin-topbar-right">
           <button
             type="button"
             className="admin-action-btn view-live"
@@ -542,77 +586,84 @@ export default function AdminConsole({ onExitToSite }) {
             <FaExternalLinkAlt /> <span>View Live Site</span>
           </button>
 
+          {/* Mobile hamburger toggle */}
           <button
             type="button"
-            className="admin-action-btn export"
-            onClick={handleExportBackup}
-            title="Download full JSON backup"
+            className={`admin-mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
+            onClick={() => setMobileMenuOpen(prev => !prev)}
+            aria-label="Toggle admin actions"
+            title="More actions"
           >
-            <FaDownload /> <span>Export JSON</span>
+            {mobileMenuOpen ? <FaTimes /> : <FaBars />}
           </button>
 
-          <label className="admin-action-btn import" title="Import JSON backup file">
-            <FaUpload /> <span>Import</span>
-            <input
-              type="file"
-              accept=".json"
-              style={{ display: 'none' }}
-              onChange={handleImportBackup}
-            />
-          </label>
+          {/* Top Actions Drawer / Row */}
+          <div className={`admin-top-actions ${mobileMenuOpen ? 'open' : ''}`}>
+            <button
+              type="button"
+              className="admin-action-btn export"
+              onClick={() => {
+                handleExportBackup();
+                setMobileMenuOpen(false);
+              }}
+              title="Download full JSON backup"
+            >
+              <FaDownload /> <span>Export JSON</span>
+            </button>
 
-          <button
-            type="button"
-            className="admin-action-btn reset"
-            onClick={handleResetDefaults}
-            title="Reset to default data"
-          >
-            <FaUndo /> <span>Reset Defaults</span>
-          </button>
+            <label className="admin-action-btn import" title="Import JSON backup file">
+              <FaUpload /> <span>Import</span>
+              <input
+                type="file"
+                accept=".json"
+                style={{ display: 'none' }}
+                onChange={e => {
+                  handleImportBackup(e);
+                  setMobileMenuOpen(false);
+                }}
+              />
+            </label>
 
-          <button
-            type="button"
-            className="admin-action-btn logout"
-            onClick={handleLogout}
-            title="Lock & Logout"
-          >
-            <FaSignOutAlt /> <span>Lock</span>
-          </button>
+            <button
+              type="button"
+              className="admin-action-btn reset"
+              onClick={() => {
+                handleResetDefaults();
+                setMobileMenuOpen(false);
+              }}
+              title="Reset to default data"
+            >
+              <FaUndo /> <span>Reset Defaults</span>
+            </button>
+
+            <button
+              type="button"
+              className="admin-action-btn logout"
+              onClick={() => {
+                handleLogout();
+                setMobileMenuOpen(false);
+              }}
+              title="Lock & Logout"
+            >
+              <FaSignOutAlt /> <span>Lock</span>
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Main Navigation Tabs */}
-      <nav className="admin-tabs-nav" aria-label="Admin Navigation Tabs">
-        <button
-          type="button"
-          className={`admin-tab-btn ${activeTab === 'events' ? 'active' : ''}`}
-          onClick={() => setActiveTab('events')}
-        >
-          <FaCalendarAlt />
-          <span>Events Manager</span>
-          <span className="admin-count-pill">{events.length}</span>
-        </button>
-
-        <button
-          type="button"
-          className={`admin-tab-btn ${activeTab === 'posters' ? 'active' : ''}`}
-          onClick={() => setActiveTab('posters')}
-        >
-          <FaImages />
-          <span>Posters Manager</span>
-          <span className="admin-count-pill">{posters.length}</span>
-        </button>
-
-        <button
-          type="button"
-          className={`admin-tab-btn ${activeTab === 'achievements' ? 'active' : ''}`}
-          onClick={() => setActiveTab('achievements')}
-        >
-          <FaTrophy />
-          <span>Student Achievements</span>
-          <span className="admin-count-pill">{achievements.length}</span>
-        </button>
-      </nav>
+      {/* Cross-subdomain bridge iframe inside Admin Console */}
+      {typeof window !== 'undefined' && (
+        <iframe
+          className="intelliq-sync-bridge"
+          src={
+            window.location.hostname.startsWith('admin.') || window.location.hostname.startsWith('console.')
+              ? `https://${window.location.hostname.replace(/^(admin|console)\./, '')}/?bridge=1`
+              : `https://admin.${window.location.hostname.replace(/^www\./, '')}/?bridge=1`
+          }
+          style={{ display: 'none', width: 0, height: 0, border: 'none' }}
+          title="Admin Cross-Domain Sync Bridge"
+        />
+      )}
 
       {/* Main Tab Content */}
       <main className="admin-main-container">

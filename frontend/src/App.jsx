@@ -103,28 +103,58 @@ export default function App() {
   // 0. IF ACCESSING ADMIN CONSOLE VIA SUBDOMAIN OR HIDDEN ROUTE:
   if (isAdmin) {
     return (
-      <AdminConsole
-        onExitToSite={() => {
-          if (window.location.search.includes('admin=true') || window.location.search.includes('console=true')) {
-            window.location.href = window.location.pathname;
-          } else if (window.location.hash === '#admin' || window.location.hash === '#console') {
-            window.location.hash = '';
-            window.location.reload();
-          } else {
-            window.location.href = '/?preview=true';
-          }
-        }}
-      />
+      <>
+        <AdminConsole
+          onExitToSite={() => {
+            if (window.location.search.includes('admin=true') || window.location.search.includes('console=true')) {
+              window.location.href = window.location.pathname;
+            } else if (window.location.hash === '#admin' || window.location.hash === '#console') {
+              window.location.hash = '';
+              window.location.reload();
+            } else {
+              window.location.href = '/?preview=true';
+            }
+          }}
+        />
+        {/* Hidden cross-subdomain bridge iframe */}
+        {typeof window !== 'undefined' && (
+          <iframe
+            className="intelliq-sync-bridge"
+            src={
+              window.location.hostname.startsWith('admin.') || window.location.hostname.startsWith('console.')
+                ? `https://${window.location.hostname.replace(/^(admin|console)\./, '')}/?bridge=1`
+                : `https://admin.${window.location.hostname.replace(/^www\./, '')}/?bridge=1`
+            }
+            style={{ display: 'none', width: 0, height: 0, border: 'none' }}
+            title="Cross-Domain Data Sync Bridge"
+          />
+        )}
+      </>
     );
   }
 
-  // 1. IF COUNTDOWN IS ACTIVE (BEFORE REVEAL DATE), SHOW ONLY COUNTDOWN PAGE!
+  // 1. IF COUNTDOWN IS ACTIVE (BEFORE REVEAL DATE), SHOW COUNTDOWN WITH ACTIVE SYNC BRIDGE!
   if (!isRevealed) {
     return (
-      <CountdownPage
-        targetDate={TARGET_REVEAL_TIMESTAMP}
-        onReveal={() => setIsRevealed(true)}
-      />
+      <>
+        <CountdownPage
+          targetDate={TARGET_REVEAL_TIMESTAMP}
+          onReveal={() => setIsRevealed(true)}
+        />
+        {/* Hidden cross-subdomain bridge iframe */}
+        {typeof window !== 'undefined' && (
+          <iframe
+            className="intelliq-sync-bridge"
+            src={
+              window.location.hostname.startsWith('admin.') || window.location.hostname.startsWith('console.')
+                ? `https://${window.location.hostname.replace(/^(admin|console)\./, '')}/?bridge=1`
+                : `https://admin.${window.location.hostname.replace(/^www\./, '')}/?bridge=1`
+            }
+            style={{ display: 'none', width: 0, height: 0, border: 'none' }}
+            title="Cross-Domain Data Sync Bridge"
+          />
+        )}
+      </>
     );
   }
 
