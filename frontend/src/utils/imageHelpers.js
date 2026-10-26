@@ -110,6 +110,104 @@ export function formatFileSize(bytes) {
 }
 
 /**
+ * Read the native pixel dimensions and aspect ratio of an image (file, URL, or dataUrl).
+ */
+export function getImageDimensions(src) {
+  return new Promise(resolve => {
+    if (!src || typeof src !== 'string') return resolve(null);
+    const img = new Image();
+    img.onload = () => {
+      const width = img.naturalWidth || img.width;
+      const height = img.naturalHeight || img.height;
+      if (!width || !height) return resolve(null);
+      const ratio = width / height;
+
+      let ratioLabel = '1:1 Square';
+      if (ratio > 1.6) ratioLabel = '16:9 Landscape';
+      else if (ratio > 1.25) ratioLabel = '4:3 Landscape';
+      else if (ratio > 1.05) ratioLabel = 'Landscape';
+      else if (ratio < 0.65) ratioLabel = '9:16 Portrait';
+      else if (ratio < 0.82) ratioLabel = '3:4 Portrait';
+      else if (ratio < 0.95) ratioLabel = '4:5 Portrait';
+      else if (ratio < 0.98) ratioLabel = 'Portrait';
+
+      resolve({
+        width,
+        height,
+        ratio: parseFloat(ratio.toFixed(2)),
+        ratioLabel,
+        formatted: `${width} × ${height} px`
+      });
+    };
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+/**
+ * Returns advice on how well the image fits the live website's component dimensions.
+ * - Posters: Live 3D Carousel is 350 × 460 px (vertical portrait ~ 3:4).
+ * - Student Achievements: Live Marquee Card is 400 × 270 px (landscape ~ 4:3 / 16:9).
+ */
+export function getSuitabilityGuideline(type, dimensions) {
+  if (!dimensions) return null;
+  const { width, height, ratio } = dimensions;
+
+  if (type === 'poster') {
+    const isPortrait = height >= width;
+    const isOptimalRatio = ratio >= 0.65 && ratio <= 0.88;
+    const isGoodRes = width >= 350 && height >= 460;
+
+    if (isPortrait && isOptimalRatio && isGoodRes) {
+      return {
+        level: 'perfect',
+        label: 'Optimal 3D Carousel Fit',
+        details: 'Matches 3:4 portrait card box (350 × 460 px on live site).'
+      };
+    } else if (isPortrait) {
+      return {
+        level: 'good',
+        label: 'Good Portrait Fit',
+        details: 'Vertical image suits the 3D Carousel frame well.'
+      };
+    } else {
+      return {
+        level: 'warning',
+        label: 'Landscape image detected',
+        details: 'Live 3D Carousel cards are portrait (350 × 460 px). A 3:4 portrait photo is recommended for full-frame fit.'
+      };
+    }
+  }
+
+  if (type === 'achievement') {
+    const isLandscape = width >= height;
+    const isGoodRes = width >= 400 && height >= 270;
+
+    if (isLandscape && isGoodRes) {
+      return {
+        level: 'perfect',
+        label: 'Optimal Marquee Box Fit',
+        details: 'Matches 400 × 270 px landscape card box on live site.'
+      };
+    } else if (isLandscape) {
+      return {
+        level: 'good',
+        label: 'Landscape Fit',
+        details: 'Suits the horizontal marquee track well.'
+      };
+    } else {
+      return {
+        level: 'info',
+        label: 'Portrait photo',
+        details: 'Will display cleanly centered with dark margins in 400 × 270 px box.'
+      };
+    }
+  }
+
+  return null;
+}
+
+/**
  * Process a batch of files uploaded from local device/computer.
  */
 export async function processLocalFiles(fileList) {
@@ -129,7 +227,7 @@ export async function processLocalFiles(fileList) {
 }
 
 /**
- * Process a batch of files uploaded from local device/computer, preserving file metadata.
+ * Process a batch of files uploaded from local device/computer, preserving file metadata and dimensions.
  */
 export async function processLocalFilesWithMetadata(fileList) {
   const files = Array.from(fileList || []);
@@ -138,12 +236,14 @@ export async function processLocalFilesWithMetadata(fileList) {
   for (const file of files) {
     try {
       const dataUrl = await compressImageFile(file);
+      const dimensions = await getImageDimensions(dataUrl);
       results.push({
         name: file.name,
         size: file.size,
         sizeFormatted: formatFileSize(file.size),
         type: file.type,
-        dataUrl
+        dataUrl,
+        dimensions
       });
     } catch (err) {
       console.error('Failed to process image file:', file.name, err);

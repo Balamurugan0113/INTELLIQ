@@ -26,7 +26,9 @@ import {
   formatGoogleDriveUrl,
   compressImageFile,
   processLocalFilesWithMetadata,
-  formatFileSize
+  formatFileSize,
+  getImageDimensions,
+  getSuitabilityGuideline
 } from '../../utils/imageHelpers';
 import {
   FaCalendarAlt,
@@ -52,7 +54,10 @@ import {
   FaBars,
   FaDice,
   FaCheckCircle,
-  FaFolderOpen
+  FaSearchPlus,
+  FaRulerCombined,
+  FaExclamationTriangle,
+  FaInfoCircle
 } from 'react-icons/fa';
 
 const DEFAULT_ADMIN_PASSWORD = 'intelliq@admin2026';
@@ -92,6 +97,9 @@ export default function AdminConsole({ onExitToSite }) {
   // Toast notification
   const [toast, setToast] = useState(null);
 
+  // Full-size Image Inspection Lightbox Modal
+  const [lightboxImg, setLightboxImg] = useState(null);
+
   // Modal forms
   const [eventModalOpen, setEventModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
@@ -105,7 +113,7 @@ export default function AdminConsole({ onExitToSite }) {
     fullDetails: '',
     link: '#',
     imagesText: '',
-    uploadedFiles: [] // [{ name, sizeFormatted, dataUrl }]
+    uploadedFiles: [] // [{ name, sizeFormatted, dimensions, dataUrl }]
   });
 
   const [posterModalOpen, setPosterModalOpen] = useState(false);
@@ -117,8 +125,12 @@ export default function AdminConsole({ onExitToSite }) {
     image: '',
     color1: '#00d2ff',
     color2: '#0078d4',
-    uploadedFile: null // { name, sizeFormatted, dataUrl }
+    uploadedFile: null // { name, sizeFormatted, dimensions, dataUrl }
   });
+
+  // Poster image dimensions and live-box fit
+  const [posterDimensions, setPosterDimensions] = useState(null);
+  const [posterSuitability, setPosterSuitability] = useState(null);
 
   // Achievements management states
   const [newAchievementImg, setNewAchievementImg] = useState('');
@@ -127,6 +139,14 @@ export default function AdminConsole({ onExitToSite }) {
   const [recentAchievementUploads, setRecentAchievementUploads] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Google Drive & URL live verification state for Student Achievements
+  const [drivePreviewUrl, setDrivePreviewUrl] = useState('');
+  const [driveDimensions, setDriveDimensions] = useState(null);
+  const [driveSuitability, setDriveSuitability] = useState(null);
+
+  const [urlPreviewDimensions, setUrlPreviewDimensions] = useState(null);
+  const [urlPreviewSuitability, setUrlPreviewSuitability] = useState(null);
 
   // Subscribe to live reactive updates and cross-domain synchronization
   useEffect(() => {
@@ -142,6 +162,78 @@ export default function AdminConsole({ onExitToSite }) {
       unsubscribeData();
     };
   }, []);
+
+  // Listen for ESC key to close lightbox
+  useEffect(() => {
+    const handleKeyDown = e => {
+      if (e.key === 'Escape' && lightboxImg) {
+        setLightboxImg(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxImg]);
+
+  // Compute live dimensions for poster image
+  useEffect(() => {
+    if (!posterForm.image) {
+      setPosterDimensions(null);
+      setPosterSuitability(null);
+      return;
+    }
+    let isMounted = true;
+    getImageDimensions(posterForm.image).then(dims => {
+      if (isMounted) {
+        setPosterDimensions(dims);
+        setPosterSuitability(getSuitabilityGuideline('poster', dims));
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [posterForm.image]);
+
+  // Compute live dimensions for Google Drive URL in Student Achievements
+  useEffect(() => {
+    if (!driveAchievementUrl.trim()) {
+      setDrivePreviewUrl('');
+      setDriveDimensions(null);
+      setDriveSuitability(null);
+      return;
+    }
+    const direct = formatGoogleDriveUrl(driveAchievementUrl.trim());
+    setDrivePreviewUrl(direct);
+    let isMounted = true;
+    getImageDimensions(direct).then(dims => {
+      if (isMounted) {
+        setDriveDimensions(dims);
+        setDriveSuitability(getSuitabilityGuideline('achievement', dims));
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [driveAchievementUrl]);
+
+  // Compute live dimensions for direct Image URL/Path in Student Achievements
+  useEffect(() => {
+    if (!newAchievementImg.trim()) {
+      setUrlPreviewDimensions(null);
+      setUrlPreviewSuitability(null);
+      return;
+    }
+    const direct = formatGoogleDriveUrl(newAchievementImg.trim());
+    let isMounted = true;
+    getImageDimensions(direct).then(dims => {
+      if (isMounted) {
+        setUrlPreviewDimensions(dims);
+        setUrlPreviewSuitability(getSuitabilityGuideline('achievement', dims));
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [newAchievementImg]);
 
   const showToast = message => {
     setToast(message);
@@ -300,7 +392,6 @@ export default function AdminConsole({ onExitToSite }) {
   // ==========================================================================
   const openNewPosterModal = () => {
     setEditingPoster(null);
-    // Automatically select a vibrant gradient preset matching poster count
     const autoPreset = CYBER_GRADIENT_PRESETS[posters.length % CYBER_GRADIENT_PRESETS.length];
     setPosterForm({
       title: '',
@@ -353,16 +444,20 @@ export default function AdminConsole({ onExitToSite }) {
     setIsUploading(true);
     try {
       const dataUrl = await compressImageFile(file);
+      const dims = await getImageDimensions(dataUrl);
       setPosterForm(prev => ({
         ...prev,
         image: dataUrl,
         uploadedFile: {
           name: file.name,
           sizeFormatted: formatFileSize(file.size),
+          dimensions: dims,
           dataUrl
         }
       }));
-      showToast(`Uploaded "${file.name}" (${formatFileSize(file.size)}) from computer`);
+      setPosterDimensions(dims);
+      setPosterSuitability(getSuitabilityGuideline('poster', dims));
+      showToast(`Uploaded "${file.name}" (${dims ? dims.formatted : ''})`);
     } catch (err) {
       alert('Upload failed: ' + err.message);
     } finally {
@@ -384,7 +479,6 @@ export default function AdminConsole({ onExitToSite }) {
       date: posterForm.date || '2026',
       image: formatGoogleDriveUrl(posterForm.image.trim()),
       gradient: [posterForm.color1, posterForm.color2]
-      // Note: description removed as requested
     };
 
     if (editingPoster) {
@@ -415,11 +509,15 @@ export default function AdminConsole({ onExitToSite }) {
     try {
       const metaList = await processLocalFilesWithMetadata(files);
       if (metaList.length > 0) {
-        const dataUrls = metaList.map(m => m.dataUrl);
+        const enrichedList = metaList.map(item => ({
+          ...item,
+          suitability: getSuitabilityGuideline('achievement', item.dimensions)
+        }));
+        const dataUrls = enrichedList.map(m => m.dataUrl);
         // Appends to last position in dataService
         addAchievements(dataUrls);
-        setRecentAchievementUploads(metaList);
-        showToast(`Uploaded ${metaList.length} photo(s) — saved to the last image of gallery!`);
+        setRecentAchievementUploads(enrichedList);
+        showToast(`Uploaded ${enrichedList.length} photo(s) — appended to end of gallery!`);
       }
     } catch (err) {
       alert('Failed to upload image(s): ' + err.message);
@@ -445,6 +543,7 @@ export default function AdminConsole({ onExitToSite }) {
     // Appends to last position in dataService
     addAchievement(directUrl);
     setDriveAchievementUrl('');
+    setDrivePreviewUrl('');
     showToast('Added Google Drive photo to end of achievements gallery!');
   };
 
@@ -461,6 +560,8 @@ export default function AdminConsole({ onExitToSite }) {
   const handleDeleteAchievement = (imgUrl, idx) => {
     if (window.confirm(`Remove achievement photo #${idx + 1} from the gallery?`)) {
       deleteAchievement(idx);
+      // Also remove from recent uploads if present
+      setRecentAchievementUploads(prev => prev.filter(p => p.dataUrl !== imgUrl));
       showToast(`Removed photo #${idx + 1}`);
     }
   };
@@ -895,6 +996,25 @@ export default function AdminConsole({ onExitToSite }) {
                         style={{ background: `linear-gradient(90deg, ${g1}, ${g2})` }}
                         title={`Gradient: ${g1} to ${g2}`}
                       />
+                      <button
+                        type="button"
+                        className="card-media-zoom-btn"
+                        onClick={() =>
+                          setLightboxImg({
+                            url: poster.image,
+                            title: poster.title,
+                            dimensions: 'Live 3D Carousel Poster',
+                            suitability: {
+                              level: 'perfect',
+                              label: 'Active 3D Carousel Poster',
+                              details: `Gradient Tint: ${g1} to ${g2}`
+                            }
+                          })
+                        }
+                        title="Click to preview full poster"
+                      >
+                        <FaSearchPlus />
+                      </button>
                     </div>
 
                     <div className="admin-item-body">
@@ -939,7 +1059,7 @@ export default function AdminConsole({ onExitToSite }) {
         )}
 
         {/* ================================================================= */}
-        {/* TAB 3: STUDENT ACHIEVEMENTS (Appends to last + High Contrast Inputs) */}
+        {/* TAB 3: STUDENT ACHIEVEMENTS (Appends to last + Preview & Dimensions) */}
         {/* ================================================================= */}
         {activeTab === 'achievements' && (
           <div className="admin-section-block">
@@ -959,6 +1079,19 @@ export default function AdminConsole({ onExitToSite }) {
               >
                 <FaSyncAlt /> <span>Restore 13 Project Photos</span>
               </button>
+            </div>
+
+            {/* Dimension Specifications Banner for Marquee Box */}
+            <div className="achievement-guideline-banner">
+              <div className="guideline-icon-circle">
+                <FaRulerCombined />
+              </div>
+              <div className="guideline-banner-text">
+                <strong>Recommended Live Marquee Box Dimensions: 400 &times; 270 px</strong>
+                <p>
+                  Aspect ratio: <strong>4:3 or 16:9 (Landscape)</strong>. Recommended resolution: <strong>800 &times; 540 px</strong> or <strong>1200 &times; 800 px</strong>. New photos are appended to the last position in the live motion track.
+                </p>
+              </div>
             </div>
 
             {/* Media Upload Studio for Achievements */}
@@ -1006,29 +1139,76 @@ export default function AdminConsole({ onExitToSite }) {
                       </div>
                       <div className="dropzone-text">
                         <strong>Click or tap to select image files from your computer or phone</strong>
-                        <p>Supports PNG, JPG, JPEG, and WEBP. You can select multiple photos at once. Photos will save to the end of the gallery.</p>
+                        <p>
+                          Supports PNG, JPG, JPEG, and WEBP. You can select multiple photos at once. Photos will save to the end of the gallery.
+                        </p>
                       </div>
                       <span className="studio-browse-btn">
                         {isUploading ? 'Compressing & Adding to Last...' : 'Choose Photos from Device'}
                       </span>
                     </label>
 
-                    {/* Confirmation list of uploaded files showing path/name & size */}
+                    {/* Rich Confirmation Deck of uploaded files showing Preview, Dimensions & Size */}
                     {recentAchievementUploads.length > 0 && (
                       <div className="upload-confirmation-deck">
                         <div className="deck-header">
                           <FaCheckCircle className="deck-check-icon" />
-                          <span>Recently Uploaded ({recentAchievementUploads.length} Photos Added to Last Position)</span>
+                          <span>
+                            Recently Uploaded ({recentAchievementUploads.length} Photos Appended to Last Position)
+                          </span>
                         </div>
                         <div className="deck-files-grid">
                           {recentAchievementUploads.map((file, idx) => (
-                            <div key={idx} className="deck-file-card">
-                              <img src={file.dataUrl} alt={file.name} className="deck-file-thumb" />
+                            <div key={idx} className="deck-file-card detailed">
+                              <div
+                                className="deck-file-thumb-wrapper"
+                                onClick={() =>
+                                  setLightboxImg({
+                                    url: file.dataUrl,
+                                    title: file.name,
+                                    dimensions: file.dimensions?.formatted,
+                                    size: file.sizeFormatted,
+                                    suitability: file.suitability
+                                  })
+                                }
+                                title="Click to view full size"
+                              >
+                                <img src={file.dataUrl} alt={file.name} className="deck-file-thumb" />
+                                <span className="deck-thumb-zoom-icon">
+                                  <FaSearchPlus />
+                                </span>
+                              </div>
+
                               <div className="deck-file-details">
                                 <span className="deck-file-name" title={file.name}>{file.name}</span>
-                                <span className="deck-file-meta">{file.sizeFormatted} &bull; Uploaded</span>
+                                
+                                <div className="deck-file-meta-row">
+                                  {file.dimensions && (
+                                    <span className="deck-dimension-pill">
+                                      <FaRulerCombined /> {file.dimensions.formatted}
+                                    </span>
+                                  )}
+                                  <span className="deck-size-pill">{file.sizeFormatted}</span>
+                                </div>
+
+                                {file.suitability && (
+                                  <span className={`deck-suitability-tag ${file.suitability.level}`}>
+                                    {file.suitability.label}
+                                  </span>
+                                )}
                               </div>
-                              <span className="deck-file-badge">Appended &rarr; End</span>
+
+                              <div className="deck-file-actions">
+                                <span className="deck-file-badge">Appended &rarr; End</span>
+                                <button
+                                  type="button"
+                                  className="deck-remove-btn"
+                                  onClick={() => handleDeleteAchievement(file.dataUrl, achievements.indexOf(file.dataUrl))}
+                                  title="Remove this photo from gallery"
+                                >
+                                  <FaTrash />
+                                </button>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -1037,7 +1217,7 @@ export default function AdminConsole({ onExitToSite }) {
                   </div>
                 )}
 
-                {/* 2. GOOGLE DRIVE LINK - High-contrast readable input with live verification */}
+                {/* 2. GOOGLE DRIVE LINK - High-contrast readable input with Live Image Preview & Dimensions */}
                 {achievementAddMode === 'drive' && (
                   <form onSubmit={handleDriveAchievementAdd} className="studio-form-stack">
                     <div className="drive-input-container">
@@ -1055,7 +1235,10 @@ export default function AdminConsole({ onExitToSite }) {
                           <button
                             type="button"
                             className="input-clear-btn"
-                            onClick={() => setDriveAchievementUrl('')}
+                            onClick={() => {
+                              setDriveAchievementUrl('');
+                              setDrivePreviewUrl('');
+                            }}
                             title="Clear link"
                           >
                             <FaTimes />
@@ -1067,20 +1250,63 @@ export default function AdminConsole({ onExitToSite }) {
                       </button>
                     </div>
 
-                    {/* Live Drive Link Recognition Feedback */}
-                    {detectedDriveId ? (
-                      <div className="drive-detection-feedback success">
-                        <FaCheckCircle className="feedback-icon" />
-                        <div className="feedback-info">
-                          <strong>Valid Google Drive Link Detected!</strong>
-                          <span>File ID: <code>{detectedDriveId}</code> &bull; Auto-converting to direct streamable image URL</span>
+                    {/* Live Preview Card for Google Drive Photo before adding */}
+                    {drivePreviewUrl && (
+                      <div className="drive-live-preview-box">
+                        <div
+                          className="drive-preview-media"
+                          onClick={() =>
+                            setLightboxImg({
+                              url: drivePreviewUrl,
+                              title: `Google Drive Photo (${detectedDriveId || 'Preview'})`,
+                              dimensions: driveDimensions?.formatted,
+                              suitability: driveSuitability
+                            })
+                          }
+                          title="Click to view full image"
+                        >
+                          <img
+                            src={drivePreviewUrl}
+                            alt="Google Drive Preview"
+                            className="drive-preview-img"
+                          />
+                          <span className="drive-preview-zoom-badge">
+                            <FaSearchPlus /> Click to Inspect
+                          </span>
+                        </div>
+
+                        <div className="drive-preview-details">
+                          <div className="drive-preview-status">
+                            <FaCheckCircle className="feedback-check" />
+                            <strong>Google Drive Image Verified &amp; Ready</strong>
+                          </div>
+
+                          {driveDimensions && (
+                            <div className="preview-dimensions-row">
+                              <span className="dimension-badge">
+                                <FaRulerCombined /> {driveDimensions.formatted}
+                              </span>
+                              <span className="aspect-ratio-pill">{driveDimensions.ratioLabel}</span>
+                            </div>
+                          )}
+
+                          {driveSuitability && (
+                            <div className={`suitability-badge ${driveSuitability.level}`}>
+                              <div className="suitability-text">
+                                <strong>{driveSuitability.label}</strong>
+                                <p>{driveSuitability.details}</p>
+                              </div>
+                            </div>
+                          )}
+
+                          <p className="drive-confirm-text">
+                            Preview loaded successfully. Click <strong>"Add to End of Gallery"</strong> to append it as the last item.
+                          </p>
                         </div>
                       </div>
-                    ) : driveAchievementUrl ? (
-                      <div className="drive-detection-feedback info">
-                        <span>Pasting direct URL. We will automatically convert standard Google Drive sharing links.</span>
-                      </div>
-                    ) : (
+                    )}
+
+                    {!driveAchievementUrl && (
                       <p className="studio-hint">
                         * Note: In Google Drive, ensure the file permission is set to <strong>"Anyone with the link can view"</strong> so it displays publicly.
                       </p>
@@ -1117,17 +1343,87 @@ export default function AdminConsole({ onExitToSite }) {
                         <FaPlus /> <span>Add to End of Gallery</span>
                       </button>
                     </div>
+
+                    {/* Live Preview Card for URL/Path before adding */}
+                    {newAchievementImg.trim() && (
+                      <div className="drive-live-preview-box">
+                        <div
+                          className="drive-preview-media"
+                          onClick={() =>
+                            setLightboxImg({
+                              url: formatGoogleDriveUrl(newAchievementImg.trim()),
+                              title: newAchievementImg,
+                              dimensions: urlPreviewDimensions?.formatted,
+                              suitability: urlPreviewSuitability
+                            })
+                          }
+                          title="Click to view full image"
+                        >
+                          <img
+                            src={formatGoogleDriveUrl(newAchievementImg.trim())}
+                            alt="Preview"
+                            className="drive-preview-img"
+                          />
+                          <span className="drive-preview-zoom-badge">
+                            <FaSearchPlus /> Click to Inspect
+                          </span>
+                        </div>
+
+                        <div className="drive-preview-details">
+                          <div className="drive-preview-status">
+                            <FaCheckCircle className="feedback-check" />
+                            <strong>Image Path Verified</strong>
+                          </div>
+
+                          {urlPreviewDimensions && (
+                            <div className="preview-dimensions-row">
+                              <span className="dimension-badge">
+                                <FaRulerCombined /> {urlPreviewDimensions.formatted}
+                              </span>
+                              <span className="aspect-ratio-pill">{urlPreviewDimensions.ratioLabel}</span>
+                            </div>
+                          )}
+
+                          {urlPreviewSuitability && (
+                            <div className={`suitability-badge ${urlPreviewSuitability.level}`}>
+                              <div className="suitability-text">
+                                <strong>{urlPreviewSuitability.label}</strong>
+                                <p>{urlPreviewSuitability.details}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </form>
                 )}
               </div>
             </div>
 
-            {/* Achievements Photos Grid - Clearly showing index numbers */}
+            {/* Achievements Photos Grid - Clearly showing index numbers & zoom inspector */}
             <div className="admin-achievements-grid">
               {achievements.map((imgSrc, idx) => (
                 <div key={idx} className="admin-achievement-thumb-card">
-                  <div className="thumb-container">
+                  <div
+                    className="thumb-container"
+                    onClick={() =>
+                      setLightboxImg({
+                        url: imgSrc,
+                        title: `Achievement Photo #${idx + 1}`,
+                        dimensions: 'Student Achievements Gallery',
+                        suitability: {
+                          level: 'perfect',
+                          label: idx === achievements.length - 1 ? 'Last Gallery Item' : `Item #${idx + 1}`,
+                          details: 'Displays in pure image marquee track on live site.'
+                        }
+                      })
+                    }
+                    title="Click to view full size in high definition"
+                  >
                     <img src={imgSrc} alt={`Achievement ${idx + 1}`} />
+                    <span className="thumb-zoom-overlay">
+                      <FaSearchPlus />
+                    </span>
                   </div>
                   <div className="thumb-footer">
                     <div className="thumb-index-badge">
@@ -1151,6 +1447,61 @@ export default function AdminConsole({ onExitToSite }) {
           </div>
         )}
       </main>
+
+      {/* =================================================================== */}
+      {/* UNIVERSAL FULL-SIZE LIGHTBOX INSPECTION MODAL */}
+      {/* =================================================================== */}
+      {lightboxImg && (
+        <div className="admin-lightbox-overlay" onClick={() => setLightboxImg(null)}>
+          <div className="admin-lightbox-container" onClick={e => e.stopPropagation()}>
+            <div className="admin-lightbox-header">
+              <div className="lightbox-title-group">
+                <h4>{lightboxImg.title || 'Image Inspection Preview'}</h4>
+                <div className="lightbox-meta-row">
+                  {lightboxImg.dimensions && (
+                    <span className="lightbox-meta-pill">
+                      <FaRulerCombined /> {lightboxImg.dimensions}
+                    </span>
+                  )}
+                  {lightboxImg.size && (
+                    <span className="lightbox-meta-pill">{lightboxImg.size}</span>
+                  )}
+                  {lightboxImg.suitability && (
+                    <span className={`lightbox-suitability-pill ${lightboxImg.suitability.level}`}>
+                      {lightboxImg.suitability.label}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <button
+                type="button"
+                className="lightbox-close-btn"
+                onClick={() => setLightboxImg(null)}
+                title="Close Preview (ESC)"
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            <div className="admin-lightbox-body">
+              <img src={lightboxImg.url} alt={lightboxImg.title} className="lightbox-full-img" />
+            </div>
+
+            <div className="admin-lightbox-footer">
+              <span className="lightbox-footer-tip">
+                Full uncropped resolution. Verify image clarity, text, and composition before saving.
+              </span>
+              <button
+                type="button"
+                className="admin-cancel-btn"
+                onClick={() => setLightboxImg(null)}
+              >
+                Close Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* =================================================================== */}
       {/* MODAL: ADD / EDIT EVENT */}
@@ -1251,7 +1602,7 @@ export default function AdminConsole({ onExitToSite }) {
                 />
               </div>
 
-              {/* Uploaded Images Deck with File Names & Sizes */}
+              {/* Uploaded Images Deck with File Names, Sizes & Preview */}
               <div className="form-group">
                 <div className="label-with-actions">
                   <label>Event Photos &amp; Banners</label>
@@ -1268,16 +1619,32 @@ export default function AdminConsole({ onExitToSite }) {
                   </label>
                 </div>
 
-                {/* Show uploaded device files visually with filenames & sizes */}
+                {/* Show uploaded device files visually with filenames, sizes, and dimensions */}
                 {eventForm.uploadedFiles && eventForm.uploadedFiles.length > 0 && (
                   <div className="modal-uploaded-files-list">
                     <span className="modal-uploaded-label">Uploaded Device Files:</span>
                     {eventForm.uploadedFiles.map((file, idx) => (
                       <div key={idx} className="modal-uploaded-file-row">
-                        <img src={file.dataUrl} alt={file.name} className="modal-uploaded-thumb" />
+                        <img
+                          src={file.dataUrl}
+                          alt={file.name}
+                          className="modal-uploaded-thumb"
+                          onClick={() =>
+                            setLightboxImg({
+                              url: file.dataUrl,
+                              title: file.name,
+                              dimensions: file.dimensions?.formatted,
+                              size: file.sizeFormatted
+                            })
+                          }
+                          title="Click to inspect full image"
+                        />
                         <div className="modal-uploaded-info">
                           <span className="modal-uploaded-name" title={file.name}>{file.name}</span>
-                          <span className="modal-uploaded-size">{file.sizeFormatted} &bull; Ready</span>
+                          <span className="modal-uploaded-size">
+                            {file.dimensions?.formatted ? `${file.dimensions.formatted} \u2022 ` : ''}
+                            {file.sizeFormatted} &bull; Ready
+                          </span>
                         </div>
                         {idx === 0 && <span className="modal-cover-badge">Cover</span>}
                         <button
@@ -1324,7 +1691,7 @@ export default function AdminConsole({ onExitToSite }) {
       )}
 
       {/* =================================================================== */}
-      {/* MODAL: ADD / EDIT POSTER (No Description + Auto Gradients) */}
+      {/* MODAL: ADD / EDIT POSTER (With Live Preview, Dimensions & Suitability) */}
       {/* =================================================================== */}
       {posterModalOpen && (
         <div className="admin-modal-overlay" onClick={() => setPosterModalOpen(false)}>
@@ -1352,7 +1719,7 @@ export default function AdminConsole({ onExitToSite }) {
                 />
               </div>
 
-              {/* Poster Image: Upload from Device or enter URL/Path */}
+              {/* Poster Image: Upload from Device or enter URL/Path with Dimension Verification */}
               <div className="form-group">
                 <div className="label-with-actions">
                   <label>Poster Image *</label>
@@ -1368,19 +1735,93 @@ export default function AdminConsole({ onExitToSite }) {
                   </label>
                 </div>
 
-                {/* If uploaded from device, show file confirmation card */}
-                {posterForm.uploadedFile && (
-                  <div className="poster-uploaded-preview-card">
-                    <img
-                      src={posterForm.uploadedFile.dataUrl}
-                      alt={posterForm.uploadedFile.name}
-                      className="poster-preview-thumb"
-                    />
-                    <div className="poster-preview-info">
-                      <span className="poster-preview-filename">{posterForm.uploadedFile.name}</span>
-                      <span className="poster-preview-size">{posterForm.uploadedFile.sizeFormatted} &bull; Uploaded from computer</span>
+                {/* Prominent Live Poster Preview Card with Dimensions & Fit Indicator */}
+                {posterForm.image ? (
+                  <div className="poster-preview-hero-card">
+                    <div
+                      className="poster-preview-stage"
+                      style={{
+                        background: `linear-gradient(135deg, ${posterForm.color1}25, ${posterForm.color2}25)`,
+                        borderColor: posterForm.color1
+                      }}
+                      onClick={() =>
+                        setLightboxImg({
+                          url: posterForm.image,
+                          title: posterForm.title || posterForm.uploadedFile?.name || 'Poster Preview',
+                          dimensions: posterDimensions?.formatted,
+                          size: posterForm.uploadedFile?.sizeFormatted,
+                          suitability: posterSuitability
+                        })
+                      }
+                      title="Click to inspect full image"
+                    >
+                      <img
+                        src={posterForm.image}
+                        alt="Poster Preview"
+                        className="poster-preview-img"
+                      />
+                      <button
+                        type="button"
+                        className="poster-zoom-btn"
+                        onClick={e => {
+                          e.stopPropagation();
+                          setLightboxImg({
+                            url: posterForm.image,
+                            title: posterForm.title || posterForm.uploadedFile?.name || 'Poster Preview',
+                            dimensions: posterDimensions?.formatted,
+                            size: posterForm.uploadedFile?.sizeFormatted,
+                            suitability: posterSuitability
+                          });
+                        }}
+                      >
+                        <FaSearchPlus /> <span>Inspect Full Size</span>
+                      </button>
                     </div>
-                    <span className="poster-preview-status">✓ Ready</span>
+
+                    <div className="poster-preview-meta-panel">
+                      <div className="meta-panel-header">
+                        <span className="meta-filename" title={posterForm.uploadedFile?.name || posterForm.image}>
+                          {posterForm.uploadedFile?.name || 'External Image Link / Path'}
+                        </span>
+                        {posterForm.uploadedFile?.sizeFormatted && (
+                          <span className="meta-filesize">{posterForm.uploadedFile.sizeFormatted}</span>
+                        )}
+                      </div>
+
+                      {posterDimensions && (
+                        <div className="meta-dimensions-row">
+                          <div className="dimension-badge">
+                            <FaRulerCombined />
+                            <span>{posterDimensions.formatted}</span>
+                          </div>
+                          <span className="aspect-ratio-pill">{posterDimensions.ratioLabel}</span>
+                        </div>
+                      )}
+
+                      {posterSuitability && (
+                        <div className={`suitability-badge ${posterSuitability.level}`}>
+                          <div className="suitability-text">
+                            <strong>{posterSuitability.label}</strong>
+                            <p>{posterSuitability.details}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="live-box-guideline">
+                        <FaInfoCircle className="guideline-icon" />
+                        <span>Live 3D Carousel box: <strong>350 &times; 460 px</strong> (Aspect ratio ~3:4 Portrait).</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="empty-preview-guideline poster">
+                    <div className="guideline-box-icon">📐</div>
+                    <div className="guideline-box-content">
+                      <strong>Recommended Poster Box Size: 350 &times; 460 px</strong>
+                      <p>
+                        Aspect ratio: <strong>3:4 or 4:5 (Vertical Portrait)</strong>. Recommended resolution: <strong>700 &times; 920 px</strong> or <strong>1050 &times; 1380 px</strong> for crisp 3D Carousel rendering.
+                      </p>
+                    </div>
                   </div>
                 )}
 
@@ -1509,8 +1950,6 @@ export default function AdminConsole({ onExitToSite }) {
                   </div>
                 </div>
               </div>
-
-              {/* Note: Poster Description field has been completely removed as requested */}
 
               <div className="admin-modal-footer">
                 <button

@@ -1889,3 +1889,711 @@
     gap: 16px;
   }
 }
+
+/* ==========================================================================
+   13. DIMENSION GUIDELINES, LIVE PREVIEW HERO & VERIFICATION DECKS
+   ========================================================================== */
+
+/* Zoom overlay on card media & thumbnails */
+.card-media-zoom-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #01cefc;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.admin-item-card:hover .card-media-zoom-btn {
+  opacity: 1;
+}
+
+.card-media-zoom-btn:hover {
+  background: #01cefc;
+  color: #030712;
+  transform: scale(1.1);
+}
+
+.thumb-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.thumb-zoom-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #01cefc;
+  font-size: 20px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.thumb-container:hover .thumb-zoom-overlay {
+  opacity: 1;
+}
+
+/* Dimension Specification Banner for Achievements */
+.achievement-guideline-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(1, 206, 252, 0.12), rgba(240, 255, 74, 0.08));
+  border: 1px solid rgba(1, 206, 252, 0.35);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.guideline-icon-circle {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 12px;
+  background: rgba(1, 206, 252, 0.2);
+  border: 1px solid rgba(1, 206, 252, 0.4);
+  color: #01cefc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.guideline-banner-text strong {
+  display: block;
+  font-size: 14px;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.guideline-banner-text p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.guideline-banner-text strong mark {
+  background: none;
+  color: #f0ff4a;
+}
+
+/* Detailed Deck File Card for Achievements Upload */
+.deck-file-card.detailed {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(11, 18, 36, 0.85);
+  border: 1px solid rgba(1, 206, 252, 0.3);
+  padding: 12px 14px;
+  border-radius: 12px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.deck-file-card.detailed:hover {
+  border-color: #01cefc;
+  box-shadow: 0 4px 18px rgba(1, 206, 252, 0.15);
+}
+
+.deck-file-thumb-wrapper {
+  position: relative;
+  width: 60px;
+  height: 48px;
+  min-width: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #020617;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.deck-file-thumb-wrapper .deck-file-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.deck-thumb-zoom-icon {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 13px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.deck-file-thumb-wrapper:hover .deck-thumb-zoom-icon {
+  opacity: 1;
+}
+
+.deck-file-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 3px 0 4px;
+  flex-wrap: wrap;
+}
+
+.deck-dimension-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #01cefc;
+  background: rgba(1, 206, 252, 0.12);
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.deck-size-pill {
+  font-size: 11px;
+  color: #94a3b8;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.deck-suitability-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.deck-suitability-tag.perfect {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.deck-suitability-tag.good {
+  background: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(14, 165, 233, 0.4);
+}
+
+.deck-suitability-tag.warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.deck-suitability-tag.info {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.deck-file-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.deck-remove-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+
+.deck-remove-btn:hover {
+  color: #ef4444;
+}
+
+/* Live Google Drive Preview Box */
+.drive-live-preview-box {
+  display: flex;
+  gap: 16px;
+  background: rgba(6, 12, 26, 0.95);
+  border: 1px solid rgba(1, 206, 252, 0.4);
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 600px) {
+  .drive-live-preview-box {
+    flex-wrap: nowrap;
+  }
+}
+
+.drive-preview-media {
+  position: relative;
+  width: 140px;
+  height: 95px;
+  min-width: 140px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #020617;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.drive-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.drive-preview-media:hover .drive-preview-img {
+  transform: scale(1.08);
+}
+
+.drive-preview-zoom-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  color: #01cefc;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.drive-preview-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.drive-preview-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.feedback-check {
+  color: #10b981;
+  font-size: 16px;
+}
+
+.preview-dimensions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dimension-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(1, 206, 252, 0.14);
+  border: 1px solid rgba(1, 206, 252, 0.35);
+  color: #01cefc;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.aspect-ratio-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.drive-confirm-text {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 2px 0 0;
+}
+
+.drive-confirm-text strong {
+  color: #01cefc;
+}
+
+/* ==========================================================================
+   14. POSTER PREVIEW HERO CARD & DIMENSION SUITABILITY
+   ========================================================================== */
+.poster-preview-hero-card {
+  display: flex;
+  gap: 18px;
+  background: rgba(6, 11, 25, 0.9);
+  border: 1px solid rgba(1, 206, 252, 0.35);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 600px) {
+  .poster-preview-hero-card {
+    flex-wrap: nowrap;
+  }
+}
+
+.poster-preview-stage {
+  position: relative;
+  width: 120px;
+  height: 160px;
+  min-width: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #01cefc;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+
+.poster-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.poster-preview-stage:hover .poster-preview-img {
+  transform: scale(1.06);
+}
+
+.poster-zoom-btn {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(4px);
+  border: none;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.poster-preview-stage:hover .poster-zoom-btn {
+  background: rgba(1, 206, 252, 0.9);
+  color: #030712;
+}
+
+.poster-preview-meta-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.meta-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.meta-filename {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+
+.meta-filesize {
+  font-size: 11px;
+  color: #94a3b8;
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.meta-dimensions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Suitability Badge */
+.suitability-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.suitability-badge.perfect {
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+.suitability-badge.good {
+  background: rgba(14, 165, 233, 0.14);
+  border: 1px solid rgba(14, 165, 233, 0.4);
+  color: #38bdf8;
+}
+
+.suitability-badge.warning {
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #fbbf24;
+}
+
+.suitability-badge.info {
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #cbd5e1;
+}
+
+.suitability-text strong {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.suitability-text p {
+  font-size: 11px;
+  margin: 0;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.live-box-guideline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.live-box-guideline strong {
+  color: #01cefc;
+}
+
+.guideline-icon {
+  font-size: 13px;
+  color: #01cefc;
+}
+
+/* Empty Preview Guideline Card */
+.empty-preview-guideline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(6, 11, 24, 0.5);
+  border: 1px dashed rgba(1, 206, 252, 0.25);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+}
+
+.guideline-box-icon {
+  font-size: 24px;
+}
+
+.guideline-box-content strong {
+  display: block;
+  font-size: 13px;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.guideline-box-content p {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   15. UNIVERSAL LIGHTBOX INSPECTION MODAL
+   ========================================================================== */
+.admin-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 18, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 999999;
+  animation: fadeInModal 0.2s ease;
+}
+
+.admin-lightbox-container {
+  width: 100%;
+  max-width: 900px;
+  max-height: 92vh;
+  background: #090e1f;
+  border: 1px solid rgba(1, 206, 252, 0.45);
+  border-radius: 20px;
+  box-shadow: 0 35px 80px rgba(0, 0, 0, 0.95),
+              0 0 50px rgba(1, 206, 252, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.admin-lightbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  background: rgba(6, 10, 22, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lightbox-title-group h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px;
+}
+
+.lightbox-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lightbox-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 2px 8px;
+  border-radius: 6px;
+  color: #cbd5e1;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.lightbox-suitability-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.lightbox-suitability-pill.perfect {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.lightbox-suitability-pill.good {
+  background: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+}
+
+.lightbox-suitability-pill.warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.lightbox-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94a3b8;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.lightbox-close-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+.admin-lightbox-body {
+  flex: 1;
+  padding: 20px;
+  background: #020614;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  max-height: 68vh;
+}
+
+.lightbox-full-img {
+  max-width: 100%;
+  max-height: 64vh;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.admin-lightbox-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: rgba(6, 10, 22, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 16px;
+}
+
+.lightbox-footer-tip {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
