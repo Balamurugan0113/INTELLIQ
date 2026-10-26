@@ -534,119 +534,93 @@ export default function AdminConsole({ onExitToSite }) {
         </div>
       )}
 
-      {/* Top Header Bar with Integrated Responsive Navigation */}
+      {/* Top Header Bar */}
       <header className="admin-topbar">
-        <div className="admin-topbar-left">
+        <div className="admin-topbar-inner">
           <div className="admin-brand">
-            <span className="admin-badge">ADMIN</span>
-            <h2 className="admin-site-title">INTELLIQ Console</h2>
+            <img
+              src="/Logo.png"
+              alt="INTELLIQ Logo"
+              className="admin-brand-logo neon"
+              width="32"
+              height="32"
+            />
+            <span className="brand-text">INTELLIQ</span>
+            <span className="admin-badge">CONSOLE</span>
           </div>
 
-          {/* Main Navigation Tabs */}
-          <nav className="admin-tabs-nav" aria-label="Admin Navigation Tabs">
+          <div className="admin-topbar-right">
             <button
               type="button"
-              className={`admin-tab-btn ${activeTab === 'events' ? 'active' : ''}`}
-              onClick={() => setActiveTab('events')}
+              className="admin-action-btn view-live"
+              onClick={handleViewLiveSite}
+              title="View Live Website in new tab"
             >
-              <FaCalendarAlt />
-              <span className="tab-label">Events</span>
-              <span className="admin-count-pill">{events.length}</span>
+              <FaExternalLinkAlt /> <span>View Live Site</span>
             </button>
 
+            {/* Mobile hamburger toggle */}
             <button
               type="button"
-              className={`admin-tab-btn ${activeTab === 'posters' ? 'active' : ''}`}
-              onClick={() => setActiveTab('posters')}
+              className={`admin-mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
+              onClick={() => setMobileMenuOpen(prev => !prev)}
+              aria-label="Toggle admin actions"
+              title="More actions"
             >
-              <FaImages />
-              <span className="tab-label">Posters</span>
-              <span className="admin-count-pill">{posters.length}</span>
+              {mobileMenuOpen ? <FaTimes /> : <FaBars />}
             </button>
 
-            <button
-              type="button"
-              className={`admin-tab-btn ${activeTab === 'achievements' ? 'active' : ''}`}
-              onClick={() => setActiveTab('achievements')}
-            >
-              <FaTrophy />
-              <span className="tab-label">Achievements</span>
-              <span className="admin-count-pill">{achievements.length}</span>
-            </button>
-          </nav>
-        </div>
-
-        <div className="admin-topbar-right">
-          <button
-            type="button"
-            className="admin-action-btn view-live"
-            onClick={handleViewLiveSite}
-            title="View Live Website in new tab"
-          >
-            <FaExternalLinkAlt /> <span>View Live Site</span>
-          </button>
-
-          {/* Mobile hamburger toggle */}
-          <button
-            type="button"
-            className={`admin-mobile-toggle ${mobileMenuOpen ? 'active' : ''}`}
-            onClick={() => setMobileMenuOpen(prev => !prev)}
-            aria-label="Toggle admin actions"
-            title="More actions"
-          >
-            {mobileMenuOpen ? <FaTimes /> : <FaBars />}
-          </button>
-
-          {/* Top Actions Drawer / Row */}
-          <div className={`admin-top-actions ${mobileMenuOpen ? 'open' : ''}`}>
-            <button
-              type="button"
-              className="admin-action-btn export"
-              onClick={() => {
-                handleExportBackup();
-                setMobileMenuOpen(false);
-              }}
-              title="Download full JSON backup"
-            >
-              <FaDownload /> <span>Export JSON</span>
-            </button>
-
-            <label className="admin-action-btn import" title="Import JSON backup file">
-              <FaUpload /> <span>Import</span>
-              <input
-                type="file"
-                accept=".json"
-                style={{ display: 'none' }}
-                onChange={e => {
-                  handleImportBackup(e);
+            {/* Top Actions Drawer / Row */}
+            <div className={`admin-top-actions ${mobileMenuOpen ? 'open' : ''}`}>
+              <button
+                type="button"
+                className="admin-action-btn export"
+                onClick={() => {
+                  handleExportBackup();
                   setMobileMenuOpen(false);
                 }}
-              />
-            </label>
+                title="Download full JSON backup"
+              >
+                <FaDownload /> <span>Export JSON</span>
+              </button>
 
-            <button
-              type="button"
-              className="admin-action-btn reset"
-              onClick={() => {
-                handleResetDefaults();
-                setMobileMenuOpen(false);
-              }}
-              title="Reset to default data"
-            >
-              <FaUndo /> <span>Reset Defaults</span>
-            </button>
+              <label className="admin-action-btn import" title="Import JSON backup file">
+                <FaUpload /> <span>Import</span>
+                <input
+                  type="file"
+                  accept=".json"
+                  style={{ display: 'none' }}
+                  onChange={e => {
+                    handleImportBackup(e);
+                    setMobileMenuOpen(false);
+                  }}
+                />
+              </label>
 
-            <button
-              type="button"
-              className="admin-action-btn logout"
-              onClick={() => {
-                handleLogout();
-                setMobileMenuOpen(false);
-              }}
-              title="Lock & Logout"
-            >
-              <FaSignOutAlt /> <span>Lock</span>
-            </button>
+              <button
+                type="button"
+                className="admin-action-btn reset"
+                onClick={() => {
+                  handleResetDefaults();
+                  setMobileMenuOpen(false);
+                }}
+                title="Reset to default data"
+              >
+                <FaUndo /> <span>Reset Defaults</span>
+              </button>
+
+              <button
+                type="button"
+                className="admin-action-btn logout"
+                onClick={() => {
+                  handleLogout();
+                  setMobileMenuOpen(false);
+                }}
+                title="Lock & Logout"
+              >
+                <FaSignOutAlt /> <span>Lock</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -665,8 +639,42 @@ export default function AdminConsole({ onExitToSite }) {
         />
       )}
 
-      {/* Main Tab Content */}
+      {/* Main Container */}
       <main className="admin-main-container">
+        {/* Navigation Tabs - Centered & Aligned perfectly with grid */}
+        <div className="admin-tabs-wrapper">
+          <nav className="admin-tabs-nav" aria-label="Admin Navigation Tabs">
+            <button
+              type="button"
+              className={`admin-tab-btn ${activeTab === 'events' ? 'active' : ''}`}
+              onClick={() => setActiveTab('events')}
+            >
+              <FaCalendarAlt />
+              <span className="tab-label">Events Manager</span>
+              <span className="admin-count-pill">{events.length}</span>
+            </button>
+
+            <button
+              type="button"
+              className={`admin-tab-btn ${activeTab === 'posters' ? 'active' : ''}`}
+              onClick={() => setActiveTab('posters')}
+            >
+              <FaImages />
+              <span className="tab-label">Posters Manager</span>
+              <span className="admin-count-pill">{posters.length}</span>
+            </button>
+
+            <button
+              type="button"
+              className={`admin-tab-btn ${activeTab === 'achievements' ? 'active' : ''}`}
+              onClick={() => setActiveTab('achievements')}
+            >
+              <FaTrophy />
+              <span className="tab-label">Student Achievements</span>
+              <span className="admin-count-pill">{achievements.length}</span>
+            </button>
+          </nav>
+        </div>
         {/* ================================================================= */}
         {/* TAB 1: EVENTS MANAGER */}
         {/* ================================================================= */}
