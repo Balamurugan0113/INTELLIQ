@@ -15,7 +15,7 @@ export default function StudentAchievements() {
     });
   }, []);
 
-  const galleryImages = achievements.length > 0 ? achievements : ['/Achievements/achievements_1.png'];
+  const galleryImages = achievements.length > 0 ? achievements : ['/Achievements/Achievements_1.png'];
 
   // Duplicate image array for seamless infinite looping
   const loopImages = useMemo(() => {

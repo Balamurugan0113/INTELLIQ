@@ -325,6 +325,19 @@
   color: #fca5a5;
 }
 
+.admin-action-btn.restore-project-btn {
+  background: rgba(1, 206, 252, 0.12);
+  border-color: rgba(1, 206, 252, 0.35);
+  color: #01cefc;
+}
+
+.admin-action-btn.restore-project-btn:hover {
+  background: rgba(1, 206, 252, 0.22);
+  border-color: #01cefc;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(1, 206, 252, 0.3);
+}
+
 .admin-action-btn.logout {
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.3);
@@ -604,30 +617,180 @@
 }
 
 /* ==========================================================================
-   4. STUDENT ACHIEVEMENTS TAB
+   4. STUDENT ACHIEVEMENTS TAB & MEDIA UPLOAD STUDIO
    ========================================================================== */
-.admin-add-photo-bar {
-  display: flex;
-  gap: 12px;
+.admin-upload-studio {
   background: rgba(15, 23, 42, 0.7);
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(1, 206, 252, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
-.admin-add-photo-bar input {
-  flex: 1;
-  background: rgba(2, 6, 23, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.studio-tabs {
+  display: flex;
+  background: rgba(7, 11, 22, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  overflow-x: auto;
+}
+
+.studio-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.studio-tab-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.studio-tab-btn.active {
+  color: #01cefc;
+  border-bottom-color: #01cefc;
+  background: rgba(1, 206, 252, 0.06);
+}
+
+.studio-content {
+  padding: 24px;
+}
+
+/* 1. Local Device Dropzone */
+.studio-upload-box {
+  width: 100%;
+}
+
+.studio-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 24px;
+  background: rgba(2, 6, 23, 0.6);
+  border: 2px dashed rgba(1, 206, 252, 0.35);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: center;
+}
+
+.studio-dropzone:hover {
+  background: rgba(1, 206, 252, 0.04);
+  border-color: #01cefc;
+  box-shadow: 0 0 25px rgba(1, 206, 252, 0.15);
+}
+
+.dropzone-icon {
+  font-size: 40px;
+  color: #01cefc;
+  margin-bottom: 12px;
+  animation: floatSubtle 3s ease-in-out infinite;
+}
+
+@keyframes floatSubtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.dropzone-text strong {
+  display: block;
+  font-size: 15px;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.dropzone-text p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0 0 16px;
+}
+
+.studio-browse-btn {
+  display: inline-block;
+  padding: 8px 18px;
+  background: rgba(1, 206, 252, 0.15);
+  border: 1px solid rgba(1, 206, 252, 0.4);
   border-radius: 8px;
-  padding: 10px 14px;
+  color: #01cefc;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.studio-dropzone:hover .studio-browse-btn {
+  background: #01cefc;
+  color: #030712;
+}
+
+/* 2. Google Drive & Direct URL Form */
+.studio-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .studio-form-row {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.studio-input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.studio-field-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 16px;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.studio-field-icon.drive-icon {
+  color: #34a853;
+}
+
+.studio-input-with-icon input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  background: rgba(2, 6, 23, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
   color: #ffffff;
   font-size: 14px;
   outline: none;
+  transition: border-color 0.2s ease;
 }
 
-.admin-add-photo-bar input:focus {
+.studio-input-with-icon input:focus {
   border-color: #01cefc;
+  box-shadow: 0 0 0 3px rgba(1, 206, 252, 0.15);
+}
+
+.studio-hint {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 6px 0 0;
+  width: 100%;
+}
+
+.studio-hint strong {
+  color: #38bdf8;
 }
 
 .admin-achievements-grid {
@@ -683,6 +846,42 @@
 
 .thumb-delete-btn:hover {
   color: #ef4444;
+}
+
+/* Form Upload Helpers */
+.label-with-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.admin-file-upload-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(1, 206, 252, 0.12);
+  border: 1px solid rgba(1, 206, 252, 0.3);
+  border-radius: 6px;
+  color: #01cefc;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-file-upload-pill:hover {
+  background: rgba(1, 206, 252, 0.25);
+  border-color: #01cefc;
+  color: #ffffff;
+}
+
+.field-hint {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 4px;
+  line-height: 1.4;
 }
 
 /* ==========================================================================

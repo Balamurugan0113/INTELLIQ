@@ -12,12 +12,20 @@ import {
   deletePoster,
   getAchievements,
   addAchievement,
+  addAchievements,
+  saveAchievements,
   deleteAchievement,
   exportAllData,
   importAllData,
   resetAllData,
   subscribeData
 } from '../../services/dataService';
+import { INITIAL_ACHIEVEMENTS } from '../../data/initialData';
+import {
+  formatGoogleDriveUrl,
+  compressImageFile,
+  processLocalFiles
+} from '../../utils/imageHelpers';
 import {
   FaCalendarAlt,
   FaImages,
@@ -33,7 +41,12 @@ import {
   FaLock,
   FaCheck,
   FaTimes,
-  FaShieldAlt
+  FaShieldAlt,
+  FaGoogleDrive,
+  FaCloudUploadAlt,
+  FaSyncAlt,
+  FaLink,
+  FaImage
 } from 'react-icons/fa';
 
 const DEFAULT_ADMIN_PASSWORD = 'intelliq@admin2026';
@@ -87,7 +100,11 @@ export default function AdminConsole({ onExitToSite }) {
     fullDetails: ''
   });
 
+  // Achievements management states
   const [newAchievementImg, setNewAchievementImg] = useState('');
+  const [driveAchievementUrl, setDriveAchievementUrl] = useState('');
+  const [achievementAddMode, setAchievementAddMode] = useState('upload'); // 'upload' | 'drive' | 'url'
+  const [isUploading, setIsUploading] = useState(false);
 
   // Subscribe to live reactive updates
   useEffect(() => {
@@ -124,7 +141,9 @@ export default function AdminConsole({ onExitToSite }) {
     setPasswordInput('');
   };
 
-  // Event modal handlers
+  // ==========================================================================
+  // EVENT HANDLERS
+  // ==========================================================================
   const openNewEventModal = () => {
     setEditingEvent(null);
     setEventForm({
@@ -157,6 +176,29 @@ export default function AdminConsole({ onExitToSite }) {
     setEventModalOpen(true);
   };
 
+  const handleEventImageUpload = async e => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setIsUploading(true);
+    try {
+      const dataUrls = await processLocalFiles(files);
+      if (dataUrls.length > 0) {
+        const current = eventForm.imagesText.trim();
+        const added = dataUrls.join('\n');
+        setEventForm(prev => ({
+          ...prev,
+          imagesText: current ? `${current}\n${added}` : added
+        }));
+        showToast(`Uploaded ${dataUrls.length} image(s) from device`);
+      }
+    } catch (err) {
+      alert('Upload failed: ' + err.message);
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
+    }
+  };
+
   const handleSaveEvent = e => {
     e.preventDefault();
     if (!eventForm.title.trim()) {
@@ -166,7 +208,7 @@ export default function AdminConsole({ onExitToSite }) {
 
     const imagesList = eventForm.imagesText
       .split('\n')
-      .map(s => s.trim())
+      .map(s => formatGoogleDriveUrl(s.trim()))
       .filter(Boolean);
 
     const payload = {
@@ -199,7 +241,9 @@ export default function AdminConsole({ onExitToSite }) {
     }
   };
 
-  // Poster modal handlers
+  // ==========================================================================
+  // POSTER HANDLERS
+  // ==========================================================================
   const openNewPosterModal = () => {
     setEditingPoster(null);
     setPosterForm({
@@ -230,6 +274,25 @@ export default function AdminConsole({ onExitToSite }) {
     setPosterModalOpen(true);
   };
 
+  const handlePosterImageUpload = async e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploading(true);
+    try {
+      const dataUrl = await compressImageFile(file);
+      setPosterForm(prev => ({
+        ...prev,
+        image: dataUrl
+      }));
+      showToast('Uploaded poster from computer');
+    } catch (err) {
+      alert('Upload failed: ' + err.message);
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
+    }
+  };
+
   const handleSavePoster = e => {
     e.preventDefault();
     if (!posterForm.title.trim() || !posterForm.image.trim()) {
@@ -241,7 +304,7 @@ export default function AdminConsole({ onExitToSite }) {
       title: posterForm.title,
       category: posterForm.category || 'Workshop',
       date: posterForm.date || '2026',
-      image: posterForm.image.trim(),
+      image: formatGoogleDriveUrl(posterForm.image.trim()),
       gradient: [posterForm.color1, posterForm.color2],
       description: posterForm.description,
       fullDetails: posterForm.fullDetails || posterForm.description
@@ -265,13 +328,43 @@ export default function AdminConsole({ onExitToSite }) {
     }
   };
 
-  // Achievement handlers
+  // ==========================================================================
+  // STUDENT ACHIEVEMENTS HANDLERS
+  // ==========================================================================
+  const handleLocalAchievementsUpload = async e => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setIsUploading(true);
+    try {
+      const dataUrls = await processLocalFiles(files);
+      if (dataUrls.length > 0) {
+        addAchievements(dataUrls);
+        showToast(`Uploaded ${dataUrls.length} image(s) from computer!`);
+      }
+    } catch (err) {
+      alert('Failed to upload image(s): ' + err.message);
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleDriveAchievementAdd = e => {
+    e.preventDefault();
+    if (!driveAchievementUrl.trim()) return;
+    const directUrl = formatGoogleDriveUrl(driveAchievementUrl.trim());
+    addAchievement(directUrl);
+    setDriveAchievementUrl('');
+    showToast('Added Google Drive photo to achievements!');
+  };
+
   const handleAddAchievement = e => {
     e.preventDefault();
     if (!newAchievementImg.trim()) return;
-    addAchievement(newAchievementImg.trim());
+    const directUrl = formatGoogleDriveUrl(newAchievementImg.trim());
+    addAchievement(directUrl);
     setNewAchievementImg('');
-    showToast('Added achievement image to gallery');
+    showToast('Added achievement photo to gallery');
   };
 
   const handleDeleteAchievement = (imgUrl, idx) => {
@@ -281,7 +374,20 @@ export default function AdminConsole({ onExitToSite }) {
     }
   };
 
-  // Backup handlers
+  const handleRestoreOriginalAchievements = () => {
+    if (
+      window.confirm(
+        'Restore all 13 original student achievement photos from the project folder (/Achievements/Achievements_1.png to _13.png)?'
+      )
+    ) {
+      saveAchievements(INITIAL_ACHIEVEMENTS);
+      showToast('Restored all 13 original project achievement photos!');
+    }
+  };
+
+  // ==========================================================================
+  // BACKUP HANDLERS
+  // ==========================================================================
   const handleExportBackup = () => {
     const json = exportAllData();
     const blob = new Blob([json], { type: 'application/json' });
@@ -620,25 +726,117 @@ export default function AdminConsole({ onExitToSite }) {
               <div>
                 <h3 className="admin-section-title">Student Achievements Gallery</h3>
                 <p className="admin-section-desc">
-                  Add or remove certificates and event photos displayed in the infinite loop marquee.
+                  Add photos directly from your computer or Google Drive, or restore the original 13 project photos.
                 </p>
+              </div>
+              <button
+                type="button"
+                className="admin-action-btn restore-project-btn"
+                onClick={handleRestoreOriginalAchievements}
+                title="Restore original 13 project achievement images from public/Achievements"
+              >
+                <FaSyncAlt /> <span>Restore 13 Project Photos</span>
+              </button>
+            </div>
+
+            {/* Media Upload Studio for Achievements */}
+            <div className="admin-upload-studio">
+              <div className="studio-tabs">
+                <button
+                  type="button"
+                  className={`studio-tab-btn ${achievementAddMode === 'upload' ? 'active' : ''}`}
+                  onClick={() => setAchievementAddMode('upload')}
+                >
+                  <FaCloudUploadAlt /> <span>Upload from Device</span>
+                </button>
+                <button
+                  type="button"
+                  className={`studio-tab-btn ${achievementAddMode === 'drive' ? 'active' : ''}`}
+                  onClick={() => setAchievementAddMode('drive')}
+                >
+                  <FaGoogleDrive /> <span>Google Drive Link</span>
+                </button>
+                <button
+                  type="button"
+                  className={`studio-tab-btn ${achievementAddMode === 'url' ? 'active' : ''}`}
+                  onClick={() => setAchievementAddMode('url')}
+                >
+                  <FaLink /> <span>Image URL / Path</span>
+                </button>
+              </div>
+
+              <div className="studio-content">
+                {/* 1. UPLOAD FROM COMPUTER / DEVICE */}
+                {achievementAddMode === 'upload' && (
+                  <div className="studio-upload-box">
+                    <input
+                      type="file"
+                      id="achievement-file-input"
+                      accept="image/*"
+                      multiple
+                      onChange={handleLocalAchievementsUpload}
+                      style={{ display: 'none' }}
+                      disabled={isUploading}
+                    />
+                    <label htmlFor="achievement-file-input" className="studio-dropzone">
+                      <div className="dropzone-icon">
+                        <FaCloudUploadAlt />
+                      </div>
+                      <div className="dropzone-text">
+                        <strong>Click or tap to select image files from your computer or phone</strong>
+                        <p>Supports PNG, JPG, JPEG, and WEBP. You can select multiple photos at once.</p>
+                      </div>
+                      <span className="studio-browse-btn">
+                        {isUploading ? 'Compressing & Adding...' : 'Choose Photos from Device'}
+                      </span>
+                    </label>
+                  </div>
+                )}
+
+                {/* 2. GOOGLE DRIVE LINK */}
+                {achievementAddMode === 'drive' && (
+                  <form onSubmit={handleDriveAchievementAdd} className="studio-form-row">
+                    <div className="studio-input-with-icon">
+                      <FaGoogleDrive className="studio-field-icon drive-icon" />
+                      <input
+                        type="text"
+                        placeholder="Paste Google Drive share link (e.g. https://drive.google.com/file/d/.../view?usp=sharing)"
+                        value={driveAchievementUrl}
+                        onChange={e => setDriveAchievementUrl(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <button type="submit" className="admin-primary-btn">
+                      <FaPlus /> <span>Add from Drive</span>
+                    </button>
+                    <p className="studio-hint">
+                      * Note: In Google Drive, ensure the file permission is set to <strong>"Anyone with the link can view"</strong>.
+                    </p>
+                  </form>
+                )}
+
+                {/* 3. IMAGE URL OR PROJECT PATH */}
+                {achievementAddMode === 'url' && (
+                  <form onSubmit={handleAddAchievement} className="studio-form-row">
+                    <div className="studio-input-with-icon">
+                      <FaLink className="studio-field-icon" />
+                      <input
+                        type="text"
+                        placeholder="Enter image path (e.g. /Achievements/Achievements_1.png or https://...)"
+                        value={newAchievementImg}
+                        onChange={e => setNewAchievementImg(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <button type="submit" className="admin-primary-btn">
+                      <FaPlus /> <span>Add Image</span>
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
 
-            {/* Quick Add Photo Bar */}
-            <form onSubmit={handleAddAchievement} className="admin-add-photo-bar">
-              <input
-                type="text"
-                placeholder="Enter image URL or path (e.g. /Achievements/achievements_1.png or https://...)"
-                value={newAchievementImg}
-                onChange={e => setNewAchievementImg(e.target.value)}
-                required
-              />
-              <button type="submit" className="admin-primary-btn">
-                <FaPlus /> <span>Add Image</span>
-              </button>
-            </form>
-
+            {/* Achievements Photos Grid */}
             <div className="admin-achievements-grid">
               {achievements.map((imgSrc, idx) => (
                 <div key={idx} className="admin-achievement-thumb-card">
@@ -763,13 +961,29 @@ export default function AdminConsole({ onExitToSite }) {
               </div>
 
               <div className="form-group">
-                <label>Image Paths / URLs (One per line; first image is Cover)</label>
+                <div className="label-with-actions">
+                  <label>Image Paths / URLs (One per line; first image is Cover)</label>
+                  <label className="admin-file-upload-pill" title="Upload photos from device">
+                    <FaUpload /> <span>Upload from Device</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleEventImageUpload}
+                      style={{ display: 'none' }}
+                      disabled={isUploading}
+                    />
+                  </label>
+                </div>
                 <textarea
                   rows="3"
                   value={eventForm.imagesText}
                   onChange={e => setEventForm({ ...eventForm, imagesText: e.target.value })}
-                  placeholder="/Events/PowerBi_1.png&#10;/Events/PowerBi_2.png"
+                  placeholder="/Events/PowerBi_1.png&#10;Paste Google Drive links or image paths here..."
                 />
+                <span className="field-hint">
+                  Tip: You can paste Google Drive share links directly — they are automatically converted to direct images.
+                </span>
               </div>
 
               <div className="admin-modal-footer">
@@ -780,7 +994,7 @@ export default function AdminConsole({ onExitToSite }) {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="admin-primary-btn">
+                <button type="submit" className="admin-primary-btn" disabled={isUploading}>
                   {editingEvent ? 'Save Changes' : 'Create Event'}
                 </button>
               </div>
@@ -819,14 +1033,29 @@ export default function AdminConsole({ onExitToSite }) {
               </div>
 
               <div className="form-group">
-                <label>Poster Image Path or URL *</label>
+                <div className="label-with-actions">
+                  <label>Poster Image Path, URL, or Google Drive Link *</label>
+                  <label className="admin-file-upload-pill" title="Upload poster from computer">
+                    <FaUpload /> <span>Upload from Device</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePosterImageUpload}
+                      style={{ display: 'none' }}
+                      disabled={isUploading}
+                    />
+                  </label>
+                </div>
                 <input
                   type="text"
                   value={posterForm.image}
-                  onChange={e => setPosterForm({ ...posterForm, image: e.target.value })}
-                  placeholder="e.g. /Events/PowerBi_1.png or https://..."
+                  onChange={e => setPosterForm({ ...posterForm, image: formatGoogleDriveUrl(e.target.value) })}
+                  placeholder="e.g. /Events/PowerBi_1.png or Google Drive link"
                   required
                 />
+                <span className="field-hint">
+                  Tip: Upload from device, enter a path, or paste a Google Drive share link.
+                </span>
               </div>
 
               <div className="form-row">
@@ -913,7 +1142,7 @@ export default function AdminConsole({ onExitToSite }) {
                 >
                   Cancel
                 </button>
-                <button type="submit" className="admin-primary-btn">
+                <button type="submit" className="admin-primary-btn" disabled={isUploading}>
                   {editingPoster ? 'Save Poster' : 'Create Poster'}
                 </button>
               </div>

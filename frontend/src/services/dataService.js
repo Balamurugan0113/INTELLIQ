@@ -142,7 +142,17 @@ export function getAchievements() {
       return INITIAL_ACHIEVEMENTS;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_ACHIEVEMENTS;
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return INITIAL_ACHIEVEMENTS;
+    }
+    // Auto-heal old lowercase /Achievements/achievements_ paths to uppercase /Achievements/Achievements_
+    const sanitized = parsed.map(item => {
+      if (typeof item === 'string' && item.startsWith('/Achievements/achievements_')) {
+        return item.replace('/Achievements/achievements_', '/Achievements/Achievements_');
+      }
+      return item;
+    });
+    return sanitized;
   } catch (err) {
     console.error('Failed to read achievements from storage:', err);
     return INITIAL_ACHIEVEMENTS;
@@ -163,6 +173,14 @@ export function addAchievement(imgUrl) {
   if (!imgUrl || typeof imgUrl !== 'string') return;
   const current = getAchievements();
   const updated = [imgUrl.trim(), ...current];
+  saveAchievements(updated);
+}
+
+export function addAchievements(imgUrls) {
+  if (!Array.isArray(imgUrls) || imgUrls.length === 0) return;
+  const current = getAchievements();
+  const valid = imgUrls.map(u => (typeof u === 'string' ? u.trim() : '')).filter(Boolean);
+  const updated = [...valid, ...current];
   saveAchievements(updated);
 }
 
