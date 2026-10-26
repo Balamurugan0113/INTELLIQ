@@ -7,6 +7,7 @@ import StudentAchievements from './components/StudentAchievements';
 import Members from './components/Members';
 import About from './components/About';
 import VisionMission from './components/VisionMission';
+import Posters from './components/Posters';
 import LogoFadeLoop from './components/LogoFadeLoop';
 import Contact from './components/Contact';
 import PaymentModal from './components/PaymentModal';
@@ -83,28 +84,35 @@ export default function App() {
               </Section>
             </section>
 
-            {/* 4. EVENTS SECTION */}
+            {/* 4. POSTERS SECTION (ABOVE EVENTS & BELOW VISION & MISSION) */}
+            <section data-trail="#ff3de8">
+              <Section id="posters" title="Posters">
+                <Posters />
+              </Section>
+            </section>
+
+            {/* 5. EVENTS SECTION */}
             <section data-trail="#ffc74d">
               <Section id="events" title="Events">
                 <Events apiBase={API_URL} />
               </Section>
             </section>
 
-            {/* 5. STUDENT ACHIEVEMENTS SECTION */}
+            {/* 6. STUDENT ACHIEVEMENTS SECTION */}
             <section data-trail="#f0ff4a">
               <Section id="achievements" title="Student Achievements">
                 <StudentAchievements />
               </Section>
             </section>
 
-            {/* 6. MEMBERS & COORDINATORS SECTION */}
+            {/* 7. MEMBERS & COORDINATORS SECTION */}
             <section data-trail="#f0ff4a">
               <Section id="members" variant="plain">
                 <Members apiBase={API_URL} />
               </Section>
             </section>
 
-            {/* 7. COLLABORATORS SECTION */}
+            {/* 8. COLLABORATORS SECTION */}
             <section id="collaborators" variant="compact" data-trail="#37ff00">
               <LogoFadeLoop
                 images={[
@@ -121,7 +129,7 @@ export default function App() {
               />
             </section>
 
-            {/* 8. CONTACT SECTION */}
+            {/* 9. CONTACT SECTION */}
             <section data-trail="#8800ff">
               <Section id="contact" title="Contact">
                 <Contact apiBase={API_URL} />

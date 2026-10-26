@@ -50,6 +50,13 @@ function Icon({ name, size = 20 }) {
           <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.4" />
         </svg>
       );
+    case "posters":
+      return (
+        <svg {...common}>
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.4" />
+          <path d="M3 15l5-5 4 4 5-5 4 4M14 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
     case "achievements":
       return (
         <svg {...common}>
@@ -148,6 +155,7 @@ export default function Navbar() {
     { id: "home", href: "#home", label: "Home", icon: "home" },
     { id: "about", href: "#about", label: "About", icon: "about" },
     { id: "vision", href: "#vision", label: "Vision", icon: "vision" },
+    { id: "posters", href: "#posters", label: "Posters", icon: "posters" },
     { id: "events", href: "#events", label: "Events", icon: "events" },
     { id: "achievements", href: "#achievements", label: "Achievements", icon: "achievements" },
     { id: "members", href: "#members", label: "Members", icon: "members" },
@@ -161,7 +169,6 @@ export default function Navbar() {
 
   return (
     <>
-
       <nav
         ref={navRef}
         className={`nav ${shrink ? "nav--shrink" : ""}`}
