@@ -17,6 +17,7 @@ import LoadingScreen from './components/LoadingScreen';
 import CountdownPage from './components/CountdownPage';
 import OverlayControls from './components/OverlayControls';
 import AdminConsole from './components/admin/AdminConsole';
+import { initCrossDomainSync } from './services/dataService';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -36,8 +37,14 @@ const TARGET_REVEAL_TIMESTAMP = new Date(TARGET_REVEAL_DATE_STRING).getTime();
 function checkIsAdminView() {
   if (typeof window === 'undefined') return false;
   const host = window.location.hostname.toLowerCase();
-  const path = window.location.pathname.toLowerCase();
   const search = window.location.search.toLowerCase();
+
+  // If visitor specifically asked to view the live site, don't show admin console
+  if (search.includes('view=live') || search.includes('preview=live') || search.includes('mode=live')) {
+    return false;
+  }
+
+  const path = window.location.pathname.toLowerCase();
   const hash = window.location.hash.toLowerCase();
 
   return (
@@ -61,6 +68,9 @@ export default function App() {
   const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => {
+    // 0. Initialize cross-domain & cross-tab real-time sync
+    const unsubscribeSync = initCrossDomainSync();
+
     const handleLocationChange = () => {
       setIsAdmin(checkIsAdminView());
     };
@@ -79,10 +89,16 @@ export default function App() {
     }
 
     return () => {
+      unsubscribeSync();
       window.removeEventListener('popstate', handleLocationChange);
       window.removeEventListener('hashchange', handleLocationChange);
     };
   }, []);
+
+  // Minimal Bridge Iframe: when running as a hidden sync frame, no UI needed
+  if (typeof window !== 'undefined' && window.location.search.includes('bridge=1')) {
+    return <div style={{ display: 'none' }} aria-hidden="true" />;
+  }
 
   // 0. IF ACCESSING ADMIN CONSOLE VIA SUBDOMAIN OR HIDDEN ROUTE:
   if (isAdmin) {
@@ -95,7 +111,7 @@ export default function App() {
             window.location.hash = '';
             window.location.reload();
           } else {
-            window.location.href = '/';
+            window.location.href = '/?preview=true';
           }
         }}
       />
@@ -210,6 +226,20 @@ export default function App() {
 
           {/* Global Overlays (Chatbot & Background Music) */}
           <OverlayControls />
+
+          {/* Cross-subdomain real-time storage bridge */}
+          {typeof window !== 'undefined' && !window.location.search.includes('bridge=1') && (
+            <iframe
+              className="intelliq-sync-bridge"
+              src={
+                window.location.hostname.startsWith('admin.') || window.location.hostname.startsWith('console.')
+                  ? `https://${window.location.hostname.replace(/^(admin|console)\./, '')}/?bridge=1`
+                  : `https://admin.${window.location.hostname.replace(/^www\./, '')}/?bridge=1`
+              }
+              style={{ display: 'none', width: 0, height: 0, border: 'none' }}
+              title="Cross-Domain Data Sync Bridge"
+            />
+          )}
         </div>
       )}
     </>

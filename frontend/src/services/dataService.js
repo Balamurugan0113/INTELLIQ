@@ -1,7 +1,7 @@
 // frontend/src/services/dataService.js
 import { INITIAL_EVENTS, INITIAL_POSTERS, INITIAL_ACHIEVEMENTS } from '../data/initialData';
 
-const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   EVENTS: 'intelliq_admin_events_v1',
   POSTERS: 'intelliq_admin_posters_v1',
   ACHIEVEMENTS: 'intelliq_admin_achievements_v1'
@@ -13,6 +13,91 @@ function emitChange() {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent(BROADCAST_EVENT));
   }
+}
+
+/**
+ * Broadcasts sync message across all open tabs, windows, child popups, and cross-subdomain iframes.
+ */
+export function broadcastSync(key, data) {
+  if (typeof window === 'undefined') return;
+
+  const payload = {
+    type: 'INTELLIQ_SYNC',
+    key,
+    data,
+    timestamp: Date.now()
+  };
+
+  // 1. Post to all bridge iframes
+  try {
+    const iframes = document.querySelectorAll('iframe.intelliq-sync-bridge');
+    iframes.forEach(iframe => {
+      iframe.contentWindow?.postMessage(payload, '*');
+    });
+  } catch (err) {}
+
+  // 2. Post to window.opener (when Live Site tab was opened from Admin Console)
+  if (window.opener) {
+    try {
+      window.opener.postMessage(payload, '*');
+    } catch (err) {}
+  }
+
+  // 3. Post to parent window (if running inside a bridge iframe)
+  if (window.parent && window.parent !== window) {
+    try {
+      window.parent.postMessage(payload, '*');
+    } catch (err) {}
+  }
+}
+
+/**
+ * Initializes cross-domain & cross-tab sync listeners.
+ */
+export function initCrossDomainSync() {
+  if (typeof window === 'undefined') return () => {};
+
+  const handleMessage = event => {
+    if (!event.data || typeof event.data !== 'object') return;
+    const { type, key, data, payload } = event.data;
+
+    if (type === 'INTELLIQ_SYNC' && key && data) {
+      try {
+        localStorage.setItem(key, JSON.stringify(data));
+        emitChange();
+      } catch (e) {}
+    } else if (type === 'INTELLIQ_SYNC_ALL' && payload) {
+      try {
+        if (payload.events) localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(payload.events));
+        if (payload.posters) localStorage.setItem(STORAGE_KEYS.POSTERS, JSON.stringify(payload.posters));
+        if (payload.achievements) localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(payload.achievements));
+        emitChange();
+      } catch (e) {}
+    } else if (type === 'INTELLIQ_REQUEST_SYNC') {
+      const response = {
+        type: 'INTELLIQ_SYNC_ALL',
+        payload: {
+          events: getEvents(),
+          posters: getPosters(),
+          achievements: getAchievements()
+        }
+      };
+      try {
+        event.source?.postMessage(response, '*');
+      } catch (e) {}
+    }
+  };
+
+  window.addEventListener('message', handleMessage);
+
+  // If this window was opened by Admin Console, request latest sync right away
+  if (window.opener) {
+    try {
+      window.opener.postMessage({ type: 'INTELLIQ_REQUEST_SYNC' }, '*');
+    } catch (e) {}
+  }
+
+  return () => window.removeEventListener('message', handleMessage);
 }
 
 /**
@@ -41,6 +126,7 @@ export function saveEvents(events) {
   try {
     localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(events));
     emitChange();
+    broadcastSync(STORAGE_KEYS.EVENTS, events);
   } catch (err) {
     console.error('Failed to save events:', err);
   }
@@ -97,6 +183,7 @@ export function savePosters(posters) {
   try {
     localStorage.setItem(STORAGE_KEYS.POSTERS, JSON.stringify(posters));
     emitChange();
+    broadcastSync(STORAGE_KEYS.POSTERS, posters);
   } catch (err) {
     console.error('Failed to save posters:', err);
   }
@@ -164,6 +251,7 @@ export function saveAchievements(achievements) {
   try {
     localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(achievements));
     emitChange();
+    broadcastSync(STORAGE_KEYS.ACHIEVEMENTS, achievements);
   } catch (err) {
     console.error('Failed to save achievements:', err);
   }

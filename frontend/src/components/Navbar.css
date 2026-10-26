@@ -1,190 +1,273 @@
-/* ---------- NAVBAR: Fixed for entire site + Shrink ---------- */
+/* frontend/src/components/Navbar.css */
+
+/* ---------- NAVBAR: Fixed Header + Blur + Shrink ---------- */
 .nav {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 1200;
-  height: var(--nav-height);
-  backdrop-filter: blur(10px) saturate(120%);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-  background: linear-gradient(180deg, rgba(10,10,15,0.9), rgba(10,10,15,0.6));
-  border-bottom: 1px solid var(--stroke);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.55);
+  height: 72px;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background: rgba(6, 9, 18, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   transition:
-    height 0.25s ease,
-    background 0.25s ease,
-    box-shadow 0.25s ease,
-    filter 0.25s ease;
-  padding-top: 2px;
-  padding-bottom: 2px;
+    height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
 }
 
-/* Shrink on scroll */
+/* Shrink state on scroll */
 .nav--shrink {
   height: 60px;
-  background: linear-gradient(180deg, rgba(10,10,15,0.85), rgba(10,10,15,0.4));
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
-  filter:
-    drop-shadow(0 0 8px rgba(0,255,240,0.15))
-    drop-shadow(0 0 14px rgba(156,107,255,0.12));
+  background: rgba(5, 7, 14, 0.88);
+  border-bottom-color: rgba(1, 206, 252, 0.2);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(1, 206, 252, 0.1);
 }
-.nav--shrink .nav-inner { padding: 0.4rem 1rem; }
-.nav--shrink .brand-logo { transform: scale(0.9); opacity: 0.9; }
-.nav--shrink .brand-text { font-size: 0.95rem; opacity: 0.9; letter-spacing: 0.4px; }
 
-/* ---------- NAV INNER / LAYOUT ---------- */
 .nav-inner {
-  max-width:1200px;
-  margin:0 auto;
-  display:flex;
-  align-items:center;      /* vertical center */
-  justify-content:space-between;
-  gap:1rem;
-  padding:.65rem 1.25rem;
+  max-width: 1360px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
 }
 
-/* ---------- BRAND ---------- */
+/* ---------- BRAND LOGO & TITLE ---------- */
 .brand {
-  display:inline-flex;
-  align-items:center;
-  gap:.6rem;
-  font-weight:800;
-  letter-spacing:.5px;
-  text-decoration:none;
-  color:var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #ffffff;
+  cursor: pointer;
+  user-select: none;
 }
+
 .brand-logo {
-  width:36px;
-  height:36px;
-  display:block;
-  border-radius: 12px;
-  will-change: transform, filter, opacity;
-  transform: translateY(2px) scale(1);
-  opacity: 0;
-  animation: logoFadeIn 650ms cubic-bezier(.2,.7,.2,1) forwards;
-  image-rendering: auto;
+  width: 36px;
+  height: 36px;
+  display: block;
+  border-radius: 10px;
+  transition: transform 0.25s ease, filter 0.25s ease;
 }
+
+.brand:hover .brand-logo {
+  transform: scale(1.08) rotate(-2deg);
+  filter: drop-shadow(0 0 10px rgba(1, 206, 252, 0.7));
+}
+
 .brand-text {
-  font-weight:700;
-  color:var(--text);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  background: linear-gradient(135deg, #ffffff 30%, #01cefc 80%, #ff3de8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* neon effect on logo */
-.neon {
-  filter:
-    drop-shadow(0 0 2px rgba(156,107,255,.55))
-    drop-shadow(0 0 6px rgba(0,255,240,.35))
-    drop-shadow(0 0 12px rgba(255,0,230,.25));
-  transition: transform 240ms ease, filter 240ms ease, opacity 240ms ease;
-}
-.brand:hover .brand-logo.neon,
-.brand:focus-visible .brand-logo.neon {
-  transform: translateY(0) scale(1.06);
-  filter:
-    drop-shadow(0 0 3px rgba(156,107,255,.7))
-    drop-shadow(0 0 10px rgba(0,255,240,.55))
-    drop-shadow(0 0 16px rgba(255,0,230,.40));
-}
-.brand:hover .brand-logo.neon {
-  animation:
-    logoFadeIn 650ms cubic-bezier(.2,.7,.2,1) forwards,
-    logoPulse 1300ms ease-in-out infinite alternate;
-}
-
-@keyframes logoFadeIn {
-  from { opacity: 0; transform: translateY(6px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(2px) scale(1); }
-}
-@keyframes logoPulse {
-  from { transform: translateY(2px) scale(1.02); }
-  to   { transform: translateY(0)    scale(1.07); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .brand-logo { animation: none; opacity: 1; transform: none; }
-}
-
-/* ---------- NAV RIGHT / TABS ---------- */
+/* ---------- NAV RIGHT & LINKS ---------- */
 .nav-right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* small hamburger */
-.menu-toggle {
-  display: none;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.04);
-  padding: 8px;
-  border-radius: 10px;
-  cursor: pointer;
-  color: var(--text);
-}
-
-/* Tabs row */
 .tabs {
   display: flex;
-  gap: 12px;
   align-items: center;
-  margin-left: 8px;
-  overflow: visible;
+  gap: 6px;
 }
 
-/* icon tab */
+/* Individual Navigation Tab / Pill */
 .tab {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  width: 44px;
-  height: 44px;
-  padding: 6px;
-  border-radius: 10px;
-  background: var(--glass);
-  border: 1px solid rgba(255,255,255,0.03);
-  color: var(--text);
-  transition: transform .16s ease, box-shadow .16s ease, background .12s;
-}
-.tab .tab-label {
-  display: none;
-  margin-left: 8px;
+  padding: 8px 14px;
+  border-radius: 20px;
   font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-decoration: none;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  white-space: nowrap;
+  position: relative;
 }
 
-/* neon hover */
-.tab:hover,
-.tab:focus {
-  transform: translateY(-4px);
-  box-shadow:
-    0 10px 30px rgba(0,255,240,0.06),
-    0 2px 6px rgba(156,107,255,0.04);
-  color: var(--cyan);
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+.tab svg {
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
-/* ---------- MOBILE MENU ---------- */
-@media (max-width: 768px) {
-  .menu-toggle { display:inline-flex; }
+.tab .tab-label {
+  display: inline-block;
+}
 
-  .tabs {
-    position: absolute;
-    right: 14px;
-    top: calc(var(--nav-height) - 16px);
-    flex-direction: column;
-    background: rgba(6,6,8,0.94);
-    padding: 12px;
-    border-radius: 10px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-    display: none;
-    min-width: 180px;
+/* Hover effect */
+.tab:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.tab:hover svg {
+  color: #01cefc;
+  transform: scale(1.1);
+}
+
+/* Active tab highlight */
+.tab.active {
+  color: #01cefc;
+  background: rgba(1, 206, 252, 0.12);
+  border-color: rgba(1, 206, 252, 0.45);
+  box-shadow: 0 0 16px rgba(1, 206, 252, 0.25);
+}
+
+.tab.active svg {
+  color: #01cefc;
+}
+
+.tab-active-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #01cefc;
+  box-shadow: 0 0 8px #01cefc;
+  margin-left: 2px;
+}
+
+/* Mobile Toggle Button */
+.menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.menu-toggle:hover,
+.menu-toggle.is-active {
+  background: rgba(1, 206, 252, 0.15);
+  border-color: #01cefc;
+  color: #01cefc;
+}
+
+/* ---------- RESPONSIVE BREAKPOINTS ---------- */
+
+/* Medium Screens (Tablets / Laptops 769px - 1080px) */
+@media (max-width: 1080px) and (min-width: 769px) {
+  .tab {
+    padding: 7px 10px;
+    font-size: 12px;
+    gap: 6px;
   }
-  .tabs.open { display: flex; }
-
-  .tab { width: auto; height: auto; padding: .55rem .85rem; }
-  .tab .tab-label { display: inline-block; }
-
-  .nav-inner { align-items: center; }
 }
-/* ---------- END OF NAVBAR CSS ---------- */
+
+/* Mobile Screens (max-width: 768px) */
+@media (max-width: 768px) {
+  .nav {
+    height: 64px;
+  }
+
+  .nav-inner {
+    padding: 0 16px;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+  }
+
+  /* Fullscreen dark overlay */
+  .nav-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1198;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: fadeInBackdrop 0.2s ease;
+  }
+
+  /* Slide-down mobile drawer */
+  .tabs {
+    position: fixed;
+    top: 72px;
+    left: 16px;
+    right: 16px;
+    max-width: 440px;
+    margin: 0 auto;
+    z-index: 1199;
+    flex-direction: column;
+    align-items: stretch;
+    background: rgba(11, 17, 32, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(1, 206, 252, 0.3);
+    border-radius: 18px;
+    padding: 14px;
+    gap: 6px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(1, 206, 252, 0.18);
+    display: none;
+    animation: slideDownMenu 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tabs.open {
+    display: flex;
+  }
+
+  .tab {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 12px 18px;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+
+  .tab.active {
+    background: rgba(1, 206, 252, 0.15);
+    border-color: rgba(1, 206, 252, 0.5);
+  }
+
+  .tab-active-dot {
+    margin-left: auto;
+  }
+}
+
+@keyframes slideDownMenu {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInBackdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

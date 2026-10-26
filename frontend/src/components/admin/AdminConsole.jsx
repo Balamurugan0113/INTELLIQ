@@ -427,6 +427,39 @@ export default function AdminConsole({ onExitToSite }) {
     }
   };
 
+  const handleViewLiveSite = () => {
+    if (typeof window === 'undefined') return;
+    const host = window.location.hostname;
+    let targetUrl;
+
+    if (host.startsWith('admin.') || host.startsWith('console.')) {
+      // Strip admin. or console. to open the real website domain: e.g. https://intelliq.co.in/?preview=true
+      const primaryHost = host.replace(/^(admin|console)\./, '');
+      targetUrl = `${window.location.protocol}//${primaryHost}/?preview=true`;
+    } else {
+      // On same domain (e.g. localhost or intelliq.co.in/admin)
+      targetUrl = `/?preview=true`;
+    }
+
+    const payload = {
+      events: getEvents(),
+      posters: getPosters(),
+      achievements: getAchievements()
+    };
+
+    const newWin = window.open(targetUrl, '_blank');
+    if (newWin) {
+      const sendSync = () => {
+        try {
+          newWin.postMessage({ type: 'INTELLIQ_SYNC_ALL', payload }, '*');
+        } catch (e) {}
+      };
+      setTimeout(sendSync, 400);
+      setTimeout(sendSync, 1000);
+      setTimeout(sendSync, 2000);
+    }
+  };
+
   // --------------------------------------------------------------------------
   // LOGIN SCREEN
   // --------------------------------------------------------------------------
@@ -503,7 +536,7 @@ export default function AdminConsole({ onExitToSite }) {
           <button
             type="button"
             className="admin-action-btn view-live"
-            onClick={() => window.open('/', '_blank')}
+            onClick={handleViewLiveSite}
             title="View Live Website in new tab"
           >
             <FaExternalLinkAlt /> <span>View Live Site</span>
