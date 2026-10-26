@@ -1,0 +1,341 @@
+/* ==========================================================================
+   GRADIENT CAROUSEL (REACT BITS PRO)
+   3D carousel that dynamically tints the background from each card
+   ========================================================================== */
+
+.gradient-carousel-root {
+  position: relative;
+  width: 100%;
+  min-height: 560px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: rgba(6, 9, 18, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 25px 60px -15px rgba(0, 0, 0, 0.9),
+    inset 0 0 40px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 16px 24px;
+  user-select: none;
+  touch-action: pan-y;
+  outline: none;
+}
+
+/* Ambient Dynamic Background Tint (Bleeds from the active card) */
+.gradient-carousel-ambient {
+  position: absolute;
+  inset: -60px;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+  filter: blur(85px);
+  opacity: 0.5;
+  transition: background 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+  will-change: background;
+}
+
+/* 3D Perspective Stage */
+.gradient-carousel-stage {
+  position: relative;
+  width: 100%;
+  height: 490px;
+  perspective: 1100px;
+  perspective-origin: 50% 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  z-index: 1;
+}
+
+/* 3D Card */
+.gradient-carousel-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  max-width: 86vw;
+  height: 480px;
+  max-height: 80vh;
+  margin-top: -240px;
+  margin-left: -200px;
+  transform-style: preserve-3d;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(11, 15, 26, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  transition:
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.55s ease,
+    filter 0.55s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+  will-change: transform, opacity, filter;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 640px) {
+  .gradient-carousel-root {
+    min-height: 500px;
+    padding: 20px 10px 18px;
+  }
+
+  .gradient-carousel-stage {
+    height: 420px;
+  }
+
+  .gradient-carousel-card {
+    width: 300px;
+    height: 410px;
+    margin-top: -205px;
+    margin-left: -150px;
+  }
+}
+
+/* Active Card Highlights */
+.gradient-carousel-card[data-active="true"] {
+  cursor: default;
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 30px 65px -10px rgba(0, 0, 0, 0.95),
+    0 0 35px var(--card-glow, rgba(1, 206, 252, 0.4));
+}
+
+.gradient-carousel-card[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--color-1, #01cefc), var(--color-2, #ff3de8));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.9;
+}
+
+/* Inactive Cards */
+.gradient-carousel-card[data-active="false"]:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Card Inner Layout */
+.gradient-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card Media */
+.gradient-card-media {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  background: #060913;
+}
+
+@media (max-width: 640px) {
+  .gradient-card-media {
+    height: 195px;
+  }
+}
+
+.gradient-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  transition: transform 0.4s ease;
+}
+
+.gradient-carousel-card[data-active="true"]:hover .gradient-card-img {
+  transform: scale(1.03);
+}
+
+.gradient-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(11, 15, 26, 0.98) 100%);
+  pointer-events: none;
+}
+
+/* Category Badge */
+.gradient-card-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 4;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.gradient-card-counter {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 4;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+}
+
+/* Card Body */
+.gradient-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 18px 16px;
+  background: #0b0f1a;
+  justify-content: space-between;
+}
+
+.gradient-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 6px;
+}
+
+.gradient-card-date {
+  color: var(--color-1, #01cefc);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.gradient-card-title {
+  margin: 0 0 6px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.35;
+  letter-spacing: -0.2px;
+}
+
+.gradient-card-desc {
+  margin: 0 0 10px 0;
+  font-size: 0.83rem;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.gradient-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gradient-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gradient-card-btn:hover {
+  background: var(--color-1, #01cefc);
+  color: #05070d;
+  border-color: var(--color-1, #01cefc);
+  box-shadow: 0 0 14px var(--card-glow, rgba(1, 206, 252, 0.5));
+}
+
+/* Carousel Bottom Controls */
+.gradient-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 14px;
+  z-index: 2;
+}
+
+.gradient-ctrl-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(14, 18, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.gradient-ctrl-arrow:hover {
+  border-color: var(--color-1, #01cefc);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-1, #01cefc);
+  transform: scale(1.08);
+}
+
+.gradient-indicator-dots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.gradient-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.gradient-dot.active {
+  width: 24px;
+  border-radius: 999px;
+  background: var(--color-1, #01cefc);
+  box-shadow: 0 0 12px var(--card-glow, rgba(1, 206, 252, 0.6));
+}

@@ -13,10 +13,7 @@ import {
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ArrowLeft01Icon,
-  ArrowRight01Icon,
-  Layers01Icon,
-  Grid2X2Icon,
-  SparklesIcon
+  ArrowRight01Icon
 } from '@hugeicons/core-free-icons';
 
 /**
@@ -156,7 +153,6 @@ const REAL_EVENTS = [
 export default function Events() {
   const [events] = useState(REAL_EVENTS);
   const [filter, setFilter] = useState('All');
-  const [viewMode, setViewMode] = useState('stack'); // 'stack' (CardSwap) or 'grid'
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const cardSwapRef = useRef(null);
@@ -190,44 +186,8 @@ export default function Events() {
   };
 
   return (
-    <section aria-labelledby="events-heading" className="events-section">
+    <section aria-label="Events Stack" className="events-section">
       <div className="events-container">
-        {/* Header Bar: Title, Subtitle, and View Mode Switcher */}
-        <div className="events-header-bar">
-          <div className="events-heading-group">
-            <h3 id="events-heading" className="events-subheading">
-              <HugeiconsIcon icon={SparklesIcon} size={18} className="events-heading-icon" />
-              Flagship & Real-Time Events
-            </h3>
-            <p className="events-description">
-              Explore interactive workshops, industrial visits, guest lectures, and symposiums at INFO Institute of Engineering.
-            </p>
-          </div>
-
-          <div className="events-view-switcher" role="group" aria-label="View mode toggle">
-            <button
-              type="button"
-              className={`view-switch-btn ${viewMode === 'stack' ? 'is-active' : ''}`}
-              onClick={() => setViewMode('stack')}
-              title="3D Card Swap Stack"
-              aria-pressed={viewMode === 'stack'}
-            >
-              <HugeiconsIcon icon={Layers01Icon} size={15} />
-              <span>Stack</span>
-            </button>
-            <button
-              type="button"
-              className={`view-switch-btn ${viewMode === 'grid' ? 'is-active' : ''}`}
-              onClick={() => setViewMode('grid')}
-              title="Grid View"
-              aria-pressed={viewMode === 'grid'}
-            >
-              <HugeiconsIcon icon={Grid2X2Icon} size={15} />
-              <span>Grid</span>
-            </button>
-          </div>
-        </div>
-
         {/* Filters row */}
         <div className="events-filters-row">
           <div className="event-filters">
@@ -246,174 +206,112 @@ export default function Events() {
         </div>
 
         {/* View Mode: CardSwap 3D Stack */}
-        {viewMode === 'stack' && (
-          <div className="events-swap-showcase">
-            {show.length === 0 ? (
-              <div className="events-empty">No events found in this category.</div>
-            ) : (
-              <>
-                <div className="events-swap-wrapper">
-                  <CardSwap
-                    ref={cardSwapRef}
-                    key={filter}
-                    width={460}
-                    height={380}
-                    cardDistance={55}
-                    verticalDistance={65}
-                    depth={85}
-                    skewAmount={5}
-                    delay={4500}
-                    autoplay={true}
-                    pauseOnHover={true}
-                    draggable={true}
-                    speed={1}
-                    theme="dark"
-                  >
-                    {show.map((e, index) => {
-                      const coverImage =
-                        e.images && e.images.length > 0
-                          ? e.images[0]
-                          : 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=80&auto=format&fit=crop';
-                      const catSlug = e.type.toLowerCase().replace(/\s+/g, '-');
-                      return (
-                        <Card
-                          key={e.id || `${e.title}-${index}`}
-                          className="event-swap-card"
-                          onClick={() => openEventModal(e)}
-                        >
-                          <div className="event-card-swap-content">
-                            <div className="event-card-swap-media">
-                              <img src={coverImage} alt={e.title} draggable={false} />
-                              <div className="event-card-swap-gradient-overlay" />
-                              <span className={`event-card-swap-badge cat-${catSlug}`}>
-                                {e.type}
+        <div className="events-swap-showcase">
+          {show.length === 0 ? (
+            <div className="events-empty">No events found in this category.</div>
+          ) : (
+            <>
+              <div className="events-swap-wrapper">
+                <CardSwap
+                  ref={cardSwapRef}
+                  key={filter}
+                  width={460}
+                  height={380}
+                  cardDistance={55}
+                  verticalDistance={65}
+                  depth={85}
+                  skewAmount={5}
+                  delay={4500}
+                  autoplay={true}
+                  pauseOnHover={true}
+                  draggable={true}
+                  speed={1}
+                  theme="dark"
+                >
+                  {show.map((e, index) => {
+                    const coverImage =
+                      e.images && e.images.length > 0
+                        ? e.images[0]
+                        : 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=80&auto=format&fit=crop';
+                    const catSlug = e.type.toLowerCase().replace(/\s+/g, '-');
+                    return (
+                      <Card
+                        key={e.id || `${e.title}-${index}`}
+                        className="event-swap-card"
+                        onClick={() => openEventModal(e)}
+                      >
+                        <div className="event-card-swap-content">
+                          <div className="event-card-swap-media">
+                            <img src={coverImage} alt={e.title} draggable={false} />
+                            <div className="event-card-swap-gradient-overlay" />
+                            <span className={`event-card-swap-badge cat-${catSlug}`}>
+                              {e.type}
+                            </span>
+                            <span className="event-card-swap-date-pill">{e.date}</span>
+                          </div>
+
+                          <div className="event-card-swap-body">
+                            <div className="event-card-swap-meta">
+                              <span className="event-card-swap-venue">
+                                <FaMapMarkerAlt className="meta-icon" />
+                                <span>{e.venue || 'INFO INSTITUTE OF ENGINEERING'}</span>
                               </span>
-                              <span className="event-card-swap-date-pill">{e.date}</span>
+                              {e.time && (
+                                <span className="event-card-swap-time">
+                                  <FaClock className="meta-icon" />
+                                  <span>{e.time}</span>
+                                </span>
+                              )}
                             </div>
 
-                            <div className="event-card-swap-body">
-                              <div className="event-card-swap-meta">
-                                <span className="event-card-swap-venue">
-                                  <FaMapMarkerAlt className="meta-icon" />
-                                  <span>{e.venue || 'INFO INSTITUTE OF ENGINEERING'}</span>
-                                </span>
-                                {e.time && (
-                                  <span className="event-card-swap-time">
-                                    <FaClock className="meta-icon" />
-                                    <span>{e.time}</span>
-                                  </span>
-                                )}
-                              </div>
+                            <h4 className="event-card-swap-title">{e.title}</h4>
+                            <p className="event-card-swap-desc">{e.description}</p>
 
-                              <h4 className="event-card-swap-title">{e.title}</h4>
-                              <p className="event-card-swap-desc">{e.description}</p>
-
-                              <div className="event-card-swap-footer">
-                                <button
-                                  type="button"
-                                  className="event-card-swap-btn"
-                                  onClick={ev => {
-                                    ev.stopPropagation();
-                                    openEventModal(e);
-                                  }}
-                                >
-                                  View Details &amp; Photos &rarr;
-                                </button>
-                              </div>
+                            <div className="event-card-swap-footer">
+                              <button
+                                type="button"
+                                className="event-card-swap-btn"
+                                onClick={ev => {
+                                  ev.stopPropagation();
+                                  openEventModal(e);
+                                }}
+                              >
+                                View Details &amp; Photos &rarr;
+                              </button>
                             </div>
                           </div>
-                        </Card>
-                      );
-                    })}
-                  </CardSwap>
-                </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </CardSwap>
+              </div>
 
-                {/* CardSwap Interactive Controls Bar */}
-                <div className="events-swap-controls">
-                  <button
-                    type="button"
-                    className="swap-nav-btn prev"
-                    onClick={handlePrev}
-                    aria-label="Previous event card"
-                    title="Previous card"
-                  >
-                    <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
-                  </button>
-
-                  <div className="swap-indicator">
-                    <span className="swap-indicator-text">
-                      Drag or fling cards &bull; Click to open gallery &bull; Use arrows to swap
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="swap-nav-btn next"
-                    onClick={handleNext}
-                    aria-label="Next event card"
-                    title="Next card"
-                  >
-                    <HugeiconsIcon icon={ArrowRight01Icon} size={18} />
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        )}
-
-        {/* View Mode: Classic Cards Grid */}
-        {viewMode === 'grid' && (
-          <div className="events-grid">
-            {show.length === 0 ? (
-              <div className="events-empty">No events found in this category.</div>
-            ) : (
-              show.map(e => (
-                <article
-                  key={e.id}
-                  className="event-card"
-                  tabIndex={0}
-                  role="button"
-                  aria-label={`${e.title} - Click for full details`}
-                  onClick={() => openEventModal(e)}
-                  onKeyDown={evt => {
-                    if (evt.key === 'Enter' || evt.key === ' ') {
-                      evt.preventDefault();
-                      openEventModal(e);
-                    }
-                  }}
+              {/* CardSwap Controls (Arrows only) */}
+              <div className="events-swap-controls">
+                <button
+                  type="button"
+                  className="swap-nav-btn prev"
+                  onClick={handlePrev}
+                  aria-label="Previous event card"
+                  title="Previous card"
                 >
-                  <div className="card-top-bar">
-                    <span className={`cat-badge cat-${e.type.toLowerCase().replace(/\s+/g, '-')}`}>
-                      {e.type}
-                    </span>
-                    <span className="award-badge">{e.date}</span>
-                  </div>
+                  <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
+                </button>
 
-                  <h3 className="ach-title">{e.title}</h3>
-
-                  <div className="ach-meta">
-                    <div className="meta-item">
-                      <FaMapMarkerAlt className="meta-icon" />
-                      <span>{e.venue || 'INFO INSTITUTE OF ENGINEERING'}</span>
-                    </div>
-                    {e.time && (
-                      <div className="meta-item">
-                        <FaClock className="meta-icon" />
-                        <span>{e.time}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {e.description && <p className="ach-desc">{e.description}</p>}
-
-                  <div className="ach-card-footer">
-                    <span className="view-details-btn">View Details &amp; Photos &rarr;</span>
-                  </div>
-                </article>
-              ))
-            )}
-          </div>
-        )}
+                <button
+                  type="button"
+                  className="swap-nav-btn next"
+                  onClick={handleNext}
+                  aria-label="Next event card"
+                  title="Next card"
+                >
+                  <HugeiconsIcon icon={ArrowRight01Icon} size={18} />
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* EVENT DETAILS POPUP MODAL */}
