@@ -39,7 +39,7 @@ services:
         value: nosniff
     envVars:
       - key: VITE_API_URL
-        value: https://intelliq-api.onrender.com
+        value: https://intelliq-1if3.onrender.com
 
 # ─── PostgreSQL Database ──────────────────────────────────────
 databases:

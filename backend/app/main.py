@@ -51,7 +51,10 @@ parsed_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
 explicit_origins = [
     "https://www.intelliq.co.in",
     "https://intelliq.co.in",
+    "https://admin.intelliq.co.in",
+    "https://console.intelliq.co.in",
     "https://intelliq-tan.vercel.app",
+    "https://intelliq-1if3.onrender.com",
     "http://localhost:5173",
     "http://localhost:3000"
 ]
@@ -90,8 +93,9 @@ async def startup():
     finally:
         db.close()
 
-@app.get("/")
-@app.get("/api/health")
+# Accept GET, HEAD, POST, and OPTIONS for uptime monitoring (e.g. UptimeRobot)
+@app.api_route("/", methods=["GET", "HEAD", "POST", "OPTIONS"])
+@app.api_route("/api/health", methods=["GET", "HEAD", "POST", "OPTIONS"])
 def health():
     return {"status": "ok", "service": "INTELLIQ API", "version": "1.0"}
 
