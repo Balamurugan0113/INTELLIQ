@@ -833,10 +833,9 @@ export default function AdminConsole({ onExitToSite }) {
         />
       )}
 
-      {/* Main Container */}
-      <main className="admin-main-container">
-        {/* Navigation Tabs - Animatic Cyber Boxes with Icons & Match Color Code */}
-        <div className="admin-tabs-wrapper">
+      {/* Sticky Glassy Navigation Bar: Top 3 boxes with titles alone */}
+      <div className="admin-sticky-tabs-bar">
+        <div className="admin-sticky-tabs-inner">
           <nav className="admin-tabs-nav" aria-label="Admin Navigation Tabs">
             {/* Box 1: Events Manager */}
             <button
@@ -890,7 +889,10 @@ export default function AdminConsole({ onExitToSite }) {
             </button>
           </nav>
         </div>
+      </div>
 
+      {/* Main Container - Below cards scroll up underneath with glassy navbar effect */}
+      <main className="admin-main-container">
         {/* ================================================================= */}
         {/* TAB 1: EVENTS MANAGER */}
         {/* ================================================================= */}

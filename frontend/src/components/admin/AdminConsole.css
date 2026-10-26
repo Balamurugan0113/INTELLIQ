@@ -246,19 +246,16 @@
 }
 
 /* ==========================================================================
-   3. TOPBAR HEADER (CYBER GLASS WITH ANIMATIC BRAND & LIVE STATUS)
+   3. TOPBAR HEADER (NATURALLY SCROLLS AT TOP OF PAGE)
    ========================================================================== */
 .admin-topbar {
-  position: sticky;
-  top: 0;
+  position: relative;
   width: 100%;
-  background: rgba(7, 12, 26, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(1, 206, 252, 0.2);
-  padding: 12px 0;
-  z-index: 1000;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(1, 206, 252, 0.15);
+  background: rgba(7, 12, 26, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .admin-topbar-inner {
@@ -481,13 +478,29 @@
 }
 
 /* ==========================================================================
-   4. ANIMATIC NAVBAR BOXES (MATCH COLOR CODE + ICONS + GLOW BARS)
+   4. STICKY GLASSY NAVBAR: TOP 3 BOXES WITH TITLES ALONE
    ========================================================================== */
-.admin-tabs-wrapper {
+.admin-sticky-tabs-bar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 950;
+  background: rgba(6, 10, 22, 0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(1, 206, 252, 0.22);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), 0 0 25px rgba(1, 206, 252, 0.1);
+  padding: 12px 0;
+  transition: all 0.25s ease;
+}
+
+.admin-sticky-tabs-inner {
+  max-width: 1360px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
   display: flex;
   justify-content: center;
-  margin-bottom: 32px;
-  width: 100%;
 }
 
 .admin-tabs-nav {
@@ -496,12 +509,11 @@
   gap: 14px;
   width: 100%;
   max-width: 1000px;
-  background: rgba(10, 16, 32, 0.85);
-  padding: 8px;
-  border-radius: 20px;
+  background: rgba(10, 16, 32, 0.7);
+  padding: 6px;
+  border-radius: 18px;
   border: 1px solid rgba(1, 206, 252, 0.25);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6),
-              0 0 30px rgba(1, 206, 252, 0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(1, 206, 252, 0.08);
 }
 
 /* Individual Tab Box */
@@ -669,7 +681,7 @@
   max-width: 1360px;
   width: 100%;
   margin: 0 auto;
-  padding: 32px 24px 70px;
+  padding: 24px 24px 70px;
   position: relative;
   z-index: 1;
 }
@@ -1832,13 +1844,39 @@
    12. RESPONSIVE DESIGN & MOBILE DRAWER
    ========================================================================== */
 @media (max-width: 960px) {
+  .admin-sticky-tabs-inner {
+    padding: 0 16px;
+  }
+
   .admin-tabs-nav {
-    grid-template-columns: 1fr;
+    display: flex;
+    overflow-x: auto;
     gap: 8px;
+    padding: 6px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .admin-tabs-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .admin-tab-box {
-    padding: 12px 14px;
+    flex: 1;
+    min-width: 145px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .tab-icon-badge {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 15px;
+  }
+
+  .tab-sublabel {
+    display: none;
   }
 }
 
