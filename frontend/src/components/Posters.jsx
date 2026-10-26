@@ -1,8 +1,7 @@
 // frontend/src/components/Posters.jsx
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import GradientCarousel from './ui/GradientCarousel';
 import './Posters.css';
-import { FaTimes, FaExternalLinkAlt, FaCalendarAlt } from 'react-icons/fa';
 
 export const POSTERS_DATA = [
   {
@@ -108,113 +107,19 @@ export const POSTERS_DATA = [
 ];
 
 export default function Posters() {
-  const [filter, setFilter] = useState('All');
-  const [selectedPoster, setSelectedPoster] = useState(null);
-
-  const chips = useMemo(() => {
-    const categories = Array.from(new Set(POSTERS_DATA.map(p => p.category)));
-    return ['All', ...categories];
-  }, []);
-
-  const filteredPosters = useMemo(() => {
-    if (filter === 'All') return POSTERS_DATA;
-    return POSTERS_DATA.filter(p => p.category.toLowerCase() === filter.toLowerCase());
-  }, [filter]);
-
-  const openPoster = poster => {
-    setSelectedPoster(poster);
-  };
-
-  const closePoster = () => {
-    setSelectedPoster(null);
-  };
-
   return (
-    <section aria-labelledby="posters-heading" className="posters-section">
+    <section aria-label="Posters" className="posters-section">
       <div className="posters-container">
-        {/* Category Filters */}
-        <div className="posters-filters-row">
-          <div className="poster-filters">
-            {chips.map(c => (
-              <button
-                key={c}
-                type="button"
-                className={`poster-filter-btn ${filter === c ? 'is-active' : ''}`}
-                aria-pressed={filter === c}
-                onClick={() => setFilter(c)}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* 3D Gradient Carousel (Tints the background from each card) */}
         <GradientCarousel
-          key={filter}
-          items={filteredPosters}
+          items={POSTERS_DATA}
           maxRotationDegrees={26}
           maxDepthPx={130}
           cardSpacing={280}
           autoplay={true}
           delay={4500}
-          onItemClick={poster => openPoster(poster)}
         />
       </div>
-
-      {/* Fullscreen Poster Modal */}
-      {selectedPoster && (
-        <div
-          className="poster-modal-overlay"
-          onClick={closePoster}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div
-            className="poster-modal-dialog"
-            onClick={e => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className="poster-modal-close-btn"
-              onClick={closePoster}
-              aria-label="Close poster view"
-            >
-              <FaTimes />
-            </button>
-
-            <div className="poster-modal-image-container">
-              <img
-                src={selectedPoster.image}
-                alt={selectedPoster.title}
-              />
-            </div>
-
-            <div className="poster-modal-content">
-              <span className="poster-modal-badge">{selectedPoster.category}</span>
-              <h2 className="poster-modal-title">{selectedPoster.title}</h2>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#01cefc', fontSize: '0.88rem', fontWeight: 600 }}>
-                <FaCalendarAlt />
-                <span>{selectedPoster.date}</span>
-              </div>
-              <p className="poster-modal-desc">
-                {selectedPoster.fullDetails || selectedPoster.description}
-              </p>
-
-              <div className="poster-modal-actions">
-                <a
-                  href={selectedPoster.image}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="poster-modal-link-btn"
-                >
-                  Open Full Image <FaExternalLinkAlt size={12} />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

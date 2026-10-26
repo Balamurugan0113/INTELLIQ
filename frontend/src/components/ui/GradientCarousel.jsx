@@ -179,58 +179,18 @@ export default function GradientCarousel({
               style={style}
               onClick={e => {
                 e.stopPropagation();
-                if (isActive) {
-                  onItemClick?.(item, index);
-                } else {
+                if (!isActive) {
                   goTo(index);
                 }
               }}
             >
               <div className="gradient-card-inner">
-                {/* Poster Media */}
-                <div className="gradient-card-media">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="gradient-card-img"
-                    draggable={false}
-                  />
-                  <div className="gradient-card-overlay" />
-                  {item.category && (
-                    <span className="gradient-card-badge">{item.category}</span>
-                  )}
-                  <span className="gradient-card-counter">
-                    #{index + 1} of {count}
-                  </span>
-                </div>
-
-                {/* Poster Information */}
-                <div className="gradient-card-body">
-                  <div>
-                    {item.date && (
-                      <div className="gradient-card-meta">
-                        <span className="gradient-card-date">{item.date}</span>
-                      </div>
-                    )}
-                    <h4 className="gradient-card-title">{item.title}</h4>
-                    {item.description && (
-                      <p className="gradient-card-desc">{item.description}</p>
-                    )}
-                  </div>
-
-                  <div className="gradient-card-footer">
-                    <button
-                      type="button"
-                      className="gradient-card-btn"
-                      onClick={e => {
-                        e.stopPropagation();
-                        onItemClick?.(item, index);
-                      }}
-                    >
-                      View Poster Details &rarr;
-                    </button>
-                  </div>
-                </div>
+                <img
+                  src={item.image}
+                  alt={item.title || `Poster ${index + 1}`}
+                  className="gradient-card-img"
+                  draggable={false}
+                />
               </div>
             </div>
           );

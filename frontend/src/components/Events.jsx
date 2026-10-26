@@ -276,7 +276,7 @@ export default function Events() {
                                   openEventModal(e);
                                 }}
                               >
-                                View Details &amp; Photos &rarr;
+                                View Details &amp; Photos
                               </button>
                             </div>
                           </div>
